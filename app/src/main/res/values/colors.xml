@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <!-- firebrick -->
+    <color name="background_swipe_to_delete_item">#b22222</color>
+    <color name="foreground_swipe_to_delete_item">#ffffff</color>
+</resources>

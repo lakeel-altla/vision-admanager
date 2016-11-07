@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item android:id="@+id/nav_tango_space"
+              android:icon="@drawable/ic_folder_shared_black_24dp"
+              android:title="@string/nav_tango_space"/>
+
+        <item android:id="@+id/nav_app_space"
+              android:icon="@drawable/ic_folder_black_24dp"
+              android:title="@string/nav_app_space"/>
+
+    </group>
+
+</menu>
