@@ -10,11 +10,11 @@ import rx.schedulers.Schedulers;
 
 public final class FindAllMetaDatasUseCase {
 
-    private final TangoMetaDataRepository tangoMetaDataRepository;
+    @Inject
+    TangoMetaDataRepository tangoMetaDataRepository;
 
     @Inject
-    public FindAllMetaDatasUseCase(TangoMetaDataRepository repository) {
-        tangoMetaDataRepository = repository;
+    public FindAllMetaDatasUseCase() {
     }
 
     public Observable<AreaDescriptionMetaData> execute() {

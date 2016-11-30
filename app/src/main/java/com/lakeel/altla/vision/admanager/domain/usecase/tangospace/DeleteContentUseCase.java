@@ -9,11 +9,11 @@ import rx.schedulers.Schedulers;
 
 public final class DeleteContentUseCase {
 
-    private final TangoMetaDataRepository tangoMetaDataRepository;
+    @Inject
+    TangoMetaDataRepository tangoMetaDataRepository;
 
     @Inject
-    public DeleteContentUseCase(TangoMetaDataRepository repository) {
-        tangoMetaDataRepository = repository;
+    public DeleteContentUseCase() {
     }
 
     public Single<String> execute(String uuid) {
