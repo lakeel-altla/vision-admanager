@@ -55,7 +55,6 @@ public final class UploadContentUseCase {
     }
 
     private Observable<AreaDescriptionMetaData> saveMetaData(AreaDescriptionMetaData metaData) {
-        // Firebase Database からの完了通知は Main スレッドで動くため、後続処理のために I/O スレッドへストリームを戻す。
         return firebaseMetaDataRepository.save(metaData)
                                          .toObservable()
                                          .subscribeOn(Schedulers.io());
@@ -68,9 +67,7 @@ public final class UploadContentUseCase {
     }
 
     private Observable<String> saveContent(String uuid, File file, OnProgressListener onProgressListener) {
-        // Firebase Storage からの完了通知は Firebase Storage 専用スレッドで動くため、
-        // 後続処理のために I/O スレッドへストリームを戻す。
-        // 非同期なアップロード処理の後にストリームを閉じる必要があるため、using を用いて対応している。
+        // Use using() to close the stream after asynchronous upload processing.
         return Observable.using(createFileInputStream(file),
                                 stream -> saveContent(uuid, stream, onProgressListener),
                                 closeFileInputStream).subscribeOn(Schedulers.io());

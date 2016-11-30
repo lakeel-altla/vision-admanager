@@ -54,11 +54,6 @@ public class ManagerActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Dagger
-        //
-        // Instant run や復帰時には既に Fragment が Activity にアタッチされているため、
-        // Fragment での UserComponent 呼び出しが null にならぬように、
-        // super.onCreate よりも先に処理しておく。
         mUserComponent = MyApplication.getApplicationComponent(this)
                                       .userComponent(new ActivityModule(this));
         mUserComponent.inject(this);

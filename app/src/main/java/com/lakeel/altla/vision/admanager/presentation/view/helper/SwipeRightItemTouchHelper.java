@@ -62,12 +62,12 @@ public final class SwipeRightItemTouchHelper extends ItemTouchHelper {
                     int iconMarginLeft = resources.getDimensionPixelSize(R.dimen.swape_to_delete_icon_margin_left);
                     Drawable icon = resources.getDrawable(R.drawable.ic_delete_black_24dp);
 
-                    // 背景の描画
+                    // Draw the background
                     paint.setColor(backgroundColor);
                     c.drawRect(view.getLeft(), view.getTop(), dX, view.getBottom(), paint);
                     icon.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_ATOP);
 
-                    // アイコンの描画
+                    // Draw the icon.
                     int left = view.getLeft() + iconMarginLeft;
                     int top = view.getTop() +
                               (int) ((view.getBottom() - view.getTop() - icon.getIntrinsicHeight()) * 0.5f);

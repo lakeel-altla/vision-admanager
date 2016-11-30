@@ -120,7 +120,6 @@ public class AppSpaceFragment extends Fragment
 
     @Override
     public void showUploadProgressDialog() {
-        // 進捗率を出す場合は、進捗率のリセットが不可能であるため、インスタンスをキャッシュすることはできない。
         mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setMessage(getString(R.string.progress_dialog_upload));
         mProgressDialog.setIndeterminate(false);

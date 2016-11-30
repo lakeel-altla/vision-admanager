@@ -26,12 +26,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class SignInPresenter implements GoogleApiClient.OnConnectionFailedListener {
 
-    // MEMO:
-    //
-    // Google Sign-In や Firebase Sign-In は Activity に強く依存しているため、
-    // あえて UseCase を作らずに Presenter 内部で処理している。
-    //
-
     @Inject
     Resources resources;
 

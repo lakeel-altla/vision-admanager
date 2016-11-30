@@ -28,13 +28,6 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
 
     @Override
     public Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData) {
-        //
-        // MEMO:
-        //
-        // Firebase Database の Task のコールバックは Main スレッドで呼び出される。
-        // そのコールバックから RxJava の通知メソッドを呼び出すと、これもまた Main スレッドでの呼び出しとなり、
-        // 後続のストリーム処理がある場合に、それらは Main スレッドで処理されてしまうことに注意する。
-        //
         return Single.create(subscriber -> {
             LOG.d("Saving meta data to Firebase Database...");
             FirebaseMetaData firebaseMetaData = mapper.toFirebaseMetaData(metaData);

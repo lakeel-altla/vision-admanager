@@ -40,7 +40,6 @@ public final class FindAllMetaDatasUseCase {
 
     private Observable<List<AreaDescriptionMetaData>> sortAreaDescriptionMetaDataList(
             List<AreaDescriptionMetaData> metaDatas) {
-        // 日時ソート
         Collections.sort(metaDatas, AreaDescriptionMetaDataComparators.DATE_COMPARATOR);
         return Observable.just(metaDatas);
     }
