@@ -1,8 +1,9 @@
-package com.lakeel.altla.vision.admanager.data.repository;
+package com.lakeel.altla.vision.admanager.data.repository.android;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
+import com.lakeel.altla.vision.admanager.data.repository.mapper.MetaDataMapper;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.TangoMetaDataRepository;
 

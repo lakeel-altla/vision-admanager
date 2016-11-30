@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.data.repository;
+package com.lakeel.altla.vision.admanager.data.repository.mapper;
 
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
@@ -9,8 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 public final class MetaDataMapper {
@@ -95,36 +93,5 @@ public final class MetaDataMapper {
         };
 
         return metaData;
-    }
-
-    public FirebaseMetaData toFirebaseMetaData(AreaDescriptionMetaData metaData) {
-        FirebaseMetaData firebaseMetaData = new FirebaseMetaData();
-
-        firebaseMetaData.uuid = metaData.uuid;
-        firebaseMetaData.name = metaData.name;
-
-        if (metaData.date != null) {
-            firebaseMetaData.date = metaData.date.getTime();
-        }
-
-        if (metaData.transformationPosition == null) {
-            firebaseMetaData.transformationPosition = Collections.emptyList();
-        } else {
-            firebaseMetaData.transformationPosition = new ArrayList<>(metaData.transformationPosition.length);
-            for (double value : metaData.transformationPosition) {
-                firebaseMetaData.transformationPosition.add(value);
-            }
-        }
-
-        if (metaData.transformationRotation == null) {
-            firebaseMetaData.transformationRotation = Collections.emptyList();
-        } else {
-            firebaseMetaData.transformationRotation = new ArrayList<>(metaData.transformationRotation.length);
-            for (double value : metaData.transformationRotation) {
-                firebaseMetaData.transformationRotation.add(value);
-            }
-        }
-
-        return firebaseMetaData;
     }
 }

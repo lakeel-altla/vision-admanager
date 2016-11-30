@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.data.repository;
+package com.lakeel.altla.vision.admanager.data.repository.firebase;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;

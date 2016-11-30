@@ -1,7 +1,8 @@
-package com.lakeel.altla.vision.admanager.data.repository;
+package com.lakeel.altla.vision.admanager.data.repository.android;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.admanager.data.repository.mapper.MetaDataMapper;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
 

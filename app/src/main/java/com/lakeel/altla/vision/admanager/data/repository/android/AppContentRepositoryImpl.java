@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.data.repository;
+package com.lakeel.altla.vision.admanager.data.repository.android;
 
 import com.lakeel.altla.vision.admanager.domain.repository.AppContentRepository;
 
