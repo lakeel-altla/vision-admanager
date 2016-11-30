@@ -34,11 +34,12 @@ public final class FindAllMetaDatasUseCase {
                                    .subscribeOn(Schedulers.io());
     }
 
-    Observable<AreaDescriptionMetaData> findAreaDescriptionMetaData(String uuid) {
+    private Observable<AreaDescriptionMetaData> findAreaDescriptionMetaData(String uuid) {
         return appMetaDataRepository.find(uuid);
     }
 
-    Observable<List<AreaDescriptionMetaData>> sortAreaDescriptionMetaDataList(List<AreaDescriptionMetaData> metaDatas) {
+    private Observable<List<AreaDescriptionMetaData>> sortAreaDescriptionMetaDataList(
+            List<AreaDescriptionMetaData> metaDatas) {
         // 日時ソート
         Collections.sort(metaDatas, AreaDescriptionMetaDataComparators.DATE_COMPARATOR);
         return Observable.just(metaDatas);

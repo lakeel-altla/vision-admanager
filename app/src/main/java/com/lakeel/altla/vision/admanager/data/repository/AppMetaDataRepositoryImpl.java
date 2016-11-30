@@ -60,18 +60,18 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
                 .toSingle();
     }
 
-    Observable<File> getMetaDataJsonFile(String uuid) {
+    private Observable<File> getMetaDataJsonFile(String uuid) {
         return createMetaDataJsonFile(uuid)
                 .filter(File::exists);
     }
 
-    Observable<File> createMetaDataJsonFile(String uuid) {
+    private Observable<File> createMetaDataJsonFile(String uuid) {
         String fileName = uuid + EXTENTION;
         File file = new File(baseDirectory, fileName);
         return Observable.just(file);
     }
 
-    Observable<String> readMetaDataJson(File file) {
+    private Observable<String> readMetaDataJson(File file) {
         return Observable.<String>create(subscriber -> {
             LOG.d("Reading json meta data from '%s'", file.getPath());
             try {
@@ -93,7 +93,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
         });
     }
 
-    Observable<AreaDescriptionMetaData> writeMetaDataJson(File file, AreaDescriptionMetaData metaData) {
+    private Observable<AreaDescriptionMetaData> writeMetaDataJson(File file, AreaDescriptionMetaData metaData) {
         String json = mapper.toJson(metaData);
         return Observable.create(subscriber -> {
             LOG.d("Writing json meta data to '%s'", file.getPath());
@@ -110,7 +110,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
         });
     }
 
-    Observable<File> deleteFile(File file) {
+    private Observable<File> deleteFile(File file) {
         file.delete();
         return Observable.just(file);
     }

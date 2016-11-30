@@ -30,7 +30,7 @@ public final class SaveMetaDataUseCase {
                                       .subscribeOn(Schedulers.io());
     }
 
-    Observable<AreaDescriptionMetaData> saveAreaDescriptionMetaData(AreaDescriptionMetaData metaData) {
+    private Observable<AreaDescriptionMetaData> saveAreaDescriptionMetaData(AreaDescriptionMetaData metaData) {
         return appMetaDataRepository.save(metaData).toObservable();
     }
 }

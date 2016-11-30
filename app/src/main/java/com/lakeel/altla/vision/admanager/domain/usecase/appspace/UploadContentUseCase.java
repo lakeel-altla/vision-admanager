@@ -54,20 +54,20 @@ public final class UploadContentUseCase {
                                     .subscribeOn(Schedulers.io());
     }
 
-    Observable<AreaDescriptionMetaData> saveMetaData(AreaDescriptionMetaData metaData) {
+    private Observable<AreaDescriptionMetaData> saveMetaData(AreaDescriptionMetaData metaData) {
         // Firebase Database からの完了通知は Main スレッドで動くため、後続処理のために I/O スレッドへストリームを戻す。
         return firebaseMetaDataRepository.save(metaData)
                                          .toObservable()
                                          .subscribeOn(Schedulers.io());
     }
 
-    Observable<File> getContentFile(String uuid) {
+    private Observable<File> getContentFile(String uuid) {
         return appContentRepository.getFilePath(uuid)
                                    .map(File::new)
                                    .toObservable();
     }
 
-    Observable<String> saveContent(String uuid, File file, OnProgressListener onProgressListener) {
+    private Observable<String> saveContent(String uuid, File file, OnProgressListener onProgressListener) {
         // Firebase Storage からの完了通知は Firebase Storage 専用スレッドで動くため、
         // 後続処理のために I/O スレッドへストリームを戻す。
         // 非同期なアップロード処理の後にストリームを閉じる必要があるため、using を用いて対応している。
@@ -76,7 +76,7 @@ public final class UploadContentUseCase {
                                 closeFileInputStream).subscribeOn(Schedulers.io());
     }
 
-    Func0<FileInputStream> createFileInputStream(File file) {
+    private Func0<FileInputStream> createFileInputStream(File file) {
         return () -> {
             try {
                 return new FileInputStream(file);
@@ -87,7 +87,7 @@ public final class UploadContentUseCase {
     }
 
 
-    Observable<String> saveContent(String uuid, FileInputStream stream, OnProgressListener onProgressListener) {
+    private Observable<String> saveContent(String uuid, FileInputStream stream, OnProgressListener onProgressListener) {
         try {
             // Firebase が返す totalBytes が常に -1 なので、ストリームから得られる available 値を用いる。
             long available = stream.available();

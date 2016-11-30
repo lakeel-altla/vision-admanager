@@ -41,7 +41,7 @@ public final class TangoMetaDataRepositoryImpl implements TangoMetaDataRepositor
         return Single.just(uuid);
     }
 
-    Observable<TangoAreaDescriptionMetaData> loadTangoAreaDescriptionMetaData(String uuid) {
+    private Observable<TangoAreaDescriptionMetaData> loadTangoAreaDescriptionMetaData(String uuid) {
         return Observable.just(tango.loadAreaDescriptionMetaData(uuid));
     }
 }
