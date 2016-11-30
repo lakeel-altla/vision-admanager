@@ -6,11 +6,15 @@ final class Names {
 
     static final String LOCAL_DIRECTORY_META_DATA = "localDirectoryMetaData";
 
-    static final String FIREBASE_STORAGE_URI = "firebaseStorageUri";
+    static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
 
-    static final String FIREBASE_STORAGE_PATH_CONTENT = "firebaseStoragePathContent";
+    static final String FIREBASE_DATABASE_REFERENCE_APP_ROOT = "firebase.database.reference.app";
 
-    static final String FIREBASE_DATABASE_NODE_META_DATA = "firebaseDatabaseNodeMetaData";
+    static final String FIREBASE_STORAGE_URI = "firebaseStorage.uri";
+
+    static final String FIREBASE_STORAGE_REFERENCE_ROOT = "firebaseStorage.reference.root";
+
+    static final String FIREBASE_STORAGE_REFERENCE_APP_ROOT = "firebaseStorage.reference.app";
 
     private Names() {
     }

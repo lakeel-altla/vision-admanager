@@ -1,11 +1,12 @@
 package com.lakeel.altla.vision.admanager.data.repository.firebase;
 
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.FirebaseContentRepository;
 
 import java.io.InputStream;
@@ -16,27 +17,41 @@ import rx.Single;
 
 public final class FirebaseContentRepositoryImpl implements FirebaseContentRepository {
 
-    private static final Log LOG = LogFactory.getLog(FirebaseContentRepositoryImpl.class);
+    private static final String PATH_AREA_DESCRIPTIONS = "areaDescriptions";
 
     private final StorageReference baseReference;
 
+    private final FirebaseAuth auth;
+
     @Inject
-    public FirebaseContentRepositoryImpl(String uri, String contentPath) {
-        StorageReference referenceRoot = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
-        baseReference = referenceRoot.child(contentPath);
+    public FirebaseContentRepositoryImpl(StorageReference baseReference, FirebaseAuth auth) {
+        if (baseReference == null) throw new ArgumentNullException("baseReference");
+        if (auth == null) throw new ArgumentNullException("auth");
+
+        this.baseReference = baseReference;
+        this.auth = auth;
     }
 
     @Override
     public Single<String> save(String uuid, InputStream areaDescriptionStream, OnProgressListener onProgressListener) {
-        return Single.create(subscriber -> {
-            LOG.d("Saving content to Firebase Storage...");
+        if (uuid == null) throw new ArgumentNullException("uuid");
+        if (areaDescriptionStream == null) throw new ArgumentNullException("areaDescriptionStream");
 
-            StorageReference reference = baseReference.child(uuid);
-            UploadTask task = reference.putStream(areaDescriptionStream);
-            task.addOnSuccessListener(taskSnapshot -> subscriber.onSuccess(uuid))
-                .addOnFailureListener(subscriber::onError)
-                .addOnProgressListener(snapshot -> onProgressListener.onProgress(
-                        snapshot.getTotalByteCount(), snapshot.getBytesTransferred()));
-        });
+        StorageReference reference = baseReference.child(resolveUserId())
+                                                  .child(PATH_AREA_DESCRIPTIONS)
+                                                  .child(uuid);
+
+        UploadTask task = reference.putStream(areaDescriptionStream);
+
+        return RxFirebaseStorageTask.asSingle(task, onProgressListener::onProgress)
+                                    .map(snapshot -> uuid);
+    }
+
+    private String resolveUserId() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            throw new IllegalStateException("The current user could not be resolved.");
+        }
+        return user.getUid();
     }
 }

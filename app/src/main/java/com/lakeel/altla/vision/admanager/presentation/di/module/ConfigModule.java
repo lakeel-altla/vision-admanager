@@ -19,10 +19,6 @@ public final class ConfigModule {
 
     private static final String FIREBASE_STORAGE_URI = "gs://firebase-trial.appspot.com";
 
-    private static final String FIREBASE_STORAGE_PATH_CONTENT = "areaDescriptions";
-
-    private static final String FIREBASE_DATABASE_NODE_META_DATA = "areaDescriptionMetaDatas";
-
     @Named(Names.LOCAL_DIRECTORY_CONTENT)
     @Singleton
     @Provides
@@ -42,19 +38,5 @@ public final class ConfigModule {
     @Provides
     public String provideFirebaseStorageUri() {
         return FIREBASE_STORAGE_URI;
-    }
-
-    @Named(Names.FIREBASE_STORAGE_PATH_CONTENT)
-    @Singleton
-    @Provides
-    public String provideFirebaseStorageContentPath() {
-        return FIREBASE_STORAGE_PATH_CONTENT;
-    }
-
-    @Named(Names.FIREBASE_DATABASE_NODE_META_DATA)
-    @Singleton
-    @Provides
-    public String provideFirebaseDatabaseNodeMetaData() {
-        return FIREBASE_DATABASE_NODE_META_DATA;
     }
 }

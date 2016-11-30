@@ -1,11 +1,13 @@
 package com.lakeel.altla.vision.admanager.data.repository.firebase;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.rx.tasks.RxGmsTask;
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetaDataRepository;
 
@@ -19,26 +21,34 @@ import rx.Single;
 
 public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRepository {
 
-    private static final Log LOG = LogFactory.getLog(FirebaseMetaDataRepositoryImpl.class);
+    private static final String PATH_AREA_DESCRIPTION_METADATAS = "areaDescriptionMetadatas";
 
     private final DatabaseReference baseReference;
 
+    private final FirebaseAuth auth;
+
     @Inject
-    public FirebaseMetaDataRepositoryImpl(String metaDataNode) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        baseReference = database.getReference(metaDataNode);
+    public FirebaseMetaDataRepositoryImpl(DatabaseReference baseReference, FirebaseAuth auth) {
+        if (baseReference == null) throw new ArgumentNullException("baseReference");
+        if (auth == null) throw new ArgumentNullException("auth");
+
+        this.baseReference = baseReference;
+        this.auth = auth;
     }
 
     @Override
     public Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData) {
-        return Single.create(subscriber -> {
-            LOG.d("Saving meta data to Firebase Database...");
-            FirebaseMetaData firebaseMetaData = toFirebaseMetaData(metaData);
-            baseReference.child(firebaseMetaData.uuid)
-                         .setValue(firebaseMetaData)
-                         .addOnSuccessListener(aVoid -> subscriber.onSuccess(metaData))
-                         .addOnFailureListener(subscriber::onError);
-        });
+        if (metaData == null) throw new ArgumentNullException("metaData");
+
+        FirebaseMetaData firebaseMetaData = toFirebaseMetaData(metaData);
+
+        Task<Void> task = baseReference.child(resolveUserId())
+                                       .child(PATH_AREA_DESCRIPTION_METADATAS)
+                                       .child(firebaseMetaData.uuid)
+                                       .setValue(firebaseMetaData);
+
+        return RxGmsTask.asSingle(task)
+                        .map(aVoid -> metaData);
     }
 
     private static FirebaseMetaData toFirebaseMetaData(AreaDescriptionMetaData metaData) {
@@ -70,6 +80,14 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
         }
 
         return firebaseMetaData;
+    }
+
+    private String resolveUserId() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            throw new IllegalStateException("The current user could not be resolved.");
+        }
+        return user.getUid();
     }
 
     @IgnoreExtraProperties
