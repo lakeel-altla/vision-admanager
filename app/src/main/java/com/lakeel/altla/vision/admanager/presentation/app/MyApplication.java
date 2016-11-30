@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.app;
 
-import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.BuildConfig;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ApplicationComponent;
@@ -13,8 +12,6 @@ import android.app.Application;
 import android.support.annotation.NonNull;
 
 public final class MyApplication extends Application {
-
-    private static final Log LOG = LogFactory.getLog(MyApplication.class);
 
     private ApplicationComponent applicationComponent;
 
@@ -33,7 +30,6 @@ public final class MyApplication extends Application {
 
         // Altla Log
         LogFactory.setDebug(BuildConfig.DEBUG);
-        LOG.i("Debug log enabled.");
     }
 
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
