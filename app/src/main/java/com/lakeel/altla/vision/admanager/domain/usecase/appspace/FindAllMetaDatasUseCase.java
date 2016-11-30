@@ -16,26 +16,26 @@ import rx.schedulers.Schedulers;
 public final class FindAllMetaDatasUseCase {
 
     @Inject
-    AppMetaDataRepository mMetaDataRepository;
+    AppMetaDataRepository appMetaDataRepository;
 
     @Inject
-    AppContentRepository mContentRepository;
+    AppContentRepository appContentRepository;
 
     @Inject
     public FindAllMetaDatasUseCase() {
     }
 
     public Observable<AreaDescriptionMetaData> execute() {
-        return mContentRepository.findAll()
-                                 .flatMap(this::findAreaDescriptionMetaData)
-                                 .toList()
-                                 .flatMap(this::sortAreaDescriptionMetaDataList)
-                                 .flatMap(Observable::from)
-                                 .subscribeOn(Schedulers.io());
+        return appContentRepository.findAll()
+                                   .flatMap(this::findAreaDescriptionMetaData)
+                                   .toList()
+                                   .flatMap(this::sortAreaDescriptionMetaDataList)
+                                   .flatMap(Observable::from)
+                                   .subscribeOn(Schedulers.io());
     }
 
     Observable<AreaDescriptionMetaData> findAreaDescriptionMetaData(String uuid) {
-        return mMetaDataRepository.find(uuid);
+        return appMetaDataRepository.find(uuid);
     }
 
     Observable<List<AreaDescriptionMetaData>> sortAreaDescriptionMetaDataList(List<AreaDescriptionMetaData> metaDatas) {

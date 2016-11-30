@@ -27,57 +27,57 @@ import rx.subscriptions.CompositeSubscription;
 public final class AppSpacePresenter {
 
     @Inject
-    FindAllMetaDatasUseCase mFindAllMetaDatasUseCase;
+    FindAllMetaDatasUseCase findAllMetaDatasUseCase;
 
     @Inject
-    GetContentPathUseCase mGetContentPathUseCase;
+    GetContentPathUseCase getContentPathUseCase;
 
     @Inject
-    DeleteMetaDataUseCase mDeleteMetaDataUseCase;
+    DeleteMetaDataUseCase deleteMetaDataUseCase;
 
     @Inject
-    UploadContentUseCase mUploadContentUseCase;
+    UploadContentUseCase uploadContentUseCase;
 
     private static final Log LOG = LogFactory.getLog(AppSpacePresenter.class);
 
-    private final List<AppSpaceItemModel> mItemModels = new ArrayList<>();
+    private final List<AppSpaceItemModel> itemModels = new ArrayList<>();
 
-    private final AppSpaceItemModelMapper mMapper = new AppSpaceItemModelMapper();
+    private final AppSpaceItemModelMapper mapper = new AppSpaceItemModelMapper();
 
-    private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private AppSpaceView mView;
+    private AppSpaceView view;
 
-    private long mPrevBytesTransferred;
+    private long prevBytesTransferred;
 
     @Inject
     public AppSpacePresenter() {
     }
 
     public void onCreateView(@NonNull AppSpaceView view) {
-        mView = view;
+        this.view = view;
     }
 
     public void onStart() {
-        Subscription subscription = mFindAllMetaDatasUseCase
+        Subscription subscription = findAllMetaDatasUseCase
                 .execute()
-                .map(mMapper::map)
+                .map(mapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
-                    mItemModels.clear();
-                    mItemModels.addAll(itemModels);
-                    mView.updateItems();
+                    this.itemModels.clear();
+                    this.itemModels.addAll(itemModels);
+                    view.updateItems();
                 }, e -> {
                     LOG.e("Loading area description meta datas failed.", e);
-                    mView.showSnackbar(R.string.snackbar_load_failed);
+                    view.showSnackbar(R.string.snackbar_load_failed);
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public void onStop() {
-        mCompositeSubscription.clear();
-        mView.hideUploadProgressDialog();
+        compositeSubscription.clear();
+        view.hideUploadProgressDialog();
     }
 
     public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
@@ -87,65 +87,65 @@ public final class AppSpacePresenter {
     }
 
     public int getItemCount() {
-        return mItemModels.size();
+        return itemModels.size();
     }
 
     public void onDelete(@IntRange(from = 0) int position) {
-        String uuid = mItemModels.get(position).uuid;
+        String uuid = itemModels.get(position).uuid;
 
-        Subscription subscription = mDeleteMetaDataUseCase
+        Subscription subscription = deleteMetaDataUseCase
                 .execute(uuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    mItemModels.remove(position);
-                    mView.updateItemRemoved(position);
-                    mView.showSnackbar(R.string.snackbar_deleted);
+                    itemModels.remove(position);
+                    view.updateItemRemoved(position);
+                    view.showSnackbar(R.string.snackbar_deleted);
                 }, e -> {
                     LOG.e("Deleting app space meta data failed.", e);
-                    mView.showSnackbar(R.string.snackbar_delete_failed);
+                    view.showSnackbar(R.string.snackbar_delete_failed);
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public final class AppSpaceItemPresenter {
 
-        private AppSpaceItemView mItemView;
+        private AppSpaceItemView itemView;
 
         public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
-            mItemView = itemView;
+            this.itemView = itemView;
         }
 
         public void onBind(@IntRange(from = 0) int position) {
-            AppSpaceItemModel itemModel = mItemModels.get(position);
-            mItemView.showModel(itemModel);
+            AppSpaceItemModel itemModel = itemModels.get(position);
+            itemView.showModel(itemModel);
         }
 
         public void onImport(@IntRange(from = 0) int position) {
-            AppSpaceView view = mView;
+            AppSpaceView view = AppSpacePresenter.this.view;
 
-            String uuid = mItemModels.get(position).uuid;
+            String uuid = itemModels.get(position).uuid;
 
-            Subscription subscription = mGetContentPathUseCase
+            Subscription subscription = getContentPathUseCase
                     .execute(uuid)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
                         LOG.e("Importing area description failed.", e);
                         view.showSnackbar(R.string.snackbar_import_failed);
                     });
-            mCompositeSubscription.add(subscription);
+            compositeSubscription.add(subscription);
         }
 
         public void onUpload(@IntRange(from = 0) int position) {
-            AppSpaceView view = mView;
+            AppSpaceView view = AppSpacePresenter.this.view;
 
-            String uuid = mItemModels.get(position).uuid;
+            String uuid = itemModels.get(position).uuid;
 
             view.showUploadProgressDialog();
 
-            Subscription subscription = mUploadContentUseCase
+            Subscription subscription = uploadContentUseCase
                     .execute(uuid, (totalBytes, bytesTransferred) -> {
-                        long increment = bytesTransferred - mPrevBytesTransferred;
-                        mPrevBytesTransferred = bytesTransferred;
+                        long increment = bytesTransferred - prevBytesTransferred;
+                        prevBytesTransferred = bytesTransferred;
                         view.setUploadProgressDialogProgress(totalBytes, increment);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
@@ -157,7 +157,7 @@ public final class AppSpacePresenter {
                         view.hideUploadProgressDialog();
                         view.showSnackbar(R.string.snackbar_upload_failed);
                     });
-            mCompositeSubscription.add(subscription);
+            compositeSubscription.add(subscription);
         }
     }
 }

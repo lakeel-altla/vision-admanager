@@ -7,42 +7,42 @@ import android.support.v4.app.Fragment;
 
 class ActivityForResult {
 
-    private Activity mActivity;
+    private Activity activity;
 
-    private Fragment mFragment;
+    private Fragment fragment;
 
-    private Intent mIntent;
+    private Intent intent;
 
-    private int mRequestCode;
+    private int requestCode;
 
-    private OnActivityResultListener mListener;
+    private OnActivityResultListener listener;
 
     protected ActivityForResult(Activity activity, Fragment fragment, Intent intent, int requestCode,
                                 OnActivityResultListener listener) {
-        mActivity = activity;
-        mFragment = fragment;
-        mIntent = intent;
-        mRequestCode = requestCode;
-        mListener = listener;
+        this.activity = activity;
+        this.fragment = fragment;
+        this.intent = intent;
+        this.requestCode = requestCode;
+        this.listener = listener;
     }
 
     public void start() {
-        if (mActivity != null) {
-            mActivity.startActivityForResult(mIntent, mRequestCode);
+        if (activity != null) {
+            activity.startActivityForResult(intent, requestCode);
         } else {
-            mFragment.startActivityForResult(mIntent, mRequestCode);
+            fragment.startActivityForResult(intent, requestCode);
         }
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mRequestCode != requestCode) {
+        if (this.requestCode != requestCode) {
             return false;
         }
 
-        if (Activity.RESULT_OK == resultCode && mListener != null) {
-            mListener.onActivityResult(data, false);
-        } else if (Activity.RESULT_CANCELED == resultCode && mListener != null) {
-            mListener.onActivityResult(data, true);
+        if (Activity.RESULT_OK == resultCode && listener != null) {
+            listener.onActivityResult(data, false);
+        } else if (Activity.RESULT_CANCELED == resultCode && listener != null) {
+            listener.onActivityResult(data, true);
         }
 
         return true;
@@ -55,41 +55,41 @@ class ActivityForResult {
 
     public static class Builder {
 
-        private Activity mActivity;
+        private Activity activity;
 
-        private Fragment mFragment;
+        private Fragment fragment;
 
-        private Intent mIntent;
+        private Intent intent;
 
-        private int mRequestCode;
+        private int requestCode;
 
-        private OnActivityResultListener mListener;
+        private OnActivityResultListener listener;
 
         public Builder(@NonNull Activity activity, @NonNull Intent intent) {
-            mActivity = activity;
-            mIntent = intent;
+            this.activity = activity;
+            this.intent = intent;
         }
 
         public Builder(@NonNull Fragment fragment, @NonNull Intent intent) {
-            mFragment = fragment;
-            mIntent = intent;
+            this.fragment = fragment;
+            this.intent = intent;
         }
 
         @NonNull
         public final Builder setRequestCode(int requestCode) {
-            mRequestCode = requestCode;
+            this.requestCode = requestCode;
             return this;
         }
 
         @NonNull
         public final Builder setListener(OnActivityResultListener listener) {
-            mListener = listener;
+            this.listener = listener;
             return this;
         }
 
         @NonNull
         public final ActivityForResult build() {
-            return new ActivityForResult(mActivity, mFragment, mIntent, mRequestCode, mListener);
+            return new ActivityForResult(activity, fragment, intent, requestCode, listener);
         }
     }
 }

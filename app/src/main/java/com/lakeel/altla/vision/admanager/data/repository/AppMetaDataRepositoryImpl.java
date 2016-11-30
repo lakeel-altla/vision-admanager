@@ -24,16 +24,16 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     private static final String EXTENTION = ".json";
 
-    private final MetaDataMapper mMapper = new MetaDataMapper();
+    private final MetaDataMapper mapper = new MetaDataMapper();
 
-    private final File mDirectory;
+    private final File baseDirectory;
 
     @Inject
-    public AppMetaDataRepositoryImpl(File directory) {
-        mDirectory = directory;
-        if (!mDirectory.exists()) {
-            if (!mDirectory.mkdirs()) {
-                throw new IllegalStateException("Creating a directory failed: " + mDirectory);
+    public AppMetaDataRepositoryImpl(File baseDirectory) {
+        this.baseDirectory = baseDirectory;
+        if (!this.baseDirectory.exists()) {
+            if (!this.baseDirectory.mkdirs()) {
+                throw new IllegalStateException("Creating a directory failed: " + this.baseDirectory);
             }
         }
     }
@@ -42,7 +42,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
     public Observable<AreaDescriptionMetaData> find(String uuid) {
         return getMetaDataJsonFile(uuid)
                 .flatMap(this::readMetaDataJson)
-                .map(mMapper::fromJson);
+                .map(mapper::fromJson);
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     Observable<File> createMetaDataJsonFile(String uuid) {
         String fileName = uuid + EXTENTION;
-        File file = new File(mDirectory, fileName);
+        File file = new File(baseDirectory, fileName);
         return Observable.just(file);
     }
 
@@ -94,7 +94,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
     }
 
     Observable<AreaDescriptionMetaData> writeMetaDataJson(File file, AreaDescriptionMetaData metaData) {
-        String json = mMapper.toJson(metaData);
+        String json = mapper.toJson(metaData);
         return Observable.create(subscriber -> {
             LOG.d("Writing json meta data to '%s'", file.getPath());
             try {

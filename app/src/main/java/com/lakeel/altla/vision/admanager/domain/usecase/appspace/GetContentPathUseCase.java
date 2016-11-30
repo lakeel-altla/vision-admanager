@@ -9,13 +9,13 @@ import rx.Single;
 public final class GetContentPathUseCase {
 
     @Inject
-    AppContentRepository mRepository;
+    AppContentRepository appContentRepository;
 
     @Inject
     public GetContentPathUseCase() {
     }
 
     public Single<String> execute(String uuid) {
-        return mRepository.getFilePath(uuid);
+        return appContentRepository.getFilePath(uuid);
     }
 }

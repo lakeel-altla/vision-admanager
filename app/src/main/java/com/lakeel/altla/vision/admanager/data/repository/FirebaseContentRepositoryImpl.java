@@ -18,12 +18,12 @@ public final class FirebaseContentRepositoryImpl implements FirebaseContentRepos
 
     private static final Log LOG = LogFactory.getLog(FirebaseContentRepositoryImpl.class);
 
-    private final StorageReference mReferenceContents;
+    private final StorageReference baseReference;
 
     @Inject
     public FirebaseContentRepositoryImpl(String uri, String contentPath) {
         StorageReference referenceRoot = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
-        mReferenceContents = referenceRoot.child(contentPath);
+        baseReference = referenceRoot.child(contentPath);
     }
 
     @Override
@@ -38,7 +38,7 @@ public final class FirebaseContentRepositoryImpl implements FirebaseContentRepos
         return Single.create(subscriber -> {
             LOG.d("Saving content to Firebase Storage...");
 
-            StorageReference reference = mReferenceContents.child(uuid);
+            StorageReference reference = baseReference.child(uuid);
             UploadTask task = reference.putStream(areaDescriptionStream);
             task.addOnSuccessListener(taskSnapshot -> subscriber.onSuccess(uuid))
                 .addOnFailureListener(subscriber::onError)

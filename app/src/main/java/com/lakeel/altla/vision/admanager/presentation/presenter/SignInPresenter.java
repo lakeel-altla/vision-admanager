@@ -33,19 +33,19 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
     //
 
     @Inject
-    Resources mResources;
+    Resources resources;
 
     private static final Log LOG = LogFactory.getLog(SignInPresenter.class);
 
-    private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private final FirebaseAuth.AuthStateListener mAuthListener;
+    private final FirebaseAuth.AuthStateListener authStateListener;
 
-    private SignInView mView;
+    private SignInView view;
 
-    private boolean mIsSignedInDetected;
+    private boolean signedInDetected;
 
-    private ActivityForResult mGoogleSignInActivityForResult;
+    private ActivityForResult googleSignInActivityForResult;
 
     @Inject
     public SignInPresenter() {
@@ -53,14 +53,14 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
         //
         // http://stackoverflow.com/questions/37674823/firebase-android-onauthstatechanged-fire-twice-after-signinwithemailandpasswor
         //
-        mAuthListener = firebaseAuth -> {
-            SignInView view = mView;
+        authStateListener = firebaseAuth -> {
+            SignInView view = this.view;
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
-                if (!mIsSignedInDetected) {
+                if (!signedInDetected) {
                     LOG.d("signedIn: " + user.getUid());
                     view.showTangoPermissionFragment();
-                    mIsSignedInDetected = true;
+                    signedInDetected = true;
                 } else {
                     LOG.d("onAuthStateChanged() fired twice.");
                 }
@@ -72,12 +72,12 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
     }
 
     public void onCreateView(@NonNull SignInView view) {
-        mView = view;
+        this.view = view;
 
         // Configure Google Sign In
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(mResources.getString(R.string.default_web_client_id))
+                .requestIdToken(resources.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
@@ -86,37 +86,37 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
                 .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
                 .build();
 
-        mGoogleSignInActivityForResult = new ActivityForResult
-                .Builder(mView.getFragment(), Auth.GoogleSignInApi.getSignInIntent(googleApiClient))
+        googleSignInActivityForResult = new ActivityForResult
+                .Builder(this.view.getFragment(), Auth.GoogleSignInApi.getSignInIntent(googleApiClient))
                 .setListener(this::onGoogleSignInActivityResult)
                 .build();
     }
 
     public void onStart() {
-        FirebaseAuth.getInstance().addAuthStateListener(mAuthListener);
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
     }
 
     public void onStop() {
-        FirebaseAuth.getInstance().removeAuthStateListener(mAuthListener);
-        mCompositeSubscription.clear();
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        compositeSubscription.clear();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         LOG.e("onConnectionFailed: " + connectionResult);
-        mView.showGoogleApiClientConnectionFailedSnackbar();
+        view.showGoogleApiClientConnectionFailedSnackbar();
     }
 
     public void onSignIn() {
-        mGoogleSignInActivityForResult.start();
+        googleSignInActivityForResult.start();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mGoogleSignInActivityForResult.onActivityResult(requestCode, resultCode, data);
+        googleSignInActivityForResult.onActivityResult(requestCode, resultCode, data);
     }
 
     private void onGoogleSignInActivityResult(Intent intent, boolean isCanceled) {
-        SignInView view = mView;
+        SignInView view = this.view;
 
         if (!isCanceled) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(intent);

@@ -16,14 +16,14 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
 
     private static final Log LOG = LogFactory.getLog(FirebaseMetaDataRepositoryImpl.class);
 
-    private final MetaDataMapper mMapper = new MetaDataMapper();
+    private final MetaDataMapper mapper = new MetaDataMapper();
 
-    private final DatabaseReference mReferenceMetaData;
+    private final DatabaseReference baseReference;
 
     @Inject
     public FirebaseMetaDataRepositoryImpl(String metaDataNode) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        mReferenceMetaData = database.getReference(metaDataNode);
+        baseReference = database.getReference(metaDataNode);
     }
 
     @Override
@@ -37,11 +37,11 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
         //
         return Single.create(subscriber -> {
             LOG.d("Saving meta data to Firebase Database...");
-            FirebaseMetaData firebaseMetaData = mMapper.toFirebaseMetaData(metaData);
-            mReferenceMetaData.child(firebaseMetaData.uuid)
-                              .setValue(firebaseMetaData)
-                              .addOnSuccessListener(aVoid -> subscriber.onSuccess(metaData))
-                              .addOnFailureListener(subscriber::onError);
+            FirebaseMetaData firebaseMetaData = mapper.toFirebaseMetaData(metaData);
+            baseReference.child(firebaseMetaData.uuid)
+                         .setValue(firebaseMetaData)
+                         .addOnSuccessListener(aVoid -> subscriber.onSuccess(metaData))
+                         .addOnFailureListener(subscriber::onError);
         });
     }
 }

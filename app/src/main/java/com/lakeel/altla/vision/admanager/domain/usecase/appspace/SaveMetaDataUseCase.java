@@ -13,24 +13,24 @@ import rx.schedulers.Schedulers;
 public final class SaveMetaDataUseCase {
 
     @Inject
-    TangoMetaDataRepository mTangoMetaDataRepository;
+    TangoMetaDataRepository tangoMetaDataRepository;
 
     @Inject
-    AppMetaDataRepository mAppMetaDataRepository;
+    AppMetaDataRepository appMetaDataRepository;
 
     @Inject
     public SaveMetaDataUseCase() {
     }
 
     public Single<String> execute(String uuid) {
-        return mTangoMetaDataRepository.find(uuid)
-                                       .flatMap(this::saveAreaDescriptionMetaData)
-                                       .map(metaData -> uuid)
-                                       .toSingle()
-                                       .subscribeOn(Schedulers.io());
+        return tangoMetaDataRepository.find(uuid)
+                                      .flatMap(this::saveAreaDescriptionMetaData)
+                                      .map(metaData -> uuid)
+                                      .toSingle()
+                                      .subscribeOn(Schedulers.io());
     }
 
     Observable<AreaDescriptionMetaData> saveAreaDescriptionMetaData(AreaDescriptionMetaData metaData) {
-        return mAppMetaDataRepository.save(metaData).toObservable();
+        return appMetaDataRepository.save(metaData).toObservable();
     }
 }

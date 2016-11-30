@@ -27,55 +27,55 @@ import rx.subscriptions.CompositeSubscription;
 public final class TangoSpacePresenter {
 
     @Inject
-    FindAllMetaDatasUseCase mFindAllMetaDatasUseCase;
+    FindAllMetaDatasUseCase findAllMetaDatasUseCase;
 
     @Inject
-    GetContentDirectoryUseCase mGetContentDirectoryUseCase;
+    GetContentDirectoryUseCase getContentDirectoryUseCase;
 
     @Inject
-    SaveMetaDataUseCase mSaveMetaDataUseCase;
+    SaveMetaDataUseCase saveMetaDataUseCase;
 
     @Inject
-    DeleteContentUseCase mDeleteContentUseCase;
+    DeleteContentUseCase deleteContentUseCase;
 
     private static final Log LOGGER = LogFactory.getLog(TangoSpacePresenter.class);
 
-    private final List<TangoSpaceItemModel> mItemModels = new ArrayList<>();
+    private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
 
-    private final TangoSpaceItemModelMapper mMapper = new TangoSpaceItemModelMapper();
+    private final TangoSpaceItemModelMapper mapper = new TangoSpaceItemModelMapper();
 
-    private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private TangoSpaceView mView;
+    private TangoSpaceView view;
 
-    private String mExportingUuid;
+    private String exportingUuid;
 
     @Inject
     public TangoSpacePresenter() {
     }
 
     public void onCreateView(@NonNull TangoSpaceView view) {
-        mView = view;
+        this.view = view;
     }
 
     public void onStart() {
-        Subscription subscription = mFindAllMetaDatasUseCase
+        Subscription subscription = findAllMetaDatasUseCase
                 .execute()
-                .map(mMapper::map)
+                .map(mapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
-                    mItemModels.clear();
-                    mItemModels.addAll(itemModels);
-                    mView.updateItems();
+                    this.itemModels.clear();
+                    this.itemModels.addAll(itemModels);
+                    view.updateItems();
                 }, e -> {
                     LOGGER.e("Loading area description meta datas failed.", e);
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public void onStop() {
-        mCompositeSubscription.clear();
+        compositeSubscription.clear();
     }
 
     public void onCreateItemView(@NonNull TangoSpaceItemView itemView) {
@@ -85,65 +85,65 @@ public final class TangoSpacePresenter {
     }
 
     public int getItemCount() {
-        return mItemModels.size();
+        return itemModels.size();
     }
 
     public void exportMetaData() {
-        if (mExportingUuid == null) {
+        if (exportingUuid == null) {
             throw new IllegalStateException("mExportingUuid == null");
         }
 
-        TangoSpaceView view = mView;
+        TangoSpaceView view = this.view;
 
-        Subscription subscription = mSaveMetaDataUseCase
-                .execute(mExportingUuid)
+        Subscription subscription = saveMetaDataUseCase
+                .execute(exportingUuid)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> mView.showSnackbar(R.string.snackbar_exported), e -> {
+                .subscribe(s -> this.view.showSnackbar(R.string.snackbar_exported), e -> {
                     LOGGER.e("Exporting area description meta data failed.", e);
                     view.showSnackbar(R.string.snackbar_export_failed);
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public void onDelete(@IntRange(from = 0) int position) {
-        String uuid = mItemModels.get(position).uuid;
+        String uuid = itemModels.get(position).uuid;
 
-        Subscription subscription = mDeleteContentUseCase
+        Subscription subscription = deleteContentUseCase
                 .execute(uuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    mItemModels.remove(position);
-                    mView.updateItemRemoved(position);
-                    mView.showSnackbar(R.string.snackbar_deleted);
+                    itemModels.remove(position);
+                    view.updateItemRemoved(position);
+                    view.showSnackbar(R.string.snackbar_deleted);
                 }, e -> {
                     LOGGER.e("Deleting area description failed.", e);
-                    mView.showSnackbar(R.string.snackbar_delete_failed);
+                    view.showSnackbar(R.string.snackbar_delete_failed);
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public final class TangoSpaceItemPresenter {
 
-        private TangoSpaceItemView mItemView;
+        private TangoSpaceItemView itemView;
 
         public void onCreateItemView(@NonNull TangoSpaceItemView itemView) {
-            mItemView = itemView;
+            this.itemView = itemView;
         }
 
         public void onBind(@IntRange(from = 0) int position) {
-            TangoSpaceItemModel itemModel = mItemModels.get(position);
-            mItemView.showModel(itemModel);
+            TangoSpaceItemModel itemModel = itemModels.get(position);
+            itemView.showModel(itemModel);
         }
 
         public void onExport(@IntRange(from = 0) int position) {
-            Subscription subscription = mGetContentDirectoryUseCase
+            Subscription subscription = getContentDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
-                        mExportingUuid = mItemModels.get(position).uuid;
-                        mView.showExportActivity(mExportingUuid, directory);
+                        exportingUuid = itemModels.get(position).uuid;
+                        view.showExportActivity(exportingUuid, directory);
                     });
-            mCompositeSubscription.add(subscription);
+            compositeSubscription.add(subscription);
         }
     }
 }

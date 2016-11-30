@@ -14,18 +14,18 @@ public final class TangoPermissionPresenter {
 
     private static final Log LOGGER = LogFactory.getLog(TangoPermissionPresenter.class);
 
-    private TangoPermissionView mView;
+    private TangoPermissionView view;
 
-    private ActivityForResult mActivityForResult;
+    private ActivityForResult activityForResult;
 
     @Inject
     public TangoPermissionPresenter() {
     }
 
     public void onCreateView(@NonNull TangoPermissionView view) {
-        mView = view;
+        this.view = view;
 
-        mActivityForResult = new ActivityForResult
+        activityForResult = new ActivityForResult
                 .Builder(view.getFragment(), TangoPermissions.getRequestAdfLoadSavePermissionIntent())
                 .setListener((intent, isCanceled) -> {
                     if (!isCanceled) {
@@ -40,10 +40,10 @@ public final class TangoPermissionPresenter {
     }
 
     public void onConfirmPermission() {
-        mActivityForResult.start();
+        activityForResult.start();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mActivityForResult.onActivityResult(requestCode, resultCode, data);
+        activityForResult.onActivityResult(requestCode, resultCode, data);
     }
 }

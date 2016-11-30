@@ -13,35 +13,35 @@ import rx.Single;
 
 public final class TangoMetaDataRepositoryImpl implements TangoMetaDataRepository {
 
-    private final Tango mTango;
+    private final Tango tango;
 
-    private final MetaDataMapper mMapper = new MetaDataMapper();
+    private final MetaDataMapper mapper = new MetaDataMapper();
 
     @Inject
     public TangoMetaDataRepositoryImpl(Tango tango) {
-        mTango = tango;
+        this.tango = tango;
     }
 
     @Override
     public Observable<AreaDescriptionMetaData> find(String uuid) {
-        return Observable.just(mTango.loadAreaDescriptionMetaData(uuid))
-                         .map(mMapper::fromTangoAreaDescriptionMetaData);
+        return Observable.just(tango.loadAreaDescriptionMetaData(uuid))
+                         .map(mapper::fromTangoAreaDescriptionMetaData);
     }
 
     @Override
     public Observable<AreaDescriptionMetaData> findAll() {
-        return Observable.from(mTango.listAreaDescriptions())
+        return Observable.from(tango.listAreaDescriptions())
                          .flatMap(this::loadTangoAreaDescriptionMetaData)
-                         .map(mMapper::fromTangoAreaDescriptionMetaData);
+                         .map(mapper::fromTangoAreaDescriptionMetaData);
     }
 
     @Override
     public Single<String> delete(String uuid) {
-        mTango.deleteAreaDescription(uuid);
+        tango.deleteAreaDescription(uuid);
         return Single.just(uuid);
     }
 
     Observable<TangoAreaDescriptionMetaData> loadTangoAreaDescriptionMetaData(String uuid) {
-        return Observable.just(mTango.loadAreaDescriptionMetaData(uuid));
+        return Observable.just(tango.loadAreaDescriptionMetaData(uuid));
     }
 }

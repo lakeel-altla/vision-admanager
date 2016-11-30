@@ -13,15 +13,15 @@ import dagger.Provides;
 @Module
 public final class ActivityModule {
 
-    private final Activity mActivity;
+    private final Activity activity;
 
     public ActivityModule(@NonNull Activity activity) {
-        mActivity = activity;
+        this.activity = activity;
     }
 
     @ActivityScope
     @Provides
     public Tango provideTango() {
-        return new Tango(mActivity);
+        return new Tango(activity);
     }
 }

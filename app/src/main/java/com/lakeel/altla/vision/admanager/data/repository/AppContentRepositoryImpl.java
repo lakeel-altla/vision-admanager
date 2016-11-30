@@ -11,37 +11,37 @@ import rx.Single;
 
 public final class AppContentRepositoryImpl implements AppContentRepository {
 
-    private final File mDirectory;
+    private final File baseDirectory;
 
     @Inject
     public AppContentRepositoryImpl(File directory) {
-        mDirectory = directory;
-        if (!mDirectory.exists()) {
-            if (!mDirectory.mkdirs()) {
-                throw new IllegalStateException("Creating a directory failed: " + mDirectory);
+        baseDirectory = directory;
+        if (!baseDirectory.exists()) {
+            if (!baseDirectory.mkdirs()) {
+                throw new IllegalStateException("Creating a directory failed: " + baseDirectory);
             }
         }
     }
 
     @Override
     public Single<String> getExportDirectory() {
-        return Single.just(mDirectory.getPath());
+        return Single.just(baseDirectory.getPath());
     }
 
     @Override
     public Single<String> getFilePath(String uuid) {
-        return Single.just(mDirectory.getPath() + File.separator + uuid);
+        return Single.just(baseDirectory.getPath() + File.separator + uuid);
     }
 
     @Override
     public Observable<String> findAll() {
-        return Observable.from(mDirectory.listFiles())
+        return Observable.from(baseDirectory.listFiles())
                          .map(File::getName);
     }
 
     @Override
     public Single<String> delete(String uuid) {
-        File file = new File(mDirectory, uuid);
+        File file = new File(baseDirectory, uuid);
         file.delete();
         return Single.just(uuid);
     }

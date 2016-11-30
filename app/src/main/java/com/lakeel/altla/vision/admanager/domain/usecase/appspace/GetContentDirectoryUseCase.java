@@ -9,13 +9,13 @@ import rx.Single;
 public final class GetContentDirectoryUseCase {
 
     @Inject
-    AppContentRepository mRepository;
+    AppContentRepository appContentRepository;
 
     @Inject
     public GetContentDirectoryUseCase() {
     }
 
     public Single<String> execute() {
-        return mRepository.getExportDirectory();
+        return appContentRepository.getExportDirectory();
     }
 }

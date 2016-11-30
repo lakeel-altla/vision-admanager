@@ -10,15 +10,15 @@ import rx.schedulers.Schedulers;
 
 public final class FindAllMetaDatasUseCase {
 
-    private final TangoMetaDataRepository mRepository;
+    private final TangoMetaDataRepository tangoMetaDataRepository;
 
     @Inject
     public FindAllMetaDatasUseCase(TangoMetaDataRepository repository) {
-        mRepository = repository;
+        tangoMetaDataRepository = repository;
     }
 
     public Observable<AreaDescriptionMetaData> execute() {
-        return mRepository.findAll()
-                          .subscribeOn(Schedulers.io());
+        return tangoMetaDataRepository.findAll()
+                                      .subscribeOn(Schedulers.io());
     }
 }

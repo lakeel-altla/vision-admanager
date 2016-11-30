@@ -16,7 +16,7 @@ public final class MyApplication extends Application {
 
     private static final Log LOG = LogFactory.getLog(MyApplication.class);
 
-    private ApplicationComponent mApplicationComponent;
+    private ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
@@ -26,7 +26,7 @@ public final class MyApplication extends Application {
         LeakCanary.install(this);
 
         // Dagger 2
-        mApplicationComponent = DaggerApplicationComponent
+        applicationComponent = DaggerApplicationComponent
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
@@ -37,6 +37,6 @@ public final class MyApplication extends Application {
     }
 
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
-        return ((MyApplication) activity.getApplication()).mApplicationComponent;
+        return ((MyApplication) activity.getApplication()).applicationComponent;
     }
 }

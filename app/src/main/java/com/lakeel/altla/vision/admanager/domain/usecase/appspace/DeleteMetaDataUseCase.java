@@ -11,18 +11,18 @@ import rx.schedulers.Schedulers;
 public final class DeleteMetaDataUseCase {
 
     @Inject
-    AppMetaDataRepository mMetaDataRepository;
+    AppMetaDataRepository appMetaDataRepository;
 
     @Inject
-    AppContentRepository mContentRepository;
+    AppContentRepository appContentRepository;
 
     @Inject
     public DeleteMetaDataUseCase() {
     }
 
     public Single<String> execute(String uuid) {
-        return mContentRepository.delete(uuid)
-                                 .flatMap(mMetaDataRepository::delete)
-                                 .subscribeOn(Schedulers.io());
+        return appContentRepository.delete(uuid)
+                                   .flatMap(appMetaDataRepository::delete)
+                                   .subscribeOn(Schedulers.io());
     }
 }
