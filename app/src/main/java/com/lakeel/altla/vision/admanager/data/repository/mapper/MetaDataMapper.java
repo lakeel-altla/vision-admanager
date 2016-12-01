@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.data.repository.mapper;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 
 import org.json.JSONArray;
@@ -24,6 +25,8 @@ public final class MetaDataMapper {
     private static final String KEY_TRANSFORM_ROTATION = "transformationRotation";
 
     public AreaDescriptionMetaData fromJson(String json) {
+        if (json == null) throw new ArgumentNullException("json");
+
         try {
             JSONObject jsonObject = new JSONObject(json);
 
@@ -52,6 +55,8 @@ public final class MetaDataMapper {
     }
 
     public String toJson(AreaDescriptionMetaData metaData) {
+        if (metaData == null) throw new ArgumentNullException("metaData");
+
         try {
             JSONObject jsonObject = new JSONObject().put(KEY_UUID, metaData.uuid)
                                                     .put(KEY_NAME, metaData.name)
@@ -71,6 +76,7 @@ public final class MetaDataMapper {
     }
 
     public AreaDescriptionMetaData fromTangoAreaDescriptionMetaData(TangoAreaDescriptionMetaData tangoMetaData) {
+        if (tangoMetaData == null) throw new ArgumentNullException("tangoMetaData");
 
         AreaDescriptionMetaData metaData = new AreaDescriptionMetaData();
 

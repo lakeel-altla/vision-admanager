@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.data.repository.android;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.data.repository.mapper.MetaDataMapper;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
@@ -31,6 +32,8 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     @Inject
     public AppMetaDataRepositoryImpl(File baseDirectory) {
+        if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+
         this.baseDirectory = baseDirectory;
         if (!this.baseDirectory.exists()) {
             if (!this.baseDirectory.mkdirs()) {
@@ -41,6 +44,8 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     @Override
     public Observable<AreaDescriptionMetaData> find(String uuid) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         return getMetaDataJsonFile(uuid)
                 .flatMap(this::readMetaDataJson)
                 .map(mapper::fromJson);
@@ -48,6 +53,8 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     @Override
     public Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData) {
+        if (metaData == null) throw new ArgumentNullException("metaData");
+
         return createMetaDataJsonFile(metaData.uuid)
                 .flatMap(file -> writeMetaDataJson(file, metaData))
                 .toSingle();
@@ -55,6 +62,8 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
 
     @Override
     public Single<String> delete(String uuid) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         return getMetaDataJsonFile(uuid)
                 .flatMap(this::deleteFile)
                 .map(file -> uuid)

@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
 
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
 import com.lakeel.altla.vision.admanager.domain.repository.TangoMetaDataRepository;
@@ -23,6 +24,8 @@ public final class SaveMetaDataUseCase {
     }
 
     public Single<String> execute(String uuid) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         return tangoMetaDataRepository.find(uuid)
                                       .flatMap(this::saveAreaDescriptionMetaData)
                                       .map(metaData -> uuid)

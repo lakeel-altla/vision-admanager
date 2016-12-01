@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
 
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
 import com.lakeel.altla.vision.admanager.domain.repository.AppContentRepository;
 import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
@@ -46,6 +47,8 @@ public final class UploadContentUseCase {
     }
 
     public Single<String> execute(String uuid, OnProgressListener onProgressListener) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         return appMetaDataRepository.find(uuid)
                                     .flatMap(this::saveMetaData)
                                     .flatMap(metaData -> getContentFile(uuid))

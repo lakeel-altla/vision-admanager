@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.data.repository.android;
 
+import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.AppContentRepository;
 
 import java.io.File;
@@ -15,6 +16,8 @@ public final class AppContentRepositoryImpl implements AppContentRepository {
 
     @Inject
     public AppContentRepositoryImpl(File directory) {
+        if (directory == null) throw new ArgumentNullException("directory");
+
         baseDirectory = directory;
         if (!baseDirectory.exists()) {
             if (!baseDirectory.mkdirs()) {
@@ -30,6 +33,8 @@ public final class AppContentRepositoryImpl implements AppContentRepository {
 
     @Override
     public Single<String> getFilePath(String uuid) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         return Single.just(baseDirectory.getPath() + File.separator + uuid);
     }
 
@@ -41,6 +46,8 @@ public final class AppContentRepositoryImpl implements AppContentRepository {
 
     @Override
     public Single<String> delete(String uuid) {
+        if (uuid == null) throw new ArgumentNullException("uuid");
+
         File file = new File(baseDirectory, uuid);
         file.delete();
         return Single.just(uuid);
