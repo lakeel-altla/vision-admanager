@@ -38,7 +38,7 @@ public final class TangoSpacePresenter {
     @Inject
     DeleteContentUseCase deleteContentUseCase;
 
-    private static final Log LOGGER = LogFactory.getLog(TangoSpacePresenter.class);
+    private static final Log LOG = LogFactory.getLog(TangoSpacePresenter.class);
 
     private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public final class TangoSpacePresenter {
                     this.itemModels.addAll(itemModels);
                     view.updateItems();
                 }, e -> {
-                    LOGGER.e("Loading area description meta datas failed.", e);
+                    LOG.e("Loading area description meta datas failed.", e);
                 });
         compositeSubscription.add(subscription);
     }
@@ -90,16 +90,14 @@ public final class TangoSpacePresenter {
 
     public void exportMetaData() {
         if (exportingUuid == null) {
-            throw new IllegalStateException("mExportingUuid == null");
+            throw new IllegalStateException("exportingUuid == null");
         }
-
-        TangoSpaceView view = this.view;
 
         Subscription subscription = saveMetaDataUseCase
                 .execute(exportingUuid)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> this.view.showSnackbar(R.string.snackbar_exported), e -> {
-                    LOGGER.e("Exporting area description meta data failed.", e);
+                .subscribe(s -> view.showSnackbar(R.string.snackbar_exported), e -> {
+                    LOG.e("Exporting area description meta data failed.", e);
                     view.showSnackbar(R.string.snackbar_export_failed);
                 });
         compositeSubscription.add(subscription);
@@ -116,7 +114,7 @@ public final class TangoSpacePresenter {
                     view.updateItemRemoved(position);
                     view.showSnackbar(R.string.snackbar_deleted);
                 }, e -> {
-                    LOGGER.e("Deleting area description failed.", e);
+                    LOG.e("Deleting area description failed.", e);
                     view.showSnackbar(R.string.snackbar_delete_failed);
                 });
         compositeSubscription.add(subscription);
