@@ -121,8 +121,6 @@ public final class AppSpacePresenter {
         }
 
         public void onImport(@IntRange(from = 0) int position) {
-            AppSpaceView view = AppSpacePresenter.this.view;
-
             String uuid = itemModels.get(position).uuid;
 
             Subscription subscription = getContentPathUseCase
@@ -136,8 +134,6 @@ public final class AppSpacePresenter {
         }
 
         public void onUpload(@IntRange(from = 0) int position) {
-            AppSpaceView view = AppSpacePresenter.this.view;
-
             String uuid = itemModels.get(position).uuid;
 
             view.showUploadProgressDialog();
