@@ -1,14 +1,22 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,7 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SignInFragment extends Fragment implements SignInView {
+public final class SignInFragment extends Fragment implements SignInView, GoogleApiClient.OnConnectionFailedListener {
 
     @Inject
     SignInPresenter presenter;
@@ -41,10 +49,9 @@ public class SignInFragment extends Fragment implements SignInView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        interactionListener = InteractionListener.class.cast(context);
-
-        // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
+
+        interactionListener = InteractionListener.class.cast(context);
     }
 
     @Override
@@ -72,12 +79,10 @@ public class SignInFragment extends Fragment implements SignInView {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onActivityResult(requestCode, resultCode, data);
-    }
 
-    @Override
-    public Fragment getFragment() {
-        return this;
+        boolean isCanceled = (Activity.RESULT_CANCELED == resultCode);
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        presenter.onSignInResult(isCanceled, result);
     }
 
     @Override
@@ -105,11 +110,6 @@ public class SignInFragment extends Fragment implements SignInView {
     }
 
     @Override
-    public void showFirebaseSignInFailedSnackbar() {
-        Snackbar.make(viewTop, R.string.snackbar_firebase_sign_in_failed, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void showGoogleSignInFailedSnackbar() {
         Snackbar.make(viewTop, R.string.snackbar_google_sign_in_failed, Snackbar.LENGTH_SHORT).show();
     }
@@ -127,6 +127,21 @@ public class SignInFragment extends Fragment implements SignInView {
     @Override
     public void showTangoPermissionFragment() {
         interactionListener.onShowTangoPermissionFragment();
+    }
+
+    @Override
+    public void startGoogleSignInActivity(GoogleSignInOptions options) {
+        GoogleApiClient apiClient = new GoogleApiClient.Builder(getActivity())
+                .enableAutoManage(getActivity(), this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, options)
+                .build();
+
+        startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(apiClient), 0);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        presenter.onGoogleApiClientConnectionFailed(connectionResult);
     }
 
     @OnClick(R.id.button_sign_in)

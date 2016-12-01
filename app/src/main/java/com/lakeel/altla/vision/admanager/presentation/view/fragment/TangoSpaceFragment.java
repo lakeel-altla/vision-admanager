@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TangoSpaceFragment extends Fragment
+public final class TangoSpaceFragment extends Fragment
         implements TangoSpaceView, TangoActivityForResult.OnTangoActivityResultListener {
 
     @Inject
@@ -52,7 +52,6 @@ public class TangoSpaceFragment extends Fragment
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
 
         tangoActivityForResult = TangoActivityForResultHost.class.cast(context).getTangoActivityForResult();

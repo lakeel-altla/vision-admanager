@@ -1,23 +1,14 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public interface SignInView {
-
-    // for Google API client
-    FragmentActivity getActivity();
-
-    // for Google API client
-    Fragment getFragment();
 
     void showProgressDialog();
 
     void hideProgressDialog();
 
     void showGoogleApiClientConnectionFailedSnackbar();
-
-    void showFirebaseSignInFailedSnackbar();
 
     void showGoogleSignInFailedSnackbar();
 
@@ -26,4 +17,6 @@ public interface SignInView {
     void showSignedOutSnackbar();
 
     void showTangoPermissionFragment();
+
+    void startGoogleSignInActivity(GoogleSignInOptions options);
 }

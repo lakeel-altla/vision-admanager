@@ -1,10 +1,12 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
+import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoPermissionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoPermissionView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +21,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TangoPermissionFragment extends Fragment implements TangoPermissionView {
+public final class TangoPermissionFragment extends Fragment implements TangoPermissionView {
 
     @Inject
     TangoPermissionPresenter presenter;
@@ -39,7 +41,6 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
 
         interactionListener = InteractionListener.class.cast(context);
 
-        // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
     }
 
@@ -49,7 +50,6 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
         ButterKnife.bind(this, view);
 
         presenter.onCreateView(this);
-        presenter.onConfirmPermission();
 
         return view;
     }
@@ -57,12 +57,9 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onActivityResult(requestCode, resultCode, data);
-    }
 
-    @Override
-    public Fragment getFragment() {
-        return this;
+        boolean isCanceled = (Activity.RESULT_CANCELED == resultCode);
+        presenter.onTangoPermissionResult(isCanceled);
     }
 
     @Override
@@ -75,6 +72,11 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
         Snackbar.make(viewTop, R.string.snackbar_area_learning_permission_required, Snackbar.LENGTH_SHORT)
                 .setAction(R.string.snackbar_action_request_permission, view -> presenter.onConfirmPermission())
                 .show();
+    }
+
+    @Override
+    public void startTangoPermissionActivity() {
+        startActivityForResult(TangoIntents.createAdfLoadSaveRequestPermissionIntent(), 0);
     }
 
     public interface InteractionListener {
