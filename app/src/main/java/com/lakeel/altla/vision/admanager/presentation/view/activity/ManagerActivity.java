@@ -35,52 +35,52 @@ public class ManagerActivity extends AppCompatActivity
         implements ActivityScopeContext, TangoActivityForResultHost, NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
-    Tango mTango;
+    Tango tango;
 
     @BindView(R.id.toolbar)
-    Toolbar mToolbar;
+    Toolbar toolbar;
 
     @BindView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    DrawerLayout drawerLayout;
 
     @BindView(R.id.navigation_view)
-    NavigationView mNavigationView;
+    NavigationView navigationView;
 
-    private final TangoActivityForResult mTangoActivityForResult = new TangoActivityForResult();
+    private final TangoActivityForResult tangoActivityForResult = new TangoActivityForResult();
 
-    private FragmentController mFragmentController;
+    private FragmentController fragmentController;
 
-    private UserComponent mUserComponent;
+    private UserComponent userComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mUserComponent = MyApplication.getApplicationComponent(this)
-                                      .userComponent(new ActivityModule(this));
-        mUserComponent.inject(this);
+        userComponent = MyApplication.getApplicationComponent(this)
+                                     .userComponent(new ActivityModule(this));
+        userComponent.inject(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager);
         ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        mFragmentController = new FragmentController(getSupportFragmentManager());
-        mFragmentController.showTangoSpaceAdListFragment();
+        fragmentController = new FragmentController(getSupportFragmentManager());
+        fragmentController.showTangoSpaceAdListFragment();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        TangoConfig config = mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
-        mTango.connect(config);
+        TangoConfig config = tango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
+        tango.connect(config);
     }
 
     @Override
@@ -88,14 +88,14 @@ public class ManagerActivity extends AppCompatActivity
         super.onPause();
 
         synchronized (this) {
-            mTango.disconnect();
+            tango.disconnect();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -129,12 +129,12 @@ public class ManagerActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_tango_space) {
-            mFragmentController.showTangoSpaceAdListFragment();
+            fragmentController.showTangoSpaceAdListFragment();
         } else if (id == R.id.nav_app_space) {
-            mFragmentController.showAppSpaceAdListFragment();
+            fragmentController.showAppSpaceAdListFragment();
         }
 
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -142,15 +142,15 @@ public class ManagerActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        mTangoActivityForResult.onResult(requestCode, resultCode, data);
+        tangoActivityForResult.onResult(requestCode, resultCode, data);
     }
 
     public UserComponent getUserComponent() {
-        return mUserComponent;
+        return userComponent;
     }
 
     public TangoActivityForResult getTangoActivityForResult() {
-        return mTangoActivityForResult;
+        return tangoActivityForResult;
     }
 
     public static Intent getStartActivityIntent(@NonNull Context context) {
@@ -163,27 +163,27 @@ public class ManagerActivity extends AppCompatActivity
 
         private static final String FRAGMENT_TAG_APP_SPACE_AD_LIST = AppSpaceFragment.class.getName();
 
-        private FragmentManager mManager;
+        private FragmentManager fragmentManager;
 
         public FragmentController(@NonNull FragmentManager manager) {
-            mManager = manager;
+            fragmentManager = manager;
         }
 
         public TangoSpaceFragment findTangoSpaceAdListFragment() {
-            return (TangoSpaceFragment) mManager.findFragmentByTag(FRAGMENT_TAG_TANGO_SPACE_AD_LIST);
+            return (TangoSpaceFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG_TANGO_SPACE_AD_LIST);
         }
 
         public AppSpaceFragment findAppSpaceAdListFragment() {
-            return (AppSpaceFragment) mManager.findFragmentByTag(FRAGMENT_TAG_APP_SPACE_AD_LIST);
+            return (AppSpaceFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG_APP_SPACE_AD_LIST);
         }
 
         public void showTangoSpaceAdListFragment() {
             TangoSpaceFragment fragment = findTangoSpaceAdListFragment();
             if (fragment == null) {
                 fragment = TangoSpaceFragment.newInstance();
-                mManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_TANGO_SPACE_AD_LIST)
-                        .commit();
+                fragmentManager.beginTransaction()
+                               .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_TANGO_SPACE_AD_LIST)
+                               .commit();
             }
         }
 
@@ -191,9 +191,9 @@ public class ManagerActivity extends AppCompatActivity
             AppSpaceFragment fragment = findAppSpaceAdListFragment();
             if (fragment == null) {
                 fragment = AppSpaceFragment.newInstance();
-                mManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_APP_SPACE_AD_LIST)
-                        .commit();
+                fragmentManager.beginTransaction()
+                               .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_APP_SPACE_AD_LIST)
+                               .commit();
             }
         }
     }

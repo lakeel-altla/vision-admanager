@@ -11,7 +11,7 @@ import java.util.List;
 
 public final class TangoActivityForResult {
 
-    private final List<OnTangoActivityResultListener> mListeners = new ArrayList<>();
+    private final List<OnTangoActivityResultListener> listeners = new ArrayList<>();
 
     public boolean onResult(int requestCode, int resultCode, Intent data) {
         if (Tango.TANGO_INTENT_ACTIVITYCODE != requestCode) {
@@ -19,7 +19,7 @@ public final class TangoActivityForResult {
         }
 
         boolean isCanceled = (Activity.RESULT_OK != resultCode);
-        for (OnTangoActivityResultListener listener : mListeners) {
+        for (OnTangoActivityResultListener listener : listeners) {
             listener.onTangoActivityResult(isCanceled);
         }
 
@@ -27,11 +27,11 @@ public final class TangoActivityForResult {
     }
 
     public void addOnTangoActivityForResultListener(@NonNull OnTangoActivityResultListener listener) {
-        mListeners.add(listener);
+        listeners.add(listener);
     }
 
     public void removeOnTangoActivityForResultListener(@NonNull OnTangoActivityResultListener listener) {
-        mListeners.remove(listener);
+        listeners.remove(listener);
     }
 
     public interface OnTangoActivityResultListener {

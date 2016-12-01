@@ -12,10 +12,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 public class StartActivity extends AppCompatActivity
-        implements ActivityScopeContext, SignInFragment.OnShowTangoPermissionFragmentListener,
-                   TangoPermissionFragment.OnStartManagerActivityListener {
+        implements ActivityScopeContext, SignInFragment.InteractionListener,
+                   TangoPermissionFragment.InteractionListener {
 
-    private UserComponent mUserComponent;
+    private UserComponent userComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +23,8 @@ public class StartActivity extends AppCompatActivity
         setContentView(R.layout.activity_start);
 
         // Dagger
-        mUserComponent = MyApplication.getApplicationComponent(this)
-                                      .userComponent(new ActivityModule(this));
+        userComponent = MyApplication.getApplicationComponent(this)
+                                     .userComponent(new ActivityModule(this));
 
         SignInFragment fragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -47,6 +47,6 @@ public class StartActivity extends AppCompatActivity
     }
 
     public UserComponent getUserComponent() {
-        return mUserComponent;
+        return userComponent;
     }
 }

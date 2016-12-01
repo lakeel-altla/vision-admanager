@@ -19,22 +19,22 @@ import butterknife.OnClick;
 
 public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.ViewHolder> {
 
-    private final AppSpacePresenter mPresenter;
+    private final AppSpacePresenter presenter;
 
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
 
     public AppSpaceAdapter(@NonNull AppSpacePresenter presenter) {
-        mPresenter = presenter;
+        this.presenter = presenter;
     }
 
     @Override
     public final ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (mInflater == null) {
-            mInflater = LayoutInflater.from(parent.getContext());
+        if (inflater == null) {
+            inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = mInflater.inflate(R.layout.list_item_app_space_data, parent, false);
+        View itemView = inflater.inflate(R.layout.list_item_app_space_data, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
-        mPresenter.onCreateItemView(holder);
+        presenter.onCreateItemView(holder);
         return holder;
     }
 
@@ -45,18 +45,18 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
 
     @Override
     public int getItemCount() {
-        return mPresenter.getItemCount();
+        return presenter.getItemCount();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements AppSpaceItemView {
 
         @BindView(R.id.text_view_name)
-        TextView mTextViewName;
+        TextView textViewName;
 
         @BindView(R.id.text_view_uuid)
-        TextView mTextViewUuid;
+        TextView textViewUuid;
 
-        private AppSpacePresenter.AppSpaceItemPresenter mItemPresenter;
+        private AppSpacePresenter.AppSpaceItemPresenter itemPresenter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,27 +64,27 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         }
 
         public void setItemPresenter(@NonNull AppSpacePresenter.AppSpaceItemPresenter itemPresenter) {
-            mItemPresenter = itemPresenter;
+            this.itemPresenter = itemPresenter;
         }
 
         @Override
         public void showModel(@NonNull AppSpaceItemModel model) {
-            mTextViewName.setText(model.name);
-            mTextViewUuid.setText(model.uuid);
+            textViewName.setText(model.name);
+            textViewUuid.setText(model.uuid);
         }
 
         public void onBind(@IntRange(from = 0) int position) {
-            mItemPresenter.onBind(position);
+            itemPresenter.onBind(position);
         }
 
         @OnClick(R.id.button_import)
         void onClickImport() {
-            mItemPresenter.onImport(getAdapterPosition());
+            itemPresenter.onImport(getAdapterPosition());
         }
 
         @OnClick(R.id.button_upload)
         void onClickUpload() {
-            mItemPresenter.onUpload(getAdapterPosition());
+            itemPresenter.onUpload(getAdapterPosition());
         }
     }
 }

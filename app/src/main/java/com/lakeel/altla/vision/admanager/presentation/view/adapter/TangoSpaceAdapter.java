@@ -19,23 +19,23 @@ import butterknife.OnClick;
 
 public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdapter.ViewHolder> {
 
-    private final TangoSpacePresenter mPresenter;
+    private final TangoSpacePresenter presenter;
 
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
 
     public TangoSpaceAdapter(@NonNull TangoSpacePresenter presenter) {
-        mPresenter = presenter;
+        this.presenter = presenter;
     }
 
     @Override
     public final ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (mInflater == null) {
-            mInflater = LayoutInflater.from(parent.getContext());
+        if (inflater == null) {
+            inflater = LayoutInflater.from(parent.getContext());
         }
 
-        View itemView = mInflater.inflate(R.layout.list_item_tango_space_data, parent, false);
+        View itemView = inflater.inflate(R.layout.list_item_tango_space_data, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
-        mPresenter.onCreateItemView(holder);
+        presenter.onCreateItemView(holder);
         return holder;
     }
 
@@ -46,18 +46,18 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
 
     @Override
     public int getItemCount() {
-        return mPresenter.getItemCount();
+        return presenter.getItemCount();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements TangoSpaceItemView {
 
         @BindView(R.id.text_view_name)
-        TextView mTextViewName;
+        TextView textViewName;
 
         @BindView(R.id.text_view_uuid)
-        TextView mTextViewUuid;
+        TextView textViewUuid;
 
-        private TangoSpacePresenter.TangoSpaceItemPresenter mItemPresenter;
+        private TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,22 +66,22 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
 
         @Override
         public void setItemPresenter(@NonNull TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter) {
-            mItemPresenter = itemPresenter;
+            this.itemPresenter = itemPresenter;
         }
 
         @Override
         public void showModel(@NonNull TangoSpaceItemModel model) {
-            mTextViewName.setText(model.name);
-            mTextViewUuid.setText(model.uuid);
+            textViewName.setText(model.name);
+            textViewUuid.setText(model.uuid);
         }
 
         public void onBind(@IntRange(from = 0) int position) {
-            mItemPresenter.onBind(position);
+            itemPresenter.onBind(position);
         }
 
         @OnClick(R.id.button_export)
         void onClickExport() {
-            mItemPresenter.onExport(getAdapterPosition());
+            itemPresenter.onExport(getAdapterPosition());
         }
     }
 }

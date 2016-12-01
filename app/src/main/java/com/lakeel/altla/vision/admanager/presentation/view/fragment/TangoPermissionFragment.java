@@ -22,12 +22,12 @@ import butterknife.ButterKnife;
 public class TangoPermissionFragment extends Fragment implements TangoPermissionView {
 
     @Inject
-    TangoPermissionPresenter mPresenter;
+    TangoPermissionPresenter presenter;
 
     @BindView(R.id.view_top)
-    View mViewTop;
+    View viewTop;
 
-    private OnStartManagerActivityListener mListener;
+    private InteractionListener interactionListener;
 
     public static TangoPermissionFragment newInstance() {
         return new TangoPermissionFragment();
@@ -37,7 +37,7 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        mListener = OnStartManagerActivityListener.class.cast(context);
+        interactionListener = InteractionListener.class.cast(context);
 
         // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
@@ -48,8 +48,8 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
         View view = inflater.inflate(R.layout.fragment_tango_permissions, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView(this);
-        mPresenter.onConfirmPermission();
+        presenter.onCreateView(this);
+        presenter.onConfirmPermission();
 
         return view;
     }
@@ -57,7 +57,7 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPresenter.onActivityResult(requestCode, resultCode, data);
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -67,17 +67,17 @@ public class TangoPermissionFragment extends Fragment implements TangoPermission
 
     @Override
     public void startManagerActivity() {
-        mListener.onStartManagerActivity();
+        interactionListener.onStartManagerActivity();
     }
 
     @Override
     public void showAreaLearningPermissionRequiredSnackbar() {
-        Snackbar.make(mViewTop, R.string.snackbar_area_learning_permission_required, Snackbar.LENGTH_SHORT)
-                .setAction(R.string.snackbar_action_request_permission, view -> mPresenter.onConfirmPermission())
+        Snackbar.make(viewTop, R.string.snackbar_area_learning_permission_required, Snackbar.LENGTH_SHORT)
+                .setAction(R.string.snackbar_action_request_permission, view -> presenter.onConfirmPermission())
                 .show();
     }
 
-    public interface OnStartManagerActivityListener {
+    public interface InteractionListener {
 
         void onStartManagerActivity();
     }

@@ -34,15 +34,15 @@ public class TangoSpaceFragment extends Fragment
         implements TangoSpaceView, TangoActivityForResult.OnTangoActivityResultListener {
 
     @Inject
-    Tango mTango;
+    Tango tango;
 
     @Inject
-    TangoSpacePresenter mPresenter;
+    TangoSpacePresenter presenter;
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    RecyclerView recyclerView;
 
-    private TangoActivityForResult mTangoActivityForResult;
+    private TangoActivityForResult tangoActivityForResult;
 
     public static TangoSpaceFragment newInstance() {
         return new TangoSpaceFragment();
@@ -55,7 +55,7 @@ public class TangoSpaceFragment extends Fragment
         // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
 
-        mTangoActivityForResult = TangoActivityForResultHost.class.cast(context).getTangoActivityForResult();
+        tangoActivityForResult = TangoActivityForResultHost.class.cast(context).getTangoActivityForResult();
     }
 
     @Override
@@ -63,12 +63,12 @@ public class TangoSpaceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_tango_space, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView(this);
+        presenter.onCreateView(this);
 
-        mRecyclerView.setAdapter(new TangoSpaceAdapter(mPresenter));
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemTouchHelper helper = new SwipeRightItemTouchHelper(mPresenter::onDelete);
-        helper.attachToRecyclerView(mRecyclerView);
+        recyclerView.setAdapter(new TangoSpaceAdapter(presenter));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ItemTouchHelper helper = new SwipeRightItemTouchHelper(presenter::onDelete);
+        helper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -76,42 +76,42 @@ public class TangoSpaceFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        mPresenter.onStart();
+        presenter.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mPresenter.onStop();
+        presenter.onStop();
     }
 
     @Override
     public void onTangoActivityResult(boolean isCanceled) {
-        mTangoActivityForResult.removeOnTangoActivityForResultListener(this);
+        tangoActivityForResult.removeOnTangoActivityForResultListener(this);
 
         if (!isCanceled) {
-            mPresenter.exportMetaData();
+            presenter.exportMetaData();
         }
     }
 
     @Override
     public void updateItems() {
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void updateItemRemoved(@IntRange(from = 0) int position) {
-        mRecyclerView.getAdapter().notifyItemRemoved(position);
+        recyclerView.getAdapter().notifyItemRemoved(position);
     }
 
     @Override
     public void showSnackbar(@StringRes int resId) {
-        Snackbar.make(mRecyclerView, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showExportActivity(@NonNull String uuid, @NonNull String directory) {
-        mTangoActivityForResult.addOnTangoActivityForResultListener(this);
-        mTango.exportAreaDescriptionFile(uuid, directory);
+        tangoActivityForResult.addOnTangoActivityForResultListener(this);
+        tango.exportAreaDescriptionFile(uuid, directory);
     }
 }

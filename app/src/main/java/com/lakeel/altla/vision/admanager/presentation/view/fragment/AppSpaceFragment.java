@@ -35,17 +35,17 @@ public class AppSpaceFragment extends Fragment
         implements AppSpaceView, TangoActivityForResult.OnTangoActivityResultListener {
 
     @Inject
-    Tango mTango;
+    Tango tango;
 
     @Inject
-    AppSpacePresenter mPresenter;
+    AppSpacePresenter presenter;
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    RecyclerView recyclerView;
 
-    private ProgressDialog mProgressDialog;
+    private ProgressDialog progressDialog;
 
-    private TangoActivityForResult mTangoActivityForResult;
+    private TangoActivityForResult tangoActivityForResult;
 
     public static AppSpaceFragment newInstance() {
         return new AppSpaceFragment();
@@ -58,7 +58,7 @@ public class AppSpaceFragment extends Fragment
         // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
 
-        mTangoActivityForResult = TangoActivityForResultHost.class.cast(getContext()).getTangoActivityForResult();
+        tangoActivityForResult = TangoActivityForResultHost.class.cast(getContext()).getTangoActivityForResult();
     }
 
     @Override
@@ -66,12 +66,12 @@ public class AppSpaceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_app_space, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView(this);
+        presenter.onCreateView(this);
 
-        mRecyclerView.setAdapter(new AppSpaceAdapter(mPresenter));
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemTouchHelper helper = new SwipeRightItemTouchHelper(mPresenter::onDelete);
-        helper.attachToRecyclerView(mRecyclerView);
+        recyclerView.setAdapter(new AppSpaceAdapter(presenter));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ItemTouchHelper helper = new SwipeRightItemTouchHelper(presenter::onDelete);
+        helper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -79,68 +79,68 @@ public class AppSpaceFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        mPresenter.onStart();
+        presenter.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mPresenter.onStop();
+        presenter.onStop();
     }
 
     @Override
     public void onTangoActivityResult(boolean isCanceled) {
-        mTangoActivityForResult.removeOnTangoActivityForResultListener(this);
+        tangoActivityForResult.removeOnTangoActivityForResultListener(this);
 
         if (!isCanceled) {
-            Snackbar.make(mRecyclerView, R.string.snackbar_imported, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(recyclerView, R.string.snackbar_imported, Snackbar.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void updateItems() {
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void updateItemRemoved(@IntRange(from = 0) int position) {
-        mRecyclerView.getAdapter().notifyItemRemoved(position);
+        recyclerView.getAdapter().notifyItemRemoved(position);
     }
 
     @Override
     public void showSnackbar(@StringRes int resId) {
-        Snackbar.make(mRecyclerView, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showImportActivity(@NonNull String path) {
-        mTangoActivityForResult.addOnTangoActivityForResultListener(this);
-        mTango.importAreaDescriptionFile(path);
+        tangoActivityForResult.addOnTangoActivityForResultListener(this);
+        tango.importAreaDescriptionFile(path);
     }
 
     @Override
     public void showUploadProgressDialog() {
-        mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setMessage(getString(R.string.progress_dialog_upload));
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.setMax(0);
-        mProgressDialog.show();
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
     }
 
     @Override
     public void setUploadProgressDialogProgress(long max, long diff) {
-        if (mProgressDialog != null) {
-            mProgressDialog.setMax((int) max);
-            mProgressDialog.incrementProgressBy((int) diff);
+        if (progressDialog != null) {
+            progressDialog.setMax((int) max);
+            progressDialog.incrementProgressBy((int) diff);
         }
     }
 
     @Override
     public void hideUploadProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.hide();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
         }
     }
 }

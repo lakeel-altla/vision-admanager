@@ -25,12 +25,12 @@ public final class SwipeRightItemTouchHelper extends ItemTouchHelper {
 
     private static class SwipeRightCallback extends ItemTouchHelper.SimpleCallback {
 
-        private OnItemSwipedListener mOnItemSwipedListener;
+        private OnItemSwipedListener onItemSwipedListener;
 
         public SwipeRightCallback(@NonNull OnItemSwipedListener onItemSwipedListener) {
             super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT);
 
-            mOnItemSwipedListener = onItemSwipedListener;
+            this.onItemSwipedListener = onItemSwipedListener;
         }
 
         @Override
@@ -45,7 +45,7 @@ public final class SwipeRightItemTouchHelper extends ItemTouchHelper {
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
-            mOnItemSwipedListener.onSwiped(position);
+            onItemSwipedListener.onSwiped(position);
         }
 
         @Override
