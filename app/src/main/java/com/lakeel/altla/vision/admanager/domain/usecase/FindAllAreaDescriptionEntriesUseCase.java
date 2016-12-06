@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
+package com.lakeel.altla.vision.admanager.domain.usecase;
 
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
 import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionEntryRepository;

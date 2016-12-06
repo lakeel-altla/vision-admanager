@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.domain.usecase.tangospace;
+package com.lakeel.altla.vision.admanager.domain.usecase;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
