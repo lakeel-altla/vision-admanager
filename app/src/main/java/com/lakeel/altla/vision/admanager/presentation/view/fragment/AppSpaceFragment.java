@@ -122,6 +122,7 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_delete));
         progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
