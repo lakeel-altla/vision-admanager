@@ -1,9 +1,9 @@
 package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
 
 import com.lakeel.altla.vision.admanager.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
-import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.TangoMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.admanager.domain.repository.AppMetadataRepository;
+import com.lakeel.altla.vision.admanager.domain.repository.TangoMetadataRepository;
 
 import javax.inject.Inject;
 
@@ -11,29 +11,29 @@ import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
-public final class SaveMetaDataUseCase {
+public final class SaveMetadataUseCase {
 
     @Inject
-    TangoMetaDataRepository tangoMetaDataRepository;
+    TangoMetadataRepository tangoMetadataRepository;
 
     @Inject
-    AppMetaDataRepository appMetaDataRepository;
+    AppMetadataRepository appMetadataRepository;
 
     @Inject
-    public SaveMetaDataUseCase() {
+    public SaveMetadataUseCase() {
     }
 
     public Single<String> execute(String uuid) {
         if (uuid == null) throw new ArgumentNullException("uuid");
 
-        return tangoMetaDataRepository.find(uuid)
+        return tangoMetadataRepository.find(uuid)
                                       .flatMap(this::saveAreaDescriptionMetaData)
-                                      .map(metaData -> uuid)
+                                      .map(metadata -> uuid)
                                       .toSingle()
                                       .subscribeOn(Schedulers.io());
     }
 
-    private Observable<AreaDescriptionMetaData> saveAreaDescriptionMetaData(AreaDescriptionMetaData metaData) {
-        return appMetaDataRepository.save(metaData).toObservable();
+    private Observable<AreaDescriptionMetadata> saveAreaDescriptionMetaData(AreaDescriptionMetadata metaData) {
+        return appMetadataRepository.save(metaData).toObservable();
     }
 }

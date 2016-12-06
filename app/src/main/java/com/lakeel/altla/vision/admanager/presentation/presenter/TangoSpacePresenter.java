@@ -4,7 +4,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetContentDirectoryUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.SaveMetaDataUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.SaveMetadataUseCase;
 import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.DeleteContentUseCase;
 import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.FindAllMetaDatasUseCase;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoSpaceItemModelMapper;
@@ -33,7 +33,7 @@ public final class TangoSpacePresenter {
     GetContentDirectoryUseCase getContentDirectoryUseCase;
 
     @Inject
-    SaveMetaDataUseCase saveMetaDataUseCase;
+    SaveMetadataUseCase saveMetadataUseCase;
 
     @Inject
     DeleteContentUseCase deleteContentUseCase;
@@ -93,7 +93,7 @@ public final class TangoSpacePresenter {
             throw new IllegalStateException("exportingUuid == null");
         }
 
-        Subscription subscription = saveMetaDataUseCase
+        Subscription subscription = saveMetadataUseCase
                 .execute(exportingUuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> view.showSnackbar(R.string.snackbar_done), e -> {

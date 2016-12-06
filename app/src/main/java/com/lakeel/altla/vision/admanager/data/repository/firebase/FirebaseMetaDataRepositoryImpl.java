@@ -8,8 +8,8 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.admanager.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
-import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetadataRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import rx.Single;
 
-public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRepository {
+public final class FirebaseMetadataRepositoryImpl implements FirebaseMetadataRepository {
 
     private static final String PATH_AREA_DESCRIPTION_METADATAS = "areaDescriptionMetadatas";
 
@@ -28,7 +28,7 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
     private final FirebaseAuth auth;
 
     @Inject
-    public FirebaseMetaDataRepositoryImpl(DatabaseReference baseReference, FirebaseAuth auth) {
+    public FirebaseMetadataRepositoryImpl(DatabaseReference baseReference, FirebaseAuth auth) {
         if (baseReference == null) throw new ArgumentNullException("baseReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
@@ -37,49 +37,49 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
     }
 
     @Override
-    public Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData) {
-        if (metaData == null) throw new ArgumentNullException("metaData");
+    public Single<AreaDescriptionMetadata> save(AreaDescriptionMetadata metadata) {
+        if (metadata == null) throw new ArgumentNullException("metadata");
 
-        FirebaseMetaData firebaseMetaData = toFirebaseMetaData(metaData);
+        FirebaseMetadata firebaseMetadata = toFirebaseMetaData(metadata);
 
         Task<Void> task = baseReference.child(resolveUserId())
                                        .child(PATH_AREA_DESCRIPTION_METADATAS)
-                                       .child(firebaseMetaData.uuid)
-                                       .setValue(firebaseMetaData);
+                                       .child(firebaseMetadata.uuid)
+                                       .setValue(firebaseMetadata);
 
         return RxGmsTask.asSingle(task)
-                        .map(aVoid -> metaData);
+                        .map(aVoid -> metadata);
     }
 
-    private static FirebaseMetaData toFirebaseMetaData(AreaDescriptionMetaData metaData) {
-        FirebaseMetaData firebaseMetaData = new FirebaseMetaData();
+    private static FirebaseMetadata toFirebaseMetaData(AreaDescriptionMetadata metadata) {
+        FirebaseMetadata firebaseMetadata = new FirebaseMetadata();
 
-        firebaseMetaData.uuid = metaData.uuid;
-        firebaseMetaData.name = metaData.name;
+        firebaseMetadata.uuid = metadata.uuid;
+        firebaseMetadata.name = metadata.name;
 
-        if (metaData.date != null) {
-            firebaseMetaData.date = metaData.date.getTime();
+        if (metadata.date != null) {
+            firebaseMetadata.date = metadata.date.getTime();
         }
 
-        if (metaData.transformationPosition == null) {
-            firebaseMetaData.transformationPosition = Collections.emptyList();
+        if (metadata.transformationPosition == null) {
+            firebaseMetadata.transformationPosition = Collections.emptyList();
         } else {
-            firebaseMetaData.transformationPosition = new ArrayList<>(metaData.transformationPosition.length);
-            for (double value : metaData.transformationPosition) {
-                firebaseMetaData.transformationPosition.add(value);
+            firebaseMetadata.transformationPosition = new ArrayList<>(metadata.transformationPosition.length);
+            for (double value : metadata.transformationPosition) {
+                firebaseMetadata.transformationPosition.add(value);
             }
         }
 
-        if (metaData.transformationRotation == null) {
-            firebaseMetaData.transformationRotation = Collections.emptyList();
+        if (metadata.transformationRotation == null) {
+            firebaseMetadata.transformationRotation = Collections.emptyList();
         } else {
-            firebaseMetaData.transformationRotation = new ArrayList<>(metaData.transformationRotation.length);
-            for (double value : metaData.transformationRotation) {
-                firebaseMetaData.transformationRotation.add(value);
+            firebaseMetadata.transformationRotation = new ArrayList<>(metadata.transformationRotation.length);
+            for (double value : metadata.transformationRotation) {
+                firebaseMetadata.transformationRotation.add(value);
             }
         }
 
-        return firebaseMetaData;
+        return firebaseMetadata;
     }
 
     private String resolveUserId() {
@@ -91,7 +91,7 @@ public final class FirebaseMetaDataRepositoryImpl implements FirebaseMetaDataRep
     }
 
     @IgnoreExtraProperties
-    public static class FirebaseMetaData {
+    public static class FirebaseMetadata {
 
         public String uuid;
 

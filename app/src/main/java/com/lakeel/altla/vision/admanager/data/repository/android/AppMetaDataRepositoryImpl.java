@@ -3,9 +3,9 @@ package com.lakeel.altla.vision.admanager.data.repository.android;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.data.repository.mapper.MetaDataMapper;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
-import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
+import com.lakeel.altla.vision.admanager.data.repository.mapper.MetadataMapper;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.admanager.domain.repository.AppMetadataRepository;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,18 +20,18 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Single;
 
-public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
+public final class AppMetadataRepositoryImpl implements AppMetadataRepository {
 
-    private static final Log LOG = LogFactory.getLog(AppMetaDataRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(AppMetadataRepositoryImpl.class);
 
     private static final String EXTENTION = ".json";
 
-    private final MetaDataMapper mapper = new MetaDataMapper();
+    private final MetadataMapper mapper = new MetadataMapper();
 
     private final File baseDirectory;
 
     @Inject
-    public AppMetaDataRepositoryImpl(File baseDirectory) {
+    public AppMetadataRepositoryImpl(File baseDirectory) {
         if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
 
         this.baseDirectory = baseDirectory;
@@ -43,7 +43,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
     }
 
     @Override
-    public Observable<AreaDescriptionMetaData> find(String uuid) {
+    public Observable<AreaDescriptionMetadata> find(String uuid) {
         if (uuid == null) throw new ArgumentNullException("uuid");
 
         return getMetaDataJsonFile(uuid)
@@ -52,11 +52,11 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
     }
 
     @Override
-    public Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData) {
-        if (metaData == null) throw new ArgumentNullException("metaData");
+    public Single<AreaDescriptionMetadata> save(AreaDescriptionMetadata metadata) {
+        if (metadata == null) throw new ArgumentNullException("metadata");
 
-        return createMetaDataJsonFile(metaData.uuid)
-                .flatMap(file -> writeMetaDataJson(file, metaData))
+        return createMetaDataJsonFile(metadata.uuid)
+                .flatMap(file -> writeMetaDataJson(file, metadata))
                 .toSingle();
     }
 
@@ -103,7 +103,7 @@ public final class AppMetaDataRepositoryImpl implements AppMetaDataRepository {
         });
     }
 
-    private Observable<AreaDescriptionMetaData> writeMetaDataJson(File file, AreaDescriptionMetaData metaData) {
+    private Observable<AreaDescriptionMetadata> writeMetaDataJson(File file, AreaDescriptionMetadata metaData) {
         String json = mapper.toJson(metaData);
         return Observable.create(subscriber -> {
             LOG.d("Writing json meta data to '%s'", file.getPath());

@@ -1,10 +1,10 @@
 package com.lakeel.altla.vision.admanager.domain.repository;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
 
 import rx.Single;
 
-public interface FirebaseMetaDataRepository {
+public interface FirebaseMetadataRepository {
 
-    Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData);
+    Single<AreaDescriptionMetadata> save(AreaDescriptionMetadata metadata);
 }

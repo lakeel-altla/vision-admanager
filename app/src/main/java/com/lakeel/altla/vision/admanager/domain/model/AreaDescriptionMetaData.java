@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.domain.model;
 
 import java.util.Date;
 
-public class AreaDescriptionMetaData {
+public class AreaDescriptionMetadata {
 
     public String uuid;
 

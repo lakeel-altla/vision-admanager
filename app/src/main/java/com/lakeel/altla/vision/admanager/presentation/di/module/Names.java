@@ -4,7 +4,7 @@ final class Names {
 
     static final String LOCAL_DIRECTORY_CONTENT = "localDirectoryContent";
 
-    static final String LOCAL_DIRECTORY_META_DATA = "localDirectoryMetaData";
+    static final String LOCAL_DIRECTORY_METADATA = "localDirectoryMetadata";
 
     static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
 

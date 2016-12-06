@@ -1,15 +1,15 @@
 package com.lakeel.altla.vision.admanager.domain.repository;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
 
 import rx.Observable;
 import rx.Single;
 
-public interface AppMetaDataRepository {
+public interface AppMetadataRepository {
 
-    Observable<AreaDescriptionMetaData> find(String uuid);
+    Observable<AreaDescriptionMetadata> find(String uuid);
 
-    Single<AreaDescriptionMetaData> save(AreaDescriptionMetaData metaData);
+    Single<AreaDescriptionMetadata> save(AreaDescriptionMetadata metadata);
 
     Single<String> delete(String uuid);
 }

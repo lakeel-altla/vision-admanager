@@ -2,30 +2,30 @@ package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
 
 import com.lakeel.altla.vision.admanager.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.AppContentRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.repository.AppMetadataRepository;
 
 import javax.inject.Inject;
 
 import rx.Single;
 import rx.schedulers.Schedulers;
 
-public final class DeleteMetaDataUseCase {
+public final class DeleteMetadataUseCase {
 
     @Inject
-    AppMetaDataRepository appMetaDataRepository;
+    AppMetadataRepository appMetadataRepository;
 
     @Inject
     AppContentRepository appContentRepository;
 
     @Inject
-    public DeleteMetaDataUseCase() {
+    public DeleteMetadataUseCase() {
     }
 
     public Single<String> execute(String uuid) {
         if (uuid == null) throw new ArgumentNullException("uuid");
 
         return appContentRepository.delete(uuid)
-                                   .flatMap(appMetaDataRepository::delete)
+                                   .flatMap(appMetadataRepository::delete)
                                    .subscribeOn(Schedulers.io());
     }
 }

@@ -15,7 +15,7 @@ public final class ConfigModule {
 
     private static final String LOCAL_DIRECTORY_CONTENT = "AreaDescription";
 
-    private static final String LOCAL_DIRECTORY_META_DATA = "AreaDescriptionMetaData";
+    private static final String LOCAL_DIRECTORY_METADATA = "AreaDescriptionMetadata";
 
     private static final String FIREBASE_STORAGE_URI = "gs://firebase-trial.appspot.com";
 
@@ -26,11 +26,11 @@ public final class ConfigModule {
         return new File(Environment.getExternalStorageDirectory(), LOCAL_DIRECTORY_CONTENT);
     }
 
-    @Named(Names.LOCAL_DIRECTORY_META_DATA)
+    @Named(Names.LOCAL_DIRECTORY_METADATA)
     @Singleton
     @Provides
-    public File provideMetaDataDirectory() {
-        return new File(Environment.getExternalStorageDirectory(), LOCAL_DIRECTORY_META_DATA);
+    public File provideMetadataDirectory() {
+        return new File(Environment.getExternalStorageDirectory(), LOCAL_DIRECTORY_METADATA);
     }
 
     @Named(Names.FIREBASE_STORAGE_URI)

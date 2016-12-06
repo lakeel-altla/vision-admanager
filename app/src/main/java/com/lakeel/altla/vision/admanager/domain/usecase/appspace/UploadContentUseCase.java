@@ -1,11 +1,11 @@
 package com.lakeel.altla.vision.admanager.domain.usecase.appspace;
 
 import com.lakeel.altla.vision.admanager.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
 import com.lakeel.altla.vision.admanager.domain.repository.AppContentRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.AppMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.repository.AppMetadataRepository;
 import com.lakeel.altla.vision.admanager.domain.repository.FirebaseContentRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetadataRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,13 +23,13 @@ import rx.schedulers.Schedulers;
 public final class UploadContentUseCase {
 
     @Inject
-    AppMetaDataRepository appMetaDataRepository;
+    AppMetadataRepository appMetadataRepository;
 
     @Inject
     AppContentRepository appContentRepository;
 
     @Inject
-    FirebaseMetaDataRepository firebaseMetaDataRepository;
+    FirebaseMetadataRepository firebaseMetadataRepository;
 
     @Inject
     FirebaseContentRepository firebaseContentRepository;
@@ -49,7 +49,7 @@ public final class UploadContentUseCase {
     public Single<String> execute(String uuid, OnProgressListener onProgressListener) {
         if (uuid == null) throw new ArgumentNullException("uuid");
 
-        return appMetaDataRepository.find(uuid)
+        return appMetadataRepository.find(uuid)
                                     .flatMap(this::saveMetaData)
                                     .flatMap(metaData -> getContentFile(uuid))
                                     .flatMap(file -> saveContent(uuid, file, onProgressListener))
@@ -57,8 +57,8 @@ public final class UploadContentUseCase {
                                     .subscribeOn(Schedulers.io());
     }
 
-    private Observable<AreaDescriptionMetaData> saveMetaData(AreaDescriptionMetaData metaData) {
-        return firebaseMetaDataRepository.save(metaData)
+    private Observable<AreaDescriptionMetadata> saveMetaData(AreaDescriptionMetadata metadata) {
+        return firebaseMetadataRepository.save(metadata)
                                          .toObservable()
                                          .subscribeOn(Schedulers.io());
     }

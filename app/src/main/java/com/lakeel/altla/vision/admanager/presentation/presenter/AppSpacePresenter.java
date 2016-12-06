@@ -3,8 +3,8 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.DeleteMetaDataUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.FindAllMetaDatasUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.DeleteMetadataUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.FindAllMetadatasUseCase;
 import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetContentPathUseCase;
 import com.lakeel.altla.vision.admanager.domain.usecase.appspace.UploadContentUseCase;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
@@ -27,13 +27,13 @@ import rx.subscriptions.CompositeSubscription;
 public final class AppSpacePresenter {
 
     @Inject
-    FindAllMetaDatasUseCase findAllMetaDatasUseCase;
+    FindAllMetadatasUseCase findAllMetadatasUseCase;
 
     @Inject
     GetContentPathUseCase getContentPathUseCase;
 
     @Inject
-    DeleteMetaDataUseCase deleteMetaDataUseCase;
+    DeleteMetadataUseCase deleteMetadataUseCase;
 
     @Inject
     UploadContentUseCase uploadContentUseCase;
@@ -59,7 +59,7 @@ public final class AppSpacePresenter {
     }
 
     public void onStart() {
-        Subscription subscription = findAllMetaDatasUseCase
+        Subscription subscription = findAllMetadatasUseCase
                 .execute()
                 .map(mapper::map)
                 .toList()
@@ -93,7 +93,7 @@ public final class AppSpacePresenter {
     public void onDelete(@IntRange(from = 0) int position) {
         String uuid = itemModels.get(position).uuid;
 
-        Subscription subscription = deleteMetaDataUseCase
+        Subscription subscription = deleteMetadataUseCase
                 .execute(uuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {

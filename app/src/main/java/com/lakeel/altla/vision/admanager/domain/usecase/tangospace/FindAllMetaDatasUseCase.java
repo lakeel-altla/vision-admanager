@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.domain.usecase.tangospace;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetaData;
-import com.lakeel.altla.vision.admanager.domain.repository.TangoMetaDataRepository;
+import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.admanager.domain.repository.TangoMetadataRepository;
 
 import javax.inject.Inject;
 
@@ -11,14 +11,14 @@ import rx.schedulers.Schedulers;
 public final class FindAllMetaDatasUseCase {
 
     @Inject
-    TangoMetaDataRepository tangoMetaDataRepository;
+    TangoMetadataRepository tangoMetadataRepository;
 
     @Inject
     public FindAllMetaDatasUseCase() {
     }
 
-    public Observable<AreaDescriptionMetaData> execute() {
-        return tangoMetaDataRepository.findAll()
+    public Observable<AreaDescriptionMetadata> execute() {
+        return tangoMetadataRepository.findAll()
                                       .subscribeOn(Schedulers.io());
     }
 }
