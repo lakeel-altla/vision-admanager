@@ -3,10 +3,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.DeleteMetadataUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.FindAllMetadatasUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetContentPathUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.UploadContentUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.DeleteAreaDescriptionUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.FindAllAreaDescriptionEntriesUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
@@ -27,16 +26,13 @@ import rx.subscriptions.CompositeSubscription;
 public final class AppSpacePresenter {
 
     @Inject
-    FindAllMetadatasUseCase findAllMetadatasUseCase;
+    FindAllAreaDescriptionEntriesUseCase findAllAreaDescriptionEntriesUseCase;
 
     @Inject
-    GetContentPathUseCase getContentPathUseCase;
+    DeleteAreaDescriptionUseCase deleteAreaDescriptionUseCase;
 
     @Inject
-    DeleteMetadataUseCase deleteMetadataUseCase;
-
-    @Inject
-    UploadContentUseCase uploadContentUseCase;
+    GetAreaDescriptionCacheUseCase getAreaDescriptionCacheUseCase;
 
     private static final Log LOG = LogFactory.getLog(AppSpacePresenter.class);
 
@@ -48,8 +44,6 @@ public final class AppSpacePresenter {
 
     private AppSpaceView view;
 
-    private long prevBytesTransferred;
-
     @Inject
     public AppSpacePresenter() {
     }
@@ -59,7 +53,7 @@ public final class AppSpacePresenter {
     }
 
     public void onStart() {
-        Subscription subscription = findAllMetadatasUseCase
+        Subscription subscription = findAllAreaDescriptionEntriesUseCase
                 .execute()
                 .map(mapper::map)
                 .toList()
@@ -69,7 +63,7 @@ public final class AppSpacePresenter {
                     this.itemModels.addAll(itemModels);
                     view.updateItems();
                 }, e -> {
-                    LOG.e("Loading area description meta datas failed.", e);
+                    LOG.e("Failed to load all area description meta entries.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
@@ -77,7 +71,6 @@ public final class AppSpacePresenter {
 
     public void onStop() {
         compositeSubscription.clear();
-        view.hideUploadProgressDialog();
     }
 
     public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
@@ -91,17 +84,17 @@ public final class AppSpacePresenter {
     }
 
     public void onDelete(@IntRange(from = 0) int position) {
-        String uuid = itemModels.get(position).uuid;
+        String id = itemModels.get(position).id;
 
-        Subscription subscription = deleteMetadataUseCase
-                .execute(uuid)
+        Subscription subscription = deleteAreaDescriptionUseCase
+                .execute(id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     itemModels.remove(position);
                     view.updateItemRemoved(position);
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e("Deleting app space meta data failed.", e);
+                    LOG.e("Failed to delete the exported area description.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
@@ -125,36 +118,13 @@ public final class AppSpacePresenter {
         }
 
         public void onImport(@IntRange(from = 0) int position) {
-            String uuid = itemModels.get(position).uuid;
+            String id = itemModels.get(position).id;
 
-            Subscription subscription = getContentPathUseCase
-                    .execute(uuid)
+            Subscription subscription = getAreaDescriptionCacheUseCase
+                    .execute(id)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
-                        LOG.e("Importing area description failed.", e);
-                        view.showSnackbar(R.string.snackbar_failed);
-                    });
-            compositeSubscription.add(subscription);
-        }
-
-        public void onUpload(@IntRange(from = 0) int position) {
-            String uuid = itemModels.get(position).uuid;
-
-            view.showUploadProgressDialog();
-
-            Subscription subscription = uploadContentUseCase
-                    .execute(uuid, (totalBytes, bytesTransferred) -> {
-                        long increment = bytesTransferred - prevBytesTransferred;
-                        prevBytesTransferred = bytesTransferred;
-                        view.setUploadProgressDialogProgress(totalBytes, increment);
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> {
-                        view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_done);
-                    }, e -> {
-                        LOG.e("Uploading area description failed.", e);
-                        view.hideUploadProgressDialog();
+                        LOG.e("Failed to import the area description into Tango.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);

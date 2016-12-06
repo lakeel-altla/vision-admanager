@@ -33,7 +33,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
             inflater = LayoutInflater.from(parent.getContext());
         }
 
-        View itemView = inflater.inflate(R.layout.list_item_tango_space_data, parent, false);
+        View itemView = inflater.inflate(R.layout.item_tango_space_model, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
         presenter.onCreateItemView(holder);
         return holder;
@@ -54,7 +54,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         @BindView(R.id.text_view_name)
         TextView textViewName;
 
-        @BindView(R.id.text_view_uuid)
+        @BindView(R.id.text_view_id)
         TextView textViewUuid;
 
         private TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter;
@@ -72,7 +72,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         @Override
         public void showModel(@NonNull TangoSpaceItemModel model) {
             textViewName.setText(model.name);
-            textViewUuid.setText(model.uuid);
+            textViewUuid.setText(model.id);
         }
 
         public void onBind(@IntRange(from = 0) int position) {

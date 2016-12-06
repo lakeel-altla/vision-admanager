@@ -2,9 +2,11 @@ package com.lakeel.altla.vision.admanager.presentation.di.module;
 
 final class Names {
 
-    static final String LOCAL_DIRECTORY_CONTENT = "localDirectoryContent";
+    public static final String APPLICATION_CONTEXT = "applicationContext";
 
-    static final String LOCAL_DIRECTORY_METADATA = "localDirectoryMetadata";
+    public static final String ACTIVITY_CONTEXT = "activityContext";
+
+    static final String EXTERNAL_STORAGE_ROOT = "external.storage.root";
 
     static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
 

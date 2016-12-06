@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 public final class TangoPermissionPresenter {
 
-    private static final Log LOGGER = LogFactory.getLog(TangoPermissionPresenter.class);
+    private static final Log LOG = LogFactory.getLog(TangoPermissionPresenter.class);
 
     private TangoPermissionView view;
 
@@ -30,10 +30,10 @@ public final class TangoPermissionPresenter {
 
     public void onTangoPermissionResult(boolean isCanceled) {
         if (!isCanceled) {
-            LOGGER.d("Tango permission granted.");
+            LOG.d("Tango permission granted.");
             view.startManagerActivity();
         } else {
-            LOGGER.d("Tango permission not granted.");
+            LOG.d("Tango permission not granted.");
             view.showAreaLearningPermissionRequiredSnackbar();
         }
     }

@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.di.component;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ApplicationModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ConfigModule;
+import com.lakeel.altla.vision.admanager.presentation.di.module.ExternalStorageModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseAuthModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseDatabaseModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseStorageModule;
@@ -16,6 +17,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = { ApplicationModule.class,
                        ConfigModule.class,
+                       ExternalStorageModule.class,
                        FirebaseAuthModule.class,
                        FirebaseDatabaseModule.class,
                        FirebaseStorageModule.class })

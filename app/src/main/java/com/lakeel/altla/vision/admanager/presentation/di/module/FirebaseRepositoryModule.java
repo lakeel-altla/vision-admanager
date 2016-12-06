@@ -4,10 +4,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 
-import com.lakeel.altla.vision.admanager.data.repository.firebase.FirebaseContentRepositoryImpl;
-import com.lakeel.altla.vision.admanager.data.repository.firebase.FirebaseMetadataRepositoryImpl;
-import com.lakeel.altla.vision.admanager.domain.repository.FirebaseContentRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.FirebaseMetadataRepository;
+import com.lakeel.altla.vision.admanager.data.repository.firebase.AreaDescriptionEntryRepositoryImpl;
+import com.lakeel.altla.vision.admanager.data.repository.firebase.AreaDescriptionFileRepositoryImpl;
+import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionFileRepository;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
 
 import javax.inject.Named;
@@ -20,15 +20,15 @@ public final class FirebaseRepositoryModule {
 
     @ActivityScope
     @Provides
-    public FirebaseContentRepository provideFirebaseContentRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
-        return new FirebaseContentRepositoryImpl(reference, auth);
+    public AreaDescriptionEntryRepository provideAreaDescriptionEntryRepository(
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference, FirebaseAuth auth) {
+        return new AreaDescriptionEntryRepositoryImpl(reference, auth);
     }
 
     @ActivityScope
     @Provides
-    public FirebaseMetadataRepository provideFirebaseMetadataRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference, FirebaseAuth auth) {
-        return new FirebaseMetadataRepositoryImpl(reference, auth);
+    public AreaDescriptionFileRepository provideAreaDescriptionFileRepository(
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
+        return new AreaDescriptionFileRepositoryImpl(reference, auth);
     }
 }

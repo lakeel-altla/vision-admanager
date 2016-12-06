@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter.model;
 
 public final class TangoSpaceItemModel {
 
-    public String name;
+    public String id;
 
-    public String uuid;
+    public String name;
 }

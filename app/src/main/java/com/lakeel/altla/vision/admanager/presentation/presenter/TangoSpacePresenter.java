@@ -3,10 +3,10 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetContentDirectoryUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.appspace.SaveMetadataUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.DeleteContentUseCase;
-import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.FindAllMetaDatasUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.appspace.GetAreaDescriptionCacheDirectoryUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.AddAreaDescriptionUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.DeleteTangoAreaDescriptionUseCase;
+import com.lakeel.altla.vision.admanager.domain.usecase.tangospace.FindAllTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
@@ -26,19 +26,19 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class TangoSpacePresenter {
 
-    @Inject
-    FindAllMetaDatasUseCase findAllMetaDatasUseCase;
-
-    @Inject
-    GetContentDirectoryUseCase getContentDirectoryUseCase;
-
-    @Inject
-    SaveMetadataUseCase saveMetadataUseCase;
-
-    @Inject
-    DeleteContentUseCase deleteContentUseCase;
-
     private static final Log LOG = LogFactory.getLog(TangoSpacePresenter.class);
+
+    @Inject
+    FindAllTangoAreaDescriptionUseCase findAllTangoAreaDescriptionUseCase;
+
+    @Inject
+    GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
+
+    @Inject
+    AddAreaDescriptionUseCase addAreaDescriptionUseCase;
+
+    @Inject
+    DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
 
     private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
 
@@ -48,7 +48,9 @@ public final class TangoSpacePresenter {
 
     private TangoSpaceView view;
 
-    private String exportingUuid;
+    private String exportingId;
+
+    private long prevBytesTransferred;
 
     @Inject
     public TangoSpacePresenter() {
@@ -59,7 +61,7 @@ public final class TangoSpacePresenter {
     }
 
     public void onStart() {
-        Subscription subscription = findAllMetaDatasUseCase
+        Subscription subscription = findAllTangoAreaDescriptionUseCase
                 .execute()
                 .map(mapper::map)
                 .toList()
@@ -89,24 +91,40 @@ public final class TangoSpacePresenter {
     }
 
     public void onExported() {
-        if (exportingUuid == null) {
+        if (exportingId == null) {
             throw new IllegalStateException("exportingUuid == null");
         }
 
-        Subscription subscription = saveMetadataUseCase
-                .execute(exportingUuid)
+        LOG.d("Adding the area description: id = %s", exportingId);
+
+        prevBytesTransferred = 0;
+        view.showUploadProgressDialog();
+
+        Subscription subscription = addAreaDescriptionUseCase
+                .execute(exportingId, (totalBytes, bytesTransferred) -> {
+                    long increment = bytesTransferred - prevBytesTransferred;
+                    prevBytesTransferred = bytesTransferred;
+                    view.setUploadProgressDialogProgress(totalBytes, increment);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> view.showSnackbar(R.string.snackbar_done), e -> {
-                    LOG.e("Exporting area description meta data failed.", e);
-                    view.showSnackbar(R.string.snackbar_failed);
-                });
+                .subscribe(entry -> {
+                               LOG.d("Added the area description.");
+                               view.hideUploadProgressDialog();
+                               view.showSnackbar(R.string.snackbar_done);
+                           }, e -> {
+                               LOG.e(String.format("Failed to add the area description: id = %s", exportingId), e);
+                               view.hideUploadProgressDialog();
+                               view.showSnackbar(R.string.snackbar_failed);
+                           }
+
+                );
         compositeSubscription.add(subscription);
     }
 
     public void onDelete(@IntRange(from = 0) int position) {
-        String uuid = itemModels.get(position).uuid;
+        String uuid = itemModels.get(position).id;
 
-        Subscription subscription = deleteContentUseCase
+        Subscription subscription = deleteTangoAreaDescriptionUseCase
                 .execute(uuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
@@ -134,12 +152,12 @@ public final class TangoSpacePresenter {
         }
 
         public void onExport(@IntRange(from = 0) int position) {
-            Subscription subscription = getContentDirectoryUseCase
+            Subscription subscription = getAreaDescriptionCacheDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
-                        exportingUuid = itemModels.get(position).uuid;
-                        view.showExportActivity(exportingUuid, directory);
+                        exportingId = itemModels.get(position).id;
+                        view.showExportActivity(exportingId, directory);
                     });
             compositeSubscription.add(subscription);
         }

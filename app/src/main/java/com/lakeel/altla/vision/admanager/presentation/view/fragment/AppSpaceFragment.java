@@ -28,6 +28,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -114,34 +116,8 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     }
 
     @Override
-    public void showImportActivity(@NonNull String path) {
-        Intent intent = TangoIntents.createAdfImportIntent(path);
+    public void showImportActivity(@NonNull File destinationFile) {
+        Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
         startActivityForResult(intent, 0);
-    }
-
-    @Override
-    public void showUploadProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setMax(0);
-        progressDialog.show();
-    }
-
-    @Override
-    public void setUploadProgressDialogProgress(long max, long diff) {
-        if (progressDialog != null) {
-            progressDialog.setMax((int) max);
-            progressDialog.incrementProgressBy((int) diff);
-        }
-    }
-
-    @Override
-    public void hideUploadProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.hide();
-        }
     }
 }

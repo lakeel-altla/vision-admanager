@@ -32,7 +32,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = inflater.inflate(R.layout.list_item_app_space_data, parent, false);
+        View itemView = inflater.inflate(R.layout.item_app_space_model, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
         presenter.onCreateItemView(holder);
         return holder;
@@ -53,7 +53,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @BindView(R.id.text_view_name)
         TextView textViewName;
 
-        @BindView(R.id.text_view_uuid)
+        @BindView(R.id.text_view_id)
         TextView textViewUuid;
 
         private AppSpacePresenter.AppSpaceItemPresenter itemPresenter;
@@ -70,7 +70,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @Override
         public void showModel(@NonNull AppSpaceItemModel model) {
             textViewName.setText(model.name);
-            textViewUuid.setText(model.uuid);
+            textViewUuid.setText(model.id);
         }
 
         public void onBind(@IntRange(from = 0) int position) {
@@ -80,11 +80,6 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @OnClick(R.id.button_import)
         void onClickImport() {
             itemPresenter.onImport(getAdapterPosition());
-        }
-
-        @OnClick(R.id.button_upload)
-        void onClickUpload() {
-            itemPresenter.onUpload(getAdapterPosition());
         }
     }
 }

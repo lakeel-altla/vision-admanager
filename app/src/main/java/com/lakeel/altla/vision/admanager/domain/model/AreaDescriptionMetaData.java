@@ -1,16 +1,49 @@
 package com.lakeel.altla.vision.admanager.domain.model;
 
-import java.util.Date;
+public final class AreaDescriptionMetadata {
 
-public class AreaDescriptionMetadata {
+    public long timeInMillis;
 
-    public String uuid;
+    public Vector3 position;
 
-    public String name;
+    public Quaternion rotation;
 
-    public Date date;
+    public static final class Vector3 {
 
-    public double[] transformationPosition;
+        public double x;
 
-    public double[] transformationRotation;
+        public double y;
+
+        public double z;
+
+        public Vector3() {
+        }
+
+        public Vector3(double x, double y, double z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    public static final class Quaternion {
+
+        public double x;
+
+        public double y;
+
+        public double z;
+
+        public double w;
+
+        public Quaternion() {
+        }
+
+        public Quaternion(double x, double y, double z, double w) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+    }
 }

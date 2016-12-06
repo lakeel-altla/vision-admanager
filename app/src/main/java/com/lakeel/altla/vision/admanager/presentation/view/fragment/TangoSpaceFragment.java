@@ -13,6 +13,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAda
 import com.lakeel.altla.vision.admanager.presentation.view.helper.SwipeRightItemTouchHelper;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -44,6 +47,8 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    private ProgressDialog progressDialog;
 
     public static TangoSpaceFragment newInstance() {
         return new TangoSpaceFragment();
@@ -110,8 +115,34 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
     }
 
     @Override
-    public void showExportActivity(@NonNull String uuid, @NonNull String directory) {
-        Intent intent = TangoIntents.createAdfExportIntent(uuid, directory);
+    public void showExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
+        Intent intent = TangoIntents.createAdfExportIntent(uuid, destinationDirectory.getPath());
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void showUploadProgressDialog() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
+    }
+
+    @Override
+    public void setUploadProgressDialogProgress(long max, long diff) {
+        if (progressDialog != null) {
+            progressDialog.setMax((int) max);
+            progressDialog.incrementProgressBy((int) diff);
+        }
+    }
+
+    @Override
+    public void hideUploadProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+        }
     }
 }
