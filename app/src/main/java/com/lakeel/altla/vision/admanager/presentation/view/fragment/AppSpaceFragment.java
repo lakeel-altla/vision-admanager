@@ -2,17 +2,20 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.google.atap.tangoservice.Tango;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.AppSpaceAdapter;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.SwipeRightItemTouchHelper;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResult;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResultHost;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -31,8 +34,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AppSpaceFragment extends Fragment
-        implements AppSpaceView, TangoActivityForResult.OnTangoActivityResultListener {
+public final class AppSpaceFragment extends Fragment implements AppSpaceView {
+
+    private static final Log LOG = LogFactory.getLog(AppSpaceFragment.class);
 
     @Inject
     Tango tango;
@@ -45,8 +49,6 @@ public class AppSpaceFragment extends Fragment
 
     private ProgressDialog progressDialog;
 
-    private TangoActivityForResult tangoActivityForResult;
-
     public static AppSpaceFragment newInstance() {
         return new AppSpaceFragment();
     }
@@ -55,10 +57,7 @@ public class AppSpaceFragment extends Fragment
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // Dagger
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
-
-        tangoActivityForResult = TangoActivityForResultHost.class.cast(getContext()).getTangoActivityForResult();
     }
 
     @Override
@@ -89,12 +88,15 @@ public class AppSpaceFragment extends Fragment
     }
 
     @Override
-    public void onTangoActivityResult(boolean isCanceled) {
-        tangoActivityForResult.removeOnTangoActivityForResultListener(this);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        LOG.d("onActivityResult: requestCode = %d, resultCode = %d, inrent = %s", requestCode, resultCode, intent);
 
-        if (!isCanceled) {
-            Snackbar.make(recyclerView, R.string.snackbar_imported, Snackbar.LENGTH_SHORT).show();
+        if (resultCode == Activity.RESULT_OK) {
+            presenter.onImported();
+        } else {
+            super.onActivityResult(requestCode, resultCode, intent);
         }
+
     }
 
     @Override
@@ -114,8 +116,8 @@ public class AppSpaceFragment extends Fragment
 
     @Override
     public void showImportActivity(@NonNull String path) {
-        tangoActivityForResult.addOnTangoActivityForResultListener(this);
-        tango.importAreaDescriptionFile(path);
+        Intent intent = TangoIntents.createAdfImportIntent(path);
+        startActivityForResult(intent, 0);
     }
 
     @Override

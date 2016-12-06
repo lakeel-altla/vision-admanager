@@ -2,16 +2,19 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.google.atap.tangoservice.Tango;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAdapter;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.SwipeRightItemTouchHelper;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResult;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResultHost;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -30,8 +33,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class TangoSpaceFragment extends Fragment
-        implements TangoSpaceView, TangoActivityForResult.OnTangoActivityResultListener {
+public final class TangoSpaceFragment extends Fragment implements TangoSpaceView {
+
+    private static final Log LOG = LogFactory.getLog(TangoSpaceFragment.class);
 
     @Inject
     Tango tango;
@@ -42,8 +46,6 @@ public final class TangoSpaceFragment extends Fragment
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    private TangoActivityForResult tangoActivityForResult;
-
     public static TangoSpaceFragment newInstance() {
         return new TangoSpaceFragment();
     }
@@ -53,8 +55,6 @@ public final class TangoSpaceFragment extends Fragment
         super.onAttach(context);
 
         ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
-
-        tangoActivityForResult = TangoActivityForResultHost.class.cast(context).getTangoActivityForResult();
     }
 
     @Override
@@ -85,11 +85,13 @@ public final class TangoSpaceFragment extends Fragment
     }
 
     @Override
-    public void onTangoActivityResult(boolean isCanceled) {
-        tangoActivityForResult.removeOnTangoActivityForResultListener(this);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        LOG.d("onActivityResult: requestCode = %d, resultCode = %d, inrent = %s", requestCode, resultCode, intent);
 
-        if (!isCanceled) {
+        if (resultCode == Activity.RESULT_OK) {
             presenter.exportMetaData();
+        } else {
+            super.onActivityResult(requestCode, resultCode, intent);
         }
     }
 
@@ -110,7 +112,7 @@ public final class TangoSpaceFragment extends Fragment
 
     @Override
     public void showExportActivity(@NonNull String uuid, @NonNull String directory) {
-        tangoActivityForResult.addOnTangoActivityForResultListener(this);
-        tango.exportAreaDescriptionFile(uuid, directory);
+        Intent intent = TangoIntents.createAdfExportIntent(uuid, directory);
+        startActivityForResult(intent, 0);
     }
 }

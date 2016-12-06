@@ -9,8 +9,6 @@ import com.lakeel.altla.vision.admanager.presentation.di.component.UserComponent
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoSpaceFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResult;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.TangoActivityForResultHost;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,8 +29,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ManagerActivity extends AppCompatActivity
-        implements ActivityScopeContext, TangoActivityForResultHost, NavigationView.OnNavigationItemSelectedListener {
+public final class ManagerActivity extends AppCompatActivity
+        implements ActivityScopeContext, NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
     Tango tango;
@@ -45,8 +43,6 @@ public class ManagerActivity extends AppCompatActivity
 
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
-
-    private final TangoActivityForResult tangoActivityForResult = new TangoActivityForResult();
 
     private FragmentController fragmentController;
 
@@ -138,19 +134,8 @@ public class ManagerActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        tangoActivityForResult.onResult(requestCode, resultCode, data);
-    }
-
     public UserComponent getUserComponent() {
         return userComponent;
-    }
-
-    public TangoActivityForResult getTangoActivityForResult() {
-        return tangoActivityForResult;
     }
 
     public static Intent getStartActivityIntent(@NonNull Context context) {

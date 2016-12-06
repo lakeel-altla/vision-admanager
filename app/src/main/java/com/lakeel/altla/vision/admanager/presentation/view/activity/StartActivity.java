@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-public class StartActivity extends AppCompatActivity
+public final class StartActivity extends AppCompatActivity
         implements ActivityScopeContext, SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener {
 

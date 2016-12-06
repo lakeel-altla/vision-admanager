@@ -96,9 +96,9 @@ public final class TangoSpacePresenter {
         Subscription subscription = saveMetaDataUseCase
                 .execute(exportingUuid)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> view.showSnackbar(R.string.snackbar_exported), e -> {
+                .subscribe(s -> view.showSnackbar(R.string.snackbar_done), e -> {
                     LOG.e("Exporting area description meta data failed.", e);
-                    view.showSnackbar(R.string.snackbar_export_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
     }
@@ -112,10 +112,10 @@ public final class TangoSpacePresenter {
                 .subscribe(s -> {
                     itemModels.remove(position);
                     view.updateItemRemoved(position);
-                    view.showSnackbar(R.string.snackbar_deleted);
+                    view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
                     LOG.e("Deleting area description failed.", e);
-                    view.showSnackbar(R.string.snackbar_delete_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
     }

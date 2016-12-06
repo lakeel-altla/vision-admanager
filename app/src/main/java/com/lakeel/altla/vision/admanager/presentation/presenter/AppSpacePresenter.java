@@ -70,7 +70,7 @@ public final class AppSpacePresenter {
                     view.updateItems();
                 }, e -> {
                     LOG.e("Loading area description meta datas failed.", e);
-                    view.showSnackbar(R.string.snackbar_load_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
     }
@@ -99,12 +99,16 @@ public final class AppSpacePresenter {
                 .subscribe(s -> {
                     itemModels.remove(position);
                     view.updateItemRemoved(position);
-                    view.showSnackbar(R.string.snackbar_deleted);
+                    view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
                     LOG.e("Deleting app space meta data failed.", e);
-                    view.showSnackbar(R.string.snackbar_delete_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
+    }
+
+    public void onImported() {
+        view.showSnackbar(R.string.snackbar_done);
     }
 
     public final class AppSpaceItemPresenter {
@@ -128,7 +132,7 @@ public final class AppSpacePresenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
                         LOG.e("Importing area description failed.", e);
-                        view.showSnackbar(R.string.snackbar_import_failed);
+                        view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);
         }
@@ -147,11 +151,11 @@ public final class AppSpacePresenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
                         view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_uploaded);
+                        view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
                         LOG.e("Uploading area description failed.", e);
                         view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_upload_failed);
+                        view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);
         }
