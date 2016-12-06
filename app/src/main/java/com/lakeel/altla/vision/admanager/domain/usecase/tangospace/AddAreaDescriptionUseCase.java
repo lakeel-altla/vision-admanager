@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -78,8 +77,8 @@ public final class AddAreaDescriptionUseCase {
 
                     // Get other metadatas.
                     AreaDescriptionMetadata metadata = new AreaDescriptionMetadata();
-                    Date date = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(tangoAreaDescriptionMetaData);
-                    metadata.timeInMillis = date.getTime();
+                    metadata.creationTime =
+                            TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(tangoAreaDescriptionMetaData);
 
                     double[] transformation =
                             TangoAreaDescriptionMetaDataHelper.getTransformation(tangoAreaDescriptionMetaData);
@@ -101,13 +100,13 @@ public final class AddAreaDescriptionUseCase {
     private Single<Model> createCacheStream(Model model) {
         return areaDescriptionCacheRepository.getFile(model.id)
                                              .map(path -> {
-                                       try {
-                                           model.stream = new FileInputStream(path);
-                                           return model;
-                                       } catch (FileNotFoundException e) {
-                                           throw new RuntimeException(e);
-                                       }
-                                   });
+                                                 try {
+                                                     model.stream = new FileInputStream(path);
+                                                     return model;
+                                                 } catch (FileNotFoundException e) {
+                                                     throw new RuntimeException(e);
+                                                 }
+                                             });
     }
 
     private Single<Model> getTotalBytes(Model model) {

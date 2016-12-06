@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.domain.model;
 
 public final class AreaDescriptionMetadata {
 
-    public long timeInMillis;
+    public long creationTime;
 
     public Vector3 position;
 
