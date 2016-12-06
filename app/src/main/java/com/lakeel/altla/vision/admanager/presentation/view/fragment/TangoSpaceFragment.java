@@ -118,18 +118,13 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
     @Override
     public void showUploadProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(getContext());
-        }
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.setMessage(getString(R.string.progress_dialog_upload));
-            progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setCancelable(false);
-            progressDialog.setMax(0);
-            progressDialog.show();
-        }
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
     }
 
     @Override
@@ -144,6 +139,7 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
     public void hideUploadProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
+            progressDialog = null;
         }
     }
 }
