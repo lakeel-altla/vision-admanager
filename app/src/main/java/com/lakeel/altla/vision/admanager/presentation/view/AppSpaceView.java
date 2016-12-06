@@ -14,4 +14,8 @@ public interface AppSpaceView {
     void showSnackbar(@StringRes int resId);
 
     void showImportActivity(@NonNull File destinationFile);
+
+    void showDeleteProgressDialog();
+
+    void hideDeleteProgressDialog();
 }

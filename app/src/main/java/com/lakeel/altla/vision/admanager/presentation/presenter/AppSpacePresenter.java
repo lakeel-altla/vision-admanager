@@ -117,7 +117,11 @@ public final class AppSpacePresenter {
             itemView.showModel(itemModel);
         }
 
-        public void onImport(@IntRange(from = 0) int position) {
+        public void onClickButtonDelete() {
+            itemView.showDeleteAreaDescriptionConfirmationDialog();
+        }
+
+        public void onClickButtonImport(@IntRange(from = 0) int position) {
             String id = itemModels.get(position).id;
 
             Subscription subscription = getAreaDescriptionCacheUseCase
@@ -125,6 +129,32 @@ public final class AppSpacePresenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
                         LOG.e("Failed to import the area description into Tango.", e);
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        }
+
+        public void onDelete(@IntRange(from = 0) int position) {
+            String id = itemModels.get(position).id;
+
+            LOG.d("Deleting the app area description: id = %s", id);
+
+            view.showDeleteProgressDialog();
+
+            Subscription subscription = deleteAreaDescriptionUseCase
+                    .execute(id)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> {
+                        LOG.d("Deleted the app area description.");
+                        itemModels.remove(position);
+
+                        view.hideDeleteProgressDialog();
+                        view.updateItemRemoved(position);
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e("Failed to delete the app area description.", e);
+
+                        view.hideDeleteProgressDialog();
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);

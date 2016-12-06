@@ -10,4 +10,6 @@ public interface AppSpaceItemView {
     void setItemPresenter(@NonNull AppSpacePresenter.AppSpaceItemPresenter appSpaceItemPresenter);
 
     void showModel(@NonNull AppSpaceItemModel model);
+
+    void showDeleteAreaDescriptionConfirmationDialog();
 }

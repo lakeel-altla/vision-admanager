@@ -10,7 +10,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresente
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.AppSpaceAdapter;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.SwipeRightItemTouchHelper;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -23,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,8 +68,6 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
 
         recyclerView.setAdapter(new AppSpaceAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemTouchHelper helper = new SwipeRightItemTouchHelper(presenter::onDelete);
-        helper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -119,5 +115,21 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     public void showImportActivity(@NonNull File destinationFile) {
         Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void showDeleteProgressDialog() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_delete));
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+    }
+
+    @Override
+    public void hideDeleteProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
     }
 }

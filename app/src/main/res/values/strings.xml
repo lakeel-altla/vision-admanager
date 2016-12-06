@@ -7,6 +7,7 @@
     <string name="button_export">Export</string>
     <string name="button_import">Import</string>
     <string name="button_upload">Upload</string>
+    <string name="button_delete">Delete</string>
 
     <string name="action_settings">Settings</string>
 
@@ -17,6 +18,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="progress_dialog_signin_in">Signing in...</string>
+    <string name="progress_dialog_delete">Deleting...</string>
+    <string name="progress_dialog_upload">Uploading...</string>
 
     <string name="snackbar_done">Done.</string>
     <string name="snackbar_failed">Failed.</string>
@@ -30,6 +33,11 @@
     <string name="snackbar_action_request_permission">Request permission</string>
     <string name="snackbar_google_sign_in_reqiured">Sign-in required.</string>
     <string name="snackbar_action_request_sign_in">Sign-in</string>
-    <string name="progress_dialog_upload">Uploading...</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_content_confirm_delete_area_description">Are you sure you want to delete the selected area
+        description ?
+    </string>
 
 </resources>
