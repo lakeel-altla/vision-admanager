@@ -10,7 +10,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresen
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAdapter;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.SwipeRightItemTouchHelper;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -23,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,8 +68,6 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
         recyclerView.setAdapter(new TangoSpaceAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemTouchHelper helper = new SwipeRightItemTouchHelper(presenter::onDelete);
-        helper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -122,13 +118,18 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
     @Override
     public void showUploadProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setMax(0);
-        progressDialog.show();
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(getContext());
+        }
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+            progressDialog.setIndeterminate(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setCancelable(false);
+            progressDialog.setMax(0);
+            progressDialog.show();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
@@ -58,6 +59,8 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
 
         private TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter;
 
+        private MaterialDialog materialDialog;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -74,6 +77,25 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
             textViewUuid.setText(model.id);
         }
 
+        @Override
+        public void showDeleteAreaDescriptionConfirmationDialog() {
+            if (materialDialog != null && materialDialog.isShowing()) {
+                // Skip to protect against double taps.
+                return;
+            }
+
+            if (materialDialog == null) {
+                materialDialog = new MaterialDialog.Builder(itemView.getContext())
+                        .content(R.string.dialog_content_confirm_delete_tango_area_description)
+                        .positiveText(R.string.dialog_ok)
+                        .negativeText(R.string.dialog_cancel)
+                        .onPositive((dialog, which) -> itemPresenter.onDelete(getAdapterPosition()))
+                        .build();
+            }
+
+            materialDialog.show();
+        }
+
         public void onBind(int position) {
             itemPresenter.onBind(position);
         }
@@ -81,6 +103,11 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         @OnClick(R.id.button_export)
         void onClickButtonExport() {
             itemPresenter.onClickButtonExport(getAdapterPosition());
+        }
+
+        @OnClick(R.id.button_delete)
+        void onClickButtonDelete() {
+            itemPresenter.onClickButtonDelete();
         }
     }
 }

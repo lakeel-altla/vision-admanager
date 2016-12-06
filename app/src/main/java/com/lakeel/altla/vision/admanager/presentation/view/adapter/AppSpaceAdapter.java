@@ -84,7 +84,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
 
             if (materialDialog == null) {
                 materialDialog = new MaterialDialog.Builder(itemView.getContext())
-                        .content(R.string.dialog_content_confirm_delete_area_description)
+                        .content(R.string.dialog_content_confirm_delete_app_area_description)
                         .positiveText(R.string.dialog_ok)
                         .negativeText(R.string.dialog_cancel)
                         .onPositive((dialog, which) -> itemPresenter.onDelete(getAdapterPosition()))

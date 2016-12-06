@@ -120,23 +120,6 @@ public final class TangoSpacePresenter {
         compositeSubscription.add(subscription);
     }
 
-    public void onDelete(int position) {
-        String uuid = itemModels.get(position).id;
-
-        Subscription subscription = deleteTangoAreaDescriptionUseCase
-                .execute(uuid)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                    itemModels.remove(position);
-                    view.updateItemRemoved(position);
-                    view.showSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    LOG.e("Deleting area description failed.", e);
-                    view.showSnackbar(R.string.snackbar_failed);
-                });
-        compositeSubscription.add(subscription);
-    }
-
     public final class TangoSpaceItemPresenter {
 
         private TangoSpaceItemView itemView;
@@ -157,6 +140,27 @@ public final class TangoSpacePresenter {
                     .subscribe(directory -> {
                         exportingId = itemModels.get(position).id;
                         view.showExportActivity(exportingId, directory);
+                    });
+            compositeSubscription.add(subscription);
+        }
+
+        public void onClickButtonDelete() {
+            itemView.showDeleteAreaDescriptionConfirmationDialog();
+        }
+
+        public void onDelete(int position) {
+            String uuid = itemModels.get(position).id;
+
+            Subscription subscription = deleteTangoAreaDescriptionUseCase
+                    .execute(uuid)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> {
+                        itemModels.remove(position);
+                        view.updateItemRemoved(position);
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e("Deleting area description failed.", e);
+                        view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);
         }
