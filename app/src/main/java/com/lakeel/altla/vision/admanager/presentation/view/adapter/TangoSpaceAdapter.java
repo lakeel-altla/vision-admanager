@@ -79,8 +79,8 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         }
 
         @OnClick(R.id.button_export)
-        void onClickExport() {
-            itemPresenter.onExport(getAdapterPosition());
+        void onClickButtonExport() {
+            itemPresenter.onClickButtonExport(getAdapterPosition());
         }
     }
 }

@@ -150,7 +150,7 @@ public final class TangoSpacePresenter {
             itemView.showModel(itemModel);
         }
 
-        public void onExport(int position) {
+        public void onClickButtonExport(int position) {
             Subscription subscription = getAreaDescriptionCacheDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
