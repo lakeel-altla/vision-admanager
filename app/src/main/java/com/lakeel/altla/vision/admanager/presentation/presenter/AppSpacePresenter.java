@@ -11,7 +11,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceIt
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
 
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -83,7 +82,7 @@ public final class AppSpacePresenter {
         return itemModels.size();
     }
 
-    public void onDelete(@IntRange(from = 0) int position) {
+    public void onDelete(int position) {
         String id = itemModels.get(position).id;
 
         Subscription subscription = deleteAreaDescriptionUseCase
@@ -112,7 +111,7 @@ public final class AppSpacePresenter {
             this.itemView = itemView;
         }
 
-        public void onBind(@IntRange(from = 0) int position) {
+        public void onBind(int position) {
             AppSpaceItemModel itemModel = itemModels.get(position);
             itemView.showModel(itemModel);
         }
@@ -121,7 +120,7 @@ public final class AppSpacePresenter {
             itemView.showDeleteAreaDescriptionConfirmationDialog();
         }
 
-        public void onClickButtonImport(@IntRange(from = 0) int position) {
+        public void onClickButtonImport(int position) {
             String id = itemModels.get(position).id;
 
             Subscription subscription = getAreaDescriptionCacheUseCase
@@ -134,7 +133,7 @@ public final class AppSpacePresenter {
             compositeSubscription.add(subscription);
         }
 
-        public void onDelete(@IntRange(from = 0) int position) {
+        public void onDelete(int position) {
             String id = itemModels.get(position).id;
 
             LOG.d("Deleting the app area description: id = %s", id);

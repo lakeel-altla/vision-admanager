@@ -5,7 +5,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresen
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
 
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -75,7 +74,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
             textViewUuid.setText(model.id);
         }
 
-        public void onBind(@IntRange(from = 0) int position) {
+        public void onBind(int position) {
             itemPresenter.onBind(position);
         }
 

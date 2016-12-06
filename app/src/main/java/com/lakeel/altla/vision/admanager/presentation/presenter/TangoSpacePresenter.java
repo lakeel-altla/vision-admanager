@@ -12,7 +12,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpace
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -121,7 +120,7 @@ public final class TangoSpacePresenter {
         compositeSubscription.add(subscription);
     }
 
-    public void onDelete(@IntRange(from = 0) int position) {
+    public void onDelete(int position) {
         String uuid = itemModels.get(position).id;
 
         Subscription subscription = deleteTangoAreaDescriptionUseCase
@@ -146,12 +145,12 @@ public final class TangoSpacePresenter {
             this.itemView = itemView;
         }
 
-        public void onBind(@IntRange(from = 0) int position) {
+        public void onBind(int position) {
             TangoSpaceItemModel itemModel = itemModels.get(position);
             itemView.showModel(itemModel);
         }
 
-        public void onExport(@IntRange(from = 0) int position) {
+        public void onExport(int position) {
             Subscription subscription = getAreaDescriptionCacheDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())

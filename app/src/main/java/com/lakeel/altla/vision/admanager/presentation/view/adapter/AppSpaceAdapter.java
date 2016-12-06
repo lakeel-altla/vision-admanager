@@ -6,7 +6,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresente
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
 
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -95,7 +94,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
             materialDialog.show();
         }
 
-        public void onBind(@IntRange(from = 0) int position) {
+        public void onBind(int position) {
             itemPresenter.onBind(position);
         }
 
