@@ -89,7 +89,7 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
         LOG.d("onActivityResult: requestCode = %d, resultCode = %d, inrent = %s", requestCode, resultCode, intent);
 
         if (resultCode == Activity.RESULT_OK) {
-            presenter.exportMetaData();
+            presenter.onExported();
         } else {
             super.onActivityResult(requestCode, resultCode, intent);
         }

@@ -88,7 +88,7 @@ public final class TangoSpacePresenter {
         return itemModels.size();
     }
 
-    public void exportMetaData() {
+    public void onExported() {
         if (exportingUuid == null) {
             throw new IllegalStateException("exportingUuid == null");
         }
