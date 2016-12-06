@@ -82,23 +82,6 @@ public final class AppSpacePresenter {
         return itemModels.size();
     }
 
-    public void onDelete(int position) {
-        String id = itemModels.get(position).id;
-
-        Subscription subscription = deleteAreaDescriptionUseCase
-                .execute(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                    itemModels.remove(position);
-                    view.updateItemRemoved(position);
-                    view.showSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    LOG.e("Failed to delete the exported area description.", e);
-                    view.showSnackbar(R.string.snackbar_failed);
-                });
-        compositeSubscription.add(subscription);
-    }
-
     public void onImported() {
         view.showSnackbar(R.string.snackbar_done);
     }
