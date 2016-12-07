@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.ExternalStorageM
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseAuthModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseDatabaseModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseStorageModule;
+import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleSignInModule;
 
 import android.content.res.Resources;
 
@@ -18,6 +19,7 @@ import dagger.Component;
 @Component(modules = { ApplicationModule.class,
                        ConfigModule.class,
                        ExternalStorageModule.class,
+                       GoogleSignInModule.class,
                        FirebaseAuthModule.class,
                        FirebaseDatabaseModule.class,
                        FirebaseStorageModule.class })

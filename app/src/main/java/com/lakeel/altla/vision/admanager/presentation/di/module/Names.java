@@ -6,6 +6,8 @@ final class Names {
 
     public static final String ACTIVITY_CONTEXT = "activityContext";
 
+    static final String GOOGLE_SIGN_IN_WEB_CLIENT_ID = "google.signIn.webClientId";
+
     static final String EXTERNAL_STORAGE_ROOT = "external.storage.root";
 
     static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";

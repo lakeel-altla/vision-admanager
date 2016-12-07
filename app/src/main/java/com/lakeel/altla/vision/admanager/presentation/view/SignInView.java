@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 
 public interface SignInView {
 
@@ -18,5 +19,5 @@ public interface SignInView {
 
     void showTangoPermissionFragment();
 
-    void startGoogleSignInActivity(GoogleSignInOptions options);
+    void startActivityForResult(@NonNull Intent intent, int requestCode);
 }

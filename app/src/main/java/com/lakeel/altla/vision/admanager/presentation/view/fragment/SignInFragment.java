@@ -1,22 +1,14 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -29,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class SignInFragment extends Fragment implements SignInView, GoogleApiClient.OnConnectionFailedListener {
+public final class SignInFragment extends Fragment implements SignInView {
 
     @Inject
     SignInPresenter presenter;
@@ -79,18 +71,12 @@ public final class SignInFragment extends Fragment implements SignInView, Google
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        boolean isCanceled = (Activity.RESULT_CANCELED == resultCode);
-        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-        presenter.onSignInResult(isCanceled, result);
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void showProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(getContext());
-        }
-
+        progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_signin_in));
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
@@ -101,6 +87,7 @@ public final class SignInFragment extends Fragment implements SignInView, Google
     public void hideProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
+            progressDialog = null;
         }
     }
 
@@ -129,24 +116,9 @@ public final class SignInFragment extends Fragment implements SignInView, Google
         interactionListener.onShowTangoPermissionFragment();
     }
 
-    @Override
-    public void startGoogleSignInActivity(GoogleSignInOptions options) {
-        GoogleApiClient apiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity(), this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, options)
-                .build();
-
-        startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(apiClient), 0);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        presenter.onGoogleApiClientConnectionFailed(connectionResult);
-    }
-
     @OnClick(R.id.button_sign_in)
     void onClickButtonSignIn() {
-        presenter.onSignIn();
+        presenter.onClickButtonSignIn();
     }
 
     public interface InteractionListener {
