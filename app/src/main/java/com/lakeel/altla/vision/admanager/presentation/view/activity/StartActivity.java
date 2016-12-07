@@ -7,8 +7,10 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 public final class StartActivity extends AppCompatActivity
@@ -16,6 +18,10 @@ public final class StartActivity extends AppCompatActivity
                    TangoPermissionFragment.InteractionListener {
 
     private ActivityComponent activityComponent;
+
+    public static Intent getStartActivityIntent(@NonNull Context context) {
+        return new Intent(context, StartActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,7 @@ public final class StartActivity extends AppCompatActivity
     public void onStartManagerActivity() {
         Intent intent = ManagerActivity.getStartActivityIntent(this);
         startActivity(intent);
+        finish();
     }
 
     public ActivityComponent getActivityComponent() {

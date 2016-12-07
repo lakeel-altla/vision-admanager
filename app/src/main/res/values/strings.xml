@@ -12,6 +12,7 @@
 
     <string name="nav_tango_space">Tango area description</string>
     <string name="nav_app_space">App area description</string>
+    <string name="nav_sign_out">Sign out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -31,12 +32,13 @@
     <string name="snackbar_signed_in">Signed in.</string>
     <string name="snackbar_google_sign_in_failed">Google Sign-In failed.</string>
     <string name="snackbar_firebase_sign_in_failed">Authentication failed.</string>
-    <string name="snackbar_google_api_client_connection_failed">Google Play Services error.</string>
     <string name="snackbar_signed_out">Signed out.</string>
     <string name="snackbar_permission_required">Permission not granted.</string>
     <string name="snackbar_action_request_permission">Request permission</string>
     <string name="snackbar_google_sign_in_reqiured">Sign-in required.</string>
     <string name="snackbar_action_request_sign_in">Sign-in</string>
+
+    <string name="toast_google_api_client_connection_failed">Google Play Services error.</string>
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>

@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.activity;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoConfig;
+import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
@@ -130,6 +131,10 @@ public final class ManagerActivity extends AppCompatActivity
             fragmentController.showTangoSpaceFragment();
         } else if (id == R.id.nav_app_space) {
             fragmentController.showAppSpaceFragment();
+        } else if (id == R.id.nav_sign_out) {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(StartActivity.getStartActivityIntent(this));
+            finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);

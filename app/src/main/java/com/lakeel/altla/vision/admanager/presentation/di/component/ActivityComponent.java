@@ -4,6 +4,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.AndroidRepositoryModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseRepositoryModule;
+import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.ManagerActivity;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
@@ -14,6 +15,7 @@ import dagger.Subcomponent;
 
 @ActivityScope
 @Subcomponent(modules = { ActivityModule.class,
+                          GoogleApiModule.class,
                           FirebaseRepositoryModule.class,
                           AndroidRepositoryModule.class })
 public interface ActivityComponent {
