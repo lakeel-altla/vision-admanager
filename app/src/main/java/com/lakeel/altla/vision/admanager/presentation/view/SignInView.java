@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.view;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 public interface SignInView {
 
@@ -9,13 +10,7 @@ public interface SignInView {
 
     void hideProgressDialog();
 
-    void showGoogleApiClientConnectionFailedSnackbar();
-
-    void showGoogleSignInFailedSnackbar();
-
-    void showGoogleSignInRequiredSnackbar();
-
-    void showSignedOutSnackbar();
+    void showSnackbar(@StringRes int resId);
 
     void showTangoPermissionFragment();
 
