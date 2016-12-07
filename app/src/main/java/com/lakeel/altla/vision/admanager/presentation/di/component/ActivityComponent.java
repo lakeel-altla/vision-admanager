@@ -16,7 +16,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = { ActivityModule.class,
                           FirebaseRepositoryModule.class,
                           AndroidRepositoryModule.class })
-public interface UserComponent {
+public interface ActivityComponent {
 
     void inject(ManagerActivity activity);
 

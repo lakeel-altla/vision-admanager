@@ -56,7 +56,7 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
+        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
     }
 
     @Override

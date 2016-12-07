@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.activity;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
-import com.lakeel.altla.vision.admanager.presentation.di.component.UserComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -15,15 +15,15 @@ public final class StartActivity extends AppCompatActivity
         implements ActivityScopeContext, SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener {
 
-    private UserComponent userComponent;
+    private ActivityComponent activityComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        userComponent = MyApplication.getApplicationComponent(this)
-                                     .userComponent(new ActivityModule(this));
+        activityComponent = MyApplication.getApplicationComponent(this)
+                                         .activityComponent(new ActivityModule(this));
 
         SignInFragment fragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -47,7 +47,7 @@ public final class StartActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public UserComponent getUserComponent() {
-        return userComponent;
+    public ActivityComponent getActivityComponent() {
+        return activityComponent;
     }
 }

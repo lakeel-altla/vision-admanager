@@ -41,7 +41,7 @@ public final class TangoPermissionFragment extends Fragment implements TangoPerm
 
         interactionListener = InteractionListener.class.cast(context);
 
-        ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
+        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
     }
 
     @Override

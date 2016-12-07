@@ -56,7 +56,7 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
+        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
     }
 
     @Override

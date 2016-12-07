@@ -23,7 +23,7 @@ import dagger.Component;
                        FirebaseStorageModule.class })
 public interface ApplicationComponent {
 
-    UserComponent userComponent(ActivityModule module);
+    ActivityComponent activityComponent(ActivityModule module);
 
     Resources resources();
 }

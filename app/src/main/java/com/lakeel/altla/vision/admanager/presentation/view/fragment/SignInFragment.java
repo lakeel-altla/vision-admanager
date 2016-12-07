@@ -49,7 +49,7 @@ public final class SignInFragment extends Fragment implements SignInView, Google
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ActivityScopeContext.class.cast(getContext()).getUserComponent().inject(this);
+        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
 
         interactionListener = InteractionListener.class.cast(context);
     }

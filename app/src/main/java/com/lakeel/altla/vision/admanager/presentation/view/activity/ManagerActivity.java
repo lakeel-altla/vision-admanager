@@ -5,7 +5,7 @@ import com.google.atap.tangoservice.TangoConfig;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
-import com.lakeel.altla.vision.admanager.presentation.di.component.UserComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoSpaceFragment;
@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +31,10 @@ import butterknife.ButterKnife;
 public final class ManagerActivity extends AppCompatActivity
         implements ActivityScopeContext, NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String FRAGMENT_TAG_TANGO_SPACE = TangoSpaceFragment.class.getName();
+
+    private static final String FRAGMENT_TAG_APP_SPACE = AppSpaceFragment.class.getName();
+
     @Inject
     Tango tango;
 
@@ -44,15 +47,15 @@ public final class ManagerActivity extends AppCompatActivity
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
-    private FragmentController fragmentController;
+    private final FragmentController fragmentController = new FragmentController();
 
-    private UserComponent userComponent;
+    private ActivityComponent activityComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        userComponent = MyApplication.getApplicationComponent(this)
-                                     .userComponent(new ActivityModule(this));
-        userComponent.inject(this);
+        activityComponent = MyApplication.getApplicationComponent(this)
+                                         .activityComponent(new ActivityModule(this));
+        activityComponent.inject(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager);
@@ -67,8 +70,7 @@ public final class ManagerActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        fragmentController = new FragmentController(getSupportFragmentManager());
-        fragmentController.showTangoSpaceAdListFragment();
+        fragmentController.showTangoSpaceFragment();
     }
 
     @Override
@@ -125,60 +127,50 @@ public final class ManagerActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_tango_space) {
-            fragmentController.showTangoSpaceAdListFragment();
+            fragmentController.showTangoSpaceFragment();
         } else if (id == R.id.nav_app_space) {
-            fragmentController.showAppSpaceAdListFragment();
+            fragmentController.showAppSpaceFragment();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public UserComponent getUserComponent() {
-        return userComponent;
+    public ActivityComponent getActivityComponent() {
+        return activityComponent;
     }
 
     public static Intent getStartActivityIntent(@NonNull Context context) {
         return new Intent(context, ManagerActivity.class);
     }
 
-    private static class FragmentController {
+    private final class FragmentController {
 
-        private static final String FRAGMENT_TAG_TANGO_SPACE_AD_LIST = TangoSpaceFragment.class.getName();
-
-        private static final String FRAGMENT_TAG_APP_SPACE_AD_LIST = AppSpaceFragment.class.getName();
-
-        private FragmentManager fragmentManager;
-
-        public FragmentController(@NonNull FragmentManager manager) {
-            fragmentManager = manager;
+        TangoSpaceFragment findTangoSpaceFragment() {
+            return (TangoSpaceFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_TANGO_SPACE);
         }
 
-        public TangoSpaceFragment findTangoSpaceAdListFragment() {
-            return (TangoSpaceFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG_TANGO_SPACE_AD_LIST);
+        AppSpaceFragment findAppSpaceFragment() {
+            return (AppSpaceFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_APP_SPACE);
         }
 
-        public AppSpaceFragment findAppSpaceAdListFragment() {
-            return (AppSpaceFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG_APP_SPACE_AD_LIST);
-        }
-
-        public void showTangoSpaceAdListFragment() {
-            TangoSpaceFragment fragment = findTangoSpaceAdListFragment();
+        void showTangoSpaceFragment() {
+            TangoSpaceFragment fragment = findTangoSpaceFragment();
             if (fragment == null) {
                 fragment = TangoSpaceFragment.newInstance();
-                fragmentManager.beginTransaction()
-                               .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_TANGO_SPACE_AD_LIST)
-                               .commit();
+                getSupportFragmentManager().beginTransaction()
+                                           .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_TANGO_SPACE)
+                                           .commit();
             }
         }
 
-        public void showAppSpaceAdListFragment() {
-            AppSpaceFragment fragment = findAppSpaceAdListFragment();
+        void showAppSpaceFragment() {
+            AppSpaceFragment fragment = findAppSpaceFragment();
             if (fragment == null) {
                 fragment = AppSpaceFragment.newInstance();
-                fragmentManager.beginTransaction()
-                               .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_APP_SPACE_AD_LIST)
-                               .commit();
+                getSupportFragmentManager().beginTransaction()
+                                           .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_APP_SPACE)
+                                           .commit();
             }
         }
     }
