@@ -22,7 +22,6 @@ public final class StartActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        // Dagger
         userComponent = MyApplication.getApplicationComponent(this)
                                      .userComponent(new ActivityModule(this));
 
@@ -30,6 +29,8 @@ public final class StartActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
                                    .commit();
+
+        setTitle(R.string.title_app_name);
     }
 
     @Override

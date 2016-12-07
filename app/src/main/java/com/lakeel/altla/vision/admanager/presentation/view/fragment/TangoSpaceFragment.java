@@ -69,6 +69,8 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
         recyclerView.setAdapter(new TangoSpaceAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        getActivity().setTitle(R.string.title_tango_space);
+
         return view;
     }
 

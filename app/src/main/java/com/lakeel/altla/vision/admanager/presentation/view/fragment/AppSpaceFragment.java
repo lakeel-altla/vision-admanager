@@ -69,6 +69,8 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
         recyclerView.setAdapter(new AppSpaceAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        getActivity().setTitle(R.string.title_app_space);
+
         return view;
     }
 
