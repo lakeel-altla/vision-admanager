@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.domain.usecase;
 
-import com.lakeel.altla.vision.admanager.ArgumentNullException;
+import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;

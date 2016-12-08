@@ -9,7 +9,7 @@ import com.google.firebase.storage.UploadTask;
 
 import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
-import com.lakeel.altla.vision.admanager.ArgumentNullException;
+import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionFileRepository;
 
 import java.io.File;

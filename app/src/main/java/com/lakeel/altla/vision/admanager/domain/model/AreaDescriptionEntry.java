@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.domain.model;
 
-import com.lakeel.altla.vision.admanager.ArgumentNullException;
+import com.lakeel.altla.vision.ArgumentNullException;
 
 public final class AreaDescriptionEntry {
 

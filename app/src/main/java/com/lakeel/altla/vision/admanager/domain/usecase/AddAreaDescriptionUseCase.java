@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.domain.usecase;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
-import com.lakeel.altla.vision.admanager.ArgumentNullException;
+import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
 import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
 import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionCacheRepository;

@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.data.repository.android;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
-import com.lakeel.altla.vision.admanager.ArgumentNullException;
+import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import rx.Observable;
