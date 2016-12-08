@@ -1,7 +1,7 @@
-package com.lakeel.altla.vision.admanager.domain.usecase;
+package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
 
 import javax.inject.Inject;
 

@@ -1,10 +1,10 @@
-package com.lakeel.altla.vision.admanager.data.repository.android;
+package com.lakeel.altla.vision.data.repository.android;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 
 import java.io.File;
 

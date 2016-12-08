@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter.mapper;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
 
 import android.support.annotation.NonNull;

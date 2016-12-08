@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.data.repository.firebase;
+package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,7 +10,7 @@ import com.google.firebase.storage.UploadTask;
 import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
 
 import java.io.File;
 import java.io.InputStream;

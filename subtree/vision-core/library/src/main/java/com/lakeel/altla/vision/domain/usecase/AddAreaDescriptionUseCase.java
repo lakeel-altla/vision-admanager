@@ -1,13 +1,13 @@
-package com.lakeel.altla.vision.admanager.domain.usecase;
+package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionCacheRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionEntryRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionFileRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

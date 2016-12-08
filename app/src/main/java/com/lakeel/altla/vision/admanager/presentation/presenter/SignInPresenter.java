@@ -10,8 +10,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.domain.usecase.SignInToFirebaseUseCase;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
+import com.lakeel.altla.vision.domain.usecase.SignInToFirebaseUseCase;
 
 import android.app.Activity;
 import android.content.Intent;

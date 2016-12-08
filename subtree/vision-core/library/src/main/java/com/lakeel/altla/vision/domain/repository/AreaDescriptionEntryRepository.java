@@ -1,7 +1,7 @@
-package com.lakeel.altla.vision.admanager.domain.repository;
+package com.lakeel.altla.vision.domain.repository;
 
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionMetadata;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionMetadata;
 
 import rx.Observable;
 import rx.Single;

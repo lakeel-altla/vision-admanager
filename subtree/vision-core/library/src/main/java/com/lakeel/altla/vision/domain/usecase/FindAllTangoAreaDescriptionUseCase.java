@@ -1,8 +1,8 @@
-package com.lakeel.altla.vision.admanager.domain.usecase;
+package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
-import com.lakeel.altla.vision.admanager.domain.model.AreaDescriptionEntry;
-import com.lakeel.altla.vision.admanager.domain.repository.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;
 

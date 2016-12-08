@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.domain.model;
+package com.lakeel.altla.vision.domain.model;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 

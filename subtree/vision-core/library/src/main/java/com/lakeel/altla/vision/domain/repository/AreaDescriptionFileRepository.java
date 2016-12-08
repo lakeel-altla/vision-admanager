@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.domain.repository;
+package com.lakeel.altla.vision.domain.repository;
 
 import java.io.File;
 import java.io.InputStream;

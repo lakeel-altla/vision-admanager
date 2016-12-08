@@ -1,8 +1,8 @@
-package com.lakeel.altla.vision.admanager.domain.usecase;
+package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionEntryRepository;
-import com.lakeel.altla.vision.admanager.domain.repository.AreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
 
 import javax.inject.Inject;
 

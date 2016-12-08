@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.domain.repository;
+package com.lakeel.altla.vision.domain.repository;
 
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
