@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.di;
+package com.lakeel.altla.vision.di;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

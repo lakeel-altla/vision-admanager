@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.di.module;
 
 import com.google.atap.tangoservice.Tango;
 
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

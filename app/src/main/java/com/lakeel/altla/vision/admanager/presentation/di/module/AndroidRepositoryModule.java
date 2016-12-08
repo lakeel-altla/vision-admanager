@@ -7,7 +7,7 @@ import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepos
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepositoryImpl;
 import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import java.io.File;
 

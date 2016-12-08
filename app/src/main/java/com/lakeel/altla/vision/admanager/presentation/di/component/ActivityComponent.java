@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.di.component;
 
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.AndroidRepositoryModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseRepositoryModule;

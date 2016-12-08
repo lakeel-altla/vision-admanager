@@ -8,7 +8,7 @@ import com.lakeel.altla.vision.data.repository.firebase.AreaDescriptionEntryRepo
 import com.lakeel.altla.vision.data.repository.firebase.AreaDescriptionFileRepositoryImpl;
 import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
 import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import javax.inject.Named;
 
