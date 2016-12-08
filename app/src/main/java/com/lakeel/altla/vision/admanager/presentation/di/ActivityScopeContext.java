@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.view.activity;
+package com.lakeel.altla.vision.admanager.presentation.di;
 
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 

@@ -8,7 +8,7 @@ import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
-import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAdapter;
 
 import android.app.Activity;

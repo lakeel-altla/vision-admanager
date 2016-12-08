@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
-import com.lakeel.altla.vision.admanager.presentation.view.activity.ActivityScopeContext;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 
 import android.app.ProgressDialog;
 import android.content.Context;
