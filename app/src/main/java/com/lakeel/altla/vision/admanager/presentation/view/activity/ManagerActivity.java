@@ -29,7 +29,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class ManagerActivity extends AppCompatActivity
-        implements ActivityScopeContext, NavigationView.OnNavigationItemSelectedListener {
+        implements ActivityScopeContext,
+                   TangoSpaceFragment.InteractionListener,
+                   AppSpaceFragment.InteractionListener,
+                   NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FRAGMENT_TAG_TANGO_SPACE = TangoSpaceFragment.class.getName();
 
@@ -137,6 +140,11 @@ public final class ManagerActivity extends AppCompatActivity
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public TangoWrapper getTangoWrapper() {
+        return tangoWrapper;
     }
 
     public ActivityComponent getActivityComponent() {

@@ -19,8 +19,7 @@ public final class AndroidRepositoryModule {
     @ActivityScope
     @Provides
     public TangoAreaDescriptionMetadataRepository provideTangoMetadataRepository() {
-        // TODO
-        return new TangoAreaDescriptionMetadataRepositoryImpl(null);
+        return new TangoAreaDescriptionMetadataRepositoryImpl();
     }
 
     @ActivityScope

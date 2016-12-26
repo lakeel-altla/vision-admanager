@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
@@ -41,6 +42,8 @@ public final class TangoSpacePresenter {
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    private TangoWrapper tangoWrapper;
+
     private TangoSpaceView view;
 
     private String exportingId;
@@ -51,13 +54,17 @@ public final class TangoSpacePresenter {
     public TangoSpacePresenter() {
     }
 
+    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
+        this.tangoWrapper = tangoWrapper;
+    }
+
     public void onCreateView(@NonNull TangoSpaceView view) {
         this.view = view;
     }
 
     public void onStart() {
         Subscription subscription = findAllTangoAreaDescriptionsUseCase
-                .execute()
+                .execute(tangoWrapper.getTango())
                 .map(mapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -144,10 +151,10 @@ public final class TangoSpacePresenter {
         }
 
         public void onDelete(int position) {
-            String uuid = itemModels.get(position).id;
+            String areaDescriptionId = itemModels.get(position).id;
 
             Subscription subscription = deleteTangoAreaDescriptionUseCase
-                    .execute(uuid)
+                    .execute(tangoWrapper.getTango(), areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
                         itemModels.remove(position);

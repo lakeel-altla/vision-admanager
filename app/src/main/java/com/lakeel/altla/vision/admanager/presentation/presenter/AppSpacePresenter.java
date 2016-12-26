@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
@@ -37,10 +38,16 @@ public final class AppSpacePresenter {
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    private TangoWrapper tangoWrapper;
+
     private AppSpaceView view;
 
     @Inject
     public AppSpacePresenter() {
+    }
+
+    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
+        this.tangoWrapper = tangoWrapper;
     }
 
     public void onCreateView(@NonNull AppSpaceView view) {
@@ -49,7 +56,7 @@ public final class AppSpacePresenter {
 
     public void onStart() {
         Subscription subscription = findAllUserAreaDescriptionsUseCase
-                .execute()
+                .execute(tangoWrapper.getTango())
                 .map(mapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())

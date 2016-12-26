@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
@@ -15,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -41,6 +43,8 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private InteractionListener interactionListener;
+
     private ProgressDialog progressDialog;
 
     public static AppSpaceFragment newInstance() {
@@ -51,7 +55,15 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+        interactionListener = InteractionListener.class.cast(context);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter.onCreate(interactionListener.getTangoWrapper());
     }
 
     @Override
@@ -129,5 +141,10 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
             progressDialog.hide();
             progressDialog = null;
         }
+    }
+
+    public interface InteractionListener {
+
+        TangoWrapper getTangoWrapper();
     }
 }
