@@ -3,6 +3,8 @@ package com.lakeel.altla.vision.data.repository.android;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
@@ -14,16 +16,11 @@ import rx.Observable;
 
 public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAreaDescriptionMetadataRepository {
 
-    private final Tango tango;
-
-    public TangoAreaDescriptionMetadataRepositoryImpl(Tango tango) {
-        if (tango == null) throw new ArgumentNullException("tango");
-
-        this.tango = tango;
-    }
+    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionMetadataRepositoryImpl.class);
 
     @Override
-    public Observable<TangoAreaDescriptionMetaData> find(String areaDescriptionId) {
+    public Observable<TangoAreaDescriptionMetaData> find(Tango tango, String areaDescriptionId) {
+        if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         return Observable.create(subscriber -> {
@@ -34,18 +31,21 @@ public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAr
     }
 
     @Override
-    public Observable<TangoAreaDescriptionMetaData> findAll() {
+    public Observable<TangoAreaDescriptionMetaData> findAll(Tango tango) {
+        if (tango == null) throw new ArgumentNullException("tango");
+
         return Observable.<String>create(subscriber -> {
             List<String> areaDescriptionIds = tango.listAreaDescriptions();
             for (String areaDescriptionId : areaDescriptionIds) {
                 subscriber.onNext(areaDescriptionId);
             }
             subscriber.onCompleted();
-        }).flatMap(this::find);
+        }).flatMap(areaDescriptionId -> find(tango, areaDescriptionId));
     }
 
     @Override
-    public Completable delete(String areaDescriptionId) {
+    public Completable delete(Tango tango, String areaDescriptionId) {
+        if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         return Completable.create(new Completable.OnSubscribe() {

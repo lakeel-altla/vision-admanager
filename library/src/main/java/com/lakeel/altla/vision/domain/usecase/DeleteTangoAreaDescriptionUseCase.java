@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
+import com.google.atap.tangoservice.Tango;
+
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
@@ -17,10 +19,11 @@ public final class DeleteTangoAreaDescriptionUseCase {
     public DeleteTangoAreaDescriptionUseCase() {
     }
 
-    public Completable execute(String areaDescriptionId) {
+    public Completable execute(Tango tango, String areaDescriptionId) {
+        if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return tangoAreaDescriptionMetadataRepository.delete(areaDescriptionId)
+        return tangoAreaDescriptionMetadataRepository.delete(tango, areaDescriptionId)
                                                      .subscribeOn(Schedulers.io());
     }
 }
