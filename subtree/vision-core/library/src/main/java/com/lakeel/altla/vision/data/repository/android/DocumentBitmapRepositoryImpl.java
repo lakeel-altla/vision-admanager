@@ -1,7 +1,6 @@
 package com.lakeel.altla.vision.data.repository.android;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.ContentException;
 import com.lakeel.altla.vision.domain.repository.DocumentBitmapRepository;
 
 import android.content.ContentResolver;
@@ -33,7 +32,7 @@ public final class DocumentBitmapRepositoryImpl implements DocumentBitmapReposit
 
             try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {
                 if (descriptor == null) {
-                    throw new ContentException("Failed to open the file descriptor: uri = " + uri);
+                    throw new IllegalStateException("Failed to open the file descriptor: uri = " + uri);
                 }
 
                 FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
@@ -41,7 +40,7 @@ public final class DocumentBitmapRepositoryImpl implements DocumentBitmapReposit
                 if (bitmap != null) {
                     subscriber.onSuccess(bitmap);
                 } else {
-                    throw new ContentException("Failed to decode the file descriptor: uri = " + uri);
+                    throw new IllegalStateException("Failed to decode the file descriptor: uri = " + uri);
                 }
             } catch (IOException e) {
                 subscriber.onError(e);
