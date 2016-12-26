@@ -8,5 +8,5 @@ public interface AreaDescriptionCacheRepository {
 
     Single<File> getDirectory();
 
-    Single<File> getFile(String id);
+    Single<File> getFile(String areaDescriptionId);
 }

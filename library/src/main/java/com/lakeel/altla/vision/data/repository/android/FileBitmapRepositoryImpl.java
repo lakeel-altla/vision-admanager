@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.lakeel.altla.vision.domain.repository.ContentException;
 import com.lakeel.altla.vision.domain.repository.FileBitmapRepository;
 
 import android.graphics.Bitmap;
@@ -19,11 +18,11 @@ public final class FileBitmapRepositoryImpl implements FileBitmapRepository {
         return Single.create(subscriber -> {
             try (FileInputStream stream = new FileInputStream(file)) {
                 Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                if (bitmap != null) {
-                    subscriber.onSuccess(bitmap);
-                } else {
-                    throw new ContentException("Failed to decode the file stream: file = " + file);
+                if (bitmap == null) {
+                    throw new IllegalStateException(String.format("Failed to decode the file stream: file = %s", file));
                 }
+
+                subscriber.onSuccess(bitmap);
             } catch (IOException e) {
                 subscriber.onError(e);
             }
