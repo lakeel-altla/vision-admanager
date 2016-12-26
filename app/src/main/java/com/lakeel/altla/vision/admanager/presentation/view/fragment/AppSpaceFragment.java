@@ -1,14 +1,12 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.google.atap.tangoservice.Tango;
-
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.AppSpaceAdapter;
 
 import android.app.Activity;
@@ -36,9 +34,6 @@ import butterknife.ButterKnife;
 public final class AppSpaceFragment extends Fragment implements AppSpaceView {
 
     private static final Log LOG = LogFactory.getLog(AppSpaceFragment.class);
-
-    @Inject
-    Tango tango;
 
     @Inject
     AppSpacePresenter presenter;

@@ -1,7 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.di.module;
 
-import com.google.atap.tangoservice.Tango;
-
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.Context;
@@ -33,11 +31,5 @@ public final class ActivityModule {
     @Provides
     public Context provideContext() {
         return activity;
-    }
-
-    @ActivityScope
-    @Provides
-    public Tango provideTango() {
-        return new Tango(activity);
     }
 }

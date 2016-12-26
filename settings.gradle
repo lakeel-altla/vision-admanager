@@ -1,3 +1,6 @@
-include ':app', ':vision-core', ':tango-helper'
+include ':app', ':vision-core', ':tango-helper', ':rx-firebase-database', ':rx-firebase-storage'
 project(':vision-core').projectDir = new File(settingsDir, './subtree/vision-core/library')
 project(':tango-helper').projectDir = new File(settingsDir, './subtree/tango-helper/library')
+
+project(':rx-firebase-database').projectDir = new File(settingsDir, './subtree/rx-firebase-database/library')
+project(':rx-firebase-storage').projectDir = new File(settingsDir, './subtree/rx-firebase-storage/library')

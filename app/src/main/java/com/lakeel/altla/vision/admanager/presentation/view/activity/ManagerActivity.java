@@ -1,9 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.view.activity;
 
-import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoConfig;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
@@ -25,8 +25,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -36,9 +34,6 @@ public final class ManagerActivity extends AppCompatActivity
     private static final String FRAGMENT_TAG_TANGO_SPACE = TangoSpaceFragment.class.getName();
 
     private static final String FRAGMENT_TAG_APP_SPACE = AppSpaceFragment.class.getName();
-
-    @Inject
-    Tango tango;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -51,6 +46,8 @@ public final class ManagerActivity extends AppCompatActivity
 
     private final FragmentController fragmentController = new FragmentController();
 
+    private TangoWrapper tangoWrapper;
+
     private ActivityComponent activityComponent;
 
     @Override
@@ -62,6 +59,9 @@ public final class ManagerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager);
         ButterKnife.bind(this);
+
+        tangoWrapper = new TangoWrapper(this);
+        tangoWrapper.setTangoConfigFactory(tango -> tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT));
 
         setSupportActionBar(toolbar);
 
@@ -79,17 +79,14 @@ public final class ManagerActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
 
-        TangoConfig config = tango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
-        tango.connect(config);
+        tangoWrapper.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        synchronized (this) {
-            tango.disconnect();
-        }
+        tangoWrapper.disconnect();
     }
 
     @Override

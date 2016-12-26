@@ -11,7 +11,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
-import com.lakeel.altla.vision.domain.usecase.SignInToFirebaseUseCase;
+import com.lakeel.altla.vision.domain.usecase.SignInWithGoogleUseCase;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +33,7 @@ public final class SignInPresenter {
     GoogleApiClient googleApiClient;
 
     @Inject
-    SignInToFirebaseUseCase signInToFirebaseUseCase;
+    SignInWithGoogleUseCase signInWithGoogleUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -53,8 +53,7 @@ public final class SignInPresenter {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 if (!signedInDetected) {
-                    LOG.d("Signed in: uid = %s", user.getUid());
-                    view.hideProgressDialog();
+                    LOG.i("Signed in to firebase: %s", user.getUid());
                     view.showTangoPermissionFragment();
                     signedInDetected = true;
                 } else {
@@ -108,20 +107,15 @@ public final class SignInPresenter {
             view.showSnackbar(R.string.snackbar_google_sign_in_failed);
         }
 
-        // If the sign-in is successful, Firebase's callback is called first rather than RX's processing
-        // so that the dialog is closed with Firebase's callback.
-        view.showProgressDialog();
-
-        Subscription subscription = signInToFirebaseUseCase
+        Subscription subscription = signInWithGoogleUseCase
                 .execute(googleSignInAccount)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(authResult -> {
+                .doOnSubscribe(_subscription -> view.showProgressDialog())
+                .doOnUnsubscribe(() -> view.hideProgressDialog())
+                .subscribe(() -> {
                     // As the main thread is called first, the fragments are discarded in Firebase's callback,
                     // so the RX processing is also canceled and will not be called here.
-                }, e -> {
-                    LOG.e("Failed to sign in to Firebase.", e);
-                    view.hideProgressDialog();
-                });
+                }, e -> LOG.e("Failed to sign in to Firebase.", e));
         compositeSubscription.add(subscription);
     }
 }

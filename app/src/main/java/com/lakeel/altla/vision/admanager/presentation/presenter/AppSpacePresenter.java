@@ -3,13 +3,12 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAllAreaDescriptionEntriesUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
+import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -25,13 +24,10 @@ import rx.subscriptions.CompositeSubscription;
 public final class AppSpacePresenter {
 
     @Inject
-    FindAllAreaDescriptionEntriesUseCase findAllAreaDescriptionEntriesUseCase;
+    FindAllUserAreaDescriptionsUseCase findAllUserAreaDescriptionsUseCase;
 
     @Inject
-    DeleteAreaDescriptionUseCase deleteAreaDescriptionUseCase;
-
-    @Inject
-    GetAreaDescriptionCacheUseCase getAreaDescriptionCacheUseCase;
+    DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
     private static final Log LOG = LogFactory.getLog(AppSpacePresenter.class);
 
@@ -52,7 +48,7 @@ public final class AppSpacePresenter {
     }
 
     public void onStart() {
-        Subscription subscription = findAllAreaDescriptionEntriesUseCase
+        Subscription subscription = findAllUserAreaDescriptionsUseCase
                 .execute()
                 .map(mapper::map)
                 .toList()
@@ -104,39 +100,35 @@ public final class AppSpacePresenter {
         }
 
         public void onClickButtonImport(int position) {
-            String id = itemModels.get(position).id;
-
-            Subscription subscription = getAreaDescriptionCacheUseCase
-                    .execute(id)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(view::showImportActivity, e -> {
-                        LOG.e("Failed to import the area description into Tango.", e);
-                        view.showSnackbar(R.string.snackbar_failed);
-                    });
-            compositeSubscription.add(subscription);
+            // TODO
+//            String id = itemModels.get(position).id;
+//
+//            Subscription subscription = getAreaDescriptionCacheUseCase
+//                    .execute(id)
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(view::showImportActivity, e -> {
+//                        LOG.e("Failed to import the area description into Tango.", e);
+//                        view.showSnackbar(R.string.snackbar_failed);
+//                    });
+//            compositeSubscription.add(subscription);
         }
 
         public void onDelete(int position) {
-            String id = itemModels.get(position).id;
-
-            LOG.d("Deleting the app area description: id = %s", id);
-
+            String areaDescriptionId = itemModels.get(position).id;
             view.showDeleteProgressDialog();
 
-            Subscription subscription = deleteAreaDescriptionUseCase
-                    .execute(id)
+            Subscription subscription = deleteUserAreaDescriptionUseCase
+                    .execute(areaDescriptionId)
+                    .doOnSubscribe(_subscription -> view.showDeleteProgressDialog())
+                    .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> {
-                        LOG.d("Deleted the app area description.");
+                    .subscribe(() -> {
                         itemModels.remove(position);
 
-                        view.hideDeleteProgressDialog();
                         view.updateItemRemoved(position);
                         view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
                         LOG.e("Failed to delete the app area description.", e);
-
-                        view.hideDeleteProgressDialog();
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);
