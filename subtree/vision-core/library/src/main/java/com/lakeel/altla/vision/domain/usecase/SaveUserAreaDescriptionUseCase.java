@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.domain.usecase;
 
+import com.google.atap.tangoservice.Tango;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -51,14 +52,16 @@ public final class SaveUserAreaDescriptionUseCase {
     public SaveUserAreaDescriptionUseCase() {
     }
 
-    public Single<UserAreaDescription> execute(String areaDescriptionId, OnProgressListener onProgressListener) {
+    public Single<UserAreaDescription> execute(Tango tango, String areaDescriptionId,
+                                               OnProgressListener onProgressListener) {
+        if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
         // Convert arguments to the internal model.
-        return Single.just(new Model(user.getUid(), areaDescriptionId, onProgressListener))
+        return Single.just(new Model(tango, user.getUid(), areaDescriptionId, onProgressListener))
                      // Get the metadata from Tango.
                      .flatMap(this::getMetadataFromTango)
                      // Open the stream of the area description file as cache.
@@ -76,7 +79,7 @@ public final class SaveUserAreaDescriptionUseCase {
 
     private Single<Model> getMetadataFromTango(Model model) {
         return tangoAreaDescriptionMetadataRepository
-                .find(model.areaDescriptionId)
+                .find(model.tango, model.areaDescriptionId)
                 .map(metaData -> {
                     model.userAreaDescription = UserAreaDescriptionMapper.map(model.userId, metaData);
                     return model;
@@ -135,6 +138,8 @@ public final class SaveUserAreaDescriptionUseCase {
 
     private final class Model {
 
+        final Tango tango;
+
         final String userId;
 
         final String areaDescriptionId;
@@ -147,7 +152,8 @@ public final class SaveUserAreaDescriptionUseCase {
 
         long totalBytes;
 
-        Model(String userId, String areaDescriptionId, OnProgressListener onProgressListener) {
+        Model(Tango tango, String userId, String areaDescriptionId, OnProgressListener onProgressListener) {
+            this.tango = tango;
             this.userId = userId;
             this.areaDescriptionId = areaDescriptionId;
             this.onProgressListener = onProgressListener;
