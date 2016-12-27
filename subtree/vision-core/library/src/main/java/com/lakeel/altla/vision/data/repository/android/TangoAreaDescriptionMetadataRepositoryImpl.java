@@ -50,8 +50,10 @@ public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAr
 
         return Completable.create(new Completable.OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber completableSubscriber) {
+            public void call(CompletableSubscriber subscriber) {
                 tango.deleteAreaDescription(areaDescriptionId);
+
+                subscriber.onCompleted();
             }
         });
     }

@@ -8,8 +8,12 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceI
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
+import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
+import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
+import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -28,19 +32,31 @@ public final class AppSpacePresenter {
     FindAllUserAreaDescriptionsUseCase findAllUserAreaDescriptionsUseCase;
 
     @Inject
+    GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
+
+    @Inject
+    UploadUserAreaDescriptionFileUseCase uploadUserAreaDescriptionFileUseCase;
+
+    @Inject
+    DownloadUserAreaDescriptionUseCase downloadUserAreaDescriptionUseCase;
+
+    @Inject
+    DeleteAreaDescriptionCacheUseCase deleteAreaDescriptionCacheUseCase;
+
+    @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
     private static final Log LOG = LogFactory.getLog(AppSpacePresenter.class);
 
     private final List<AppSpaceItemModel> itemModels = new ArrayList<>();
 
-    private final AppSpaceItemModelMapper mapper = new AppSpaceItemModelMapper();
-
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     private TangoWrapper tangoWrapper;
 
     private AppSpaceView view;
+
+    private long prevBytesTransferred;
 
     @Inject
     public AppSpacePresenter() {
@@ -56,8 +72,8 @@ public final class AppSpacePresenter {
 
     public void onStart() {
         Subscription subscription = findAllUserAreaDescriptionsUseCase
-                .execute(tangoWrapper.getTango())
-                .map(mapper::map)
+                .execute()
+                .map(AppSpaceItemModelMapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
@@ -89,6 +105,27 @@ public final class AppSpacePresenter {
         view.showSnackbar(R.string.snackbar_done);
     }
 
+    public void onDelete(int position) {
+        String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+
+        view.showDeleteProgressDialog();
+
+        Subscription subscription = deleteUserAreaDescriptionUseCase
+                .execute(areaDescriptionId)
+                .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    itemModels.remove(position);
+
+                    view.updateItemRemoved(position);
+                    view.showSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    LOG.e("Failed to delete the user area description.", e);
+                    view.showSnackbar(R.string.snackbar_failed);
+                });
+        compositeSubscription.add(subscription);
+    }
+
     public final class AppSpaceItemPresenter {
 
         private AppSpaceItemView itemView;
@@ -102,43 +139,91 @@ public final class AppSpacePresenter {
             itemView.showModel(itemModel);
         }
 
-        public void onClickButtonDelete() {
-            itemView.showDeleteAreaDescriptionConfirmationDialog();
-        }
+        public void onClickImageButtonImport(int position) {
+            String areaDescriptionId = itemModels.get(position).areaDescriptionId;
 
-        public void onClickButtonImport(int position) {
-            // TODO
-//            String id = itemModels.get(position).id;
-//
-//            Subscription subscription = getAreaDescriptionCacheUseCase
-//                    .execute(id)
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(view::showImportActivity, e -> {
-//                        LOG.e("Failed to import the area description into Tango.", e);
-//                        view.showSnackbar(R.string.snackbar_failed);
-//                    });
-//            compositeSubscription.add(subscription);
-        }
-
-        public void onDelete(int position) {
-            String areaDescriptionId = itemModels.get(position).id;
-            view.showDeleteProgressDialog();
-
-            Subscription subscription = deleteUserAreaDescriptionUseCase
+            Subscription subscription = getAreaDescriptionCacheFileUseCase
                     .execute(areaDescriptionId)
-                    .doOnSubscribe(_subscription -> view.showDeleteProgressDialog())
-                    .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> {
-                        itemModels.remove(position);
-
-                        view.updateItemRemoved(position);
-                        view.showSnackbar(R.string.snackbar_done);
-                    }, e -> {
-                        LOG.e("Failed to delete the app area description.", e);
+                    .subscribe(view::showImportActivity, e -> {
+                        LOG.e("Failed to import the area description into Tango.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeSubscription.add(subscription);
+        }
+
+        public void onClickImageButtonUpload(int position) {
+            AppSpaceItemModel itemModel = itemModels.get(position);
+
+            prevBytesTransferred = 0;
+
+            Subscription subscription = uploadUserAreaDescriptionFileUseCase
+                    .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
+                        long increment = bytesTransferred - prevBytesTransferred;
+                        prevBytesTransferred = bytesTransferred;
+                        view.setUploadProgressDialogProgress(totalBytes, increment);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(_subscription -> view.showUploadProgressDialog())
+                    .doOnUnsubscribe(() -> view.hideUploadProgressDialog())
+                    .subscribe(() -> {
+                        itemModel.fileUploaded = true;
+
+                        view.updateItem(position);
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e("Failed to upload the user area description.", e);
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        }
+
+        public void onClickImageButtonDownload(int position) {
+            AppSpaceItemModel itemModel = itemModels.get(position);
+
+            prevBytesTransferred = 0;
+
+            Subscription subscription = downloadUserAreaDescriptionUseCase
+                    .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
+                        long increment = bytesTransferred - prevBytesTransferred;
+                        prevBytesTransferred = bytesTransferred;
+                        view.setUploadProgressDialogProgress(totalBytes, increment);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(_subscription -> view.showUploadProgressDialog())
+                    .doOnUnsubscribe(() -> view.hideUploadProgressDialog())
+                    .subscribe(() -> {
+                        itemModel.fileCached = true;
+
+                        view.updateItem(position);
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e("Failed to download the user area description.", e);
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        }
+
+        public void onClickImageButtonSynced(int position) {
+            AppSpaceItemModel itemModel = itemModels.get(position);
+
+            Subscription subscription = deleteAreaDescriptionCacheUseCase
+                    .execute(itemModel.areaDescriptionId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        itemModel.fileCached = false;
+
+                        view.updateItem(position);
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e("Failed to delete the area description cache.", e);
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        }
+
+        public void onClickImageButtonDelete(int position) {
+            view.showDeleteConfirmationDialog(position);
         }
     }
 }

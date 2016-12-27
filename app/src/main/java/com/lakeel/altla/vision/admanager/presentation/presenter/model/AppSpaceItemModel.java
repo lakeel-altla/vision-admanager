@@ -2,9 +2,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter.model;
 
 public final class AppSpaceItemModel {
 
-    public String id;
+    public String areaDescriptionId;
 
     public String name;
 
-    public String contentPath;
+    public boolean fileCached;
+
+    public boolean fileUploaded;
 }

@@ -25,16 +25,55 @@
 
     </LinearLayout>
 
-    <Button android:id="@+id/button_import"
-            android:text="@string/button_import"
-            android:layout_marginStart="@dimen/content_horizontal_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+    <ImageButton android:id="@+id/image_button_import"
+                 android:src="@drawable/ic_import_black_24dp"
+                 android:background="?android:attr/actionBarItemBackground"
+                 android:tint="@color/tint_image_button_area_description_model"
+                 android:layout_marginStart="@dimen/content_horizontal_margin"
+                 android:layout_marginTop="@dimen/content_vertical_margin"
+                 android:layout_marginBottom="@dimen/content_vertical_margin"
+                 android:layout_width="@dimen/touch_target_width"
+                 android:layout_height="@dimen/touch_target_height"/>
 
-    <Button android:id="@+id/button_delete"
-            android:text="@string/button_delete"
-            android:layout_marginStart="@dimen/content_horizontal_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+    <ImageButton android:id="@+id/image_button_upload"
+                 android:src="@drawable/ic_cloud_upload_black_24dp"
+                 android:background="?android:attr/actionBarItemBackground"
+                 android:tint="@color/tint_image_button_area_description_model"
+                 android:layout_marginStart="@dimen/content_horizontal_margin"
+                 android:layout_marginTop="@dimen/content_vertical_margin"
+                 android:layout_marginBottom="@dimen/content_vertical_margin"
+                 android:layout_width="@dimen/touch_target_width"
+                 android:layout_height="@dimen/touch_target_height"/>
+
+    <ImageButton android:id="@+id/image_button_download"
+                 android:src="@drawable/ic_cloud_download_black_24dp"
+                 android:background="?android:attr/actionBarItemBackground"
+                 android:tint="@color/tint_image_button_area_description_model"
+                 android:layout_marginStart="@dimen/content_horizontal_margin"
+                 android:layout_marginTop="@dimen/content_vertical_margin"
+                 android:layout_marginBottom="@dimen/content_vertical_margin"
+                 android:layout_width="@dimen/touch_target_width"
+                 android:layout_height="@dimen/touch_target_height"/>
+
+    <ImageButton android:id="@+id/image_button_synced"
+                 android:src="@drawable/ic_cloud_done_black_24dp"
+                 android:background="?android:attr/actionBarItemBackground"
+                 android:tint="@color/tint_image_button_area_description_model"
+                 android:layout_marginStart="@dimen/content_horizontal_margin"
+                 android:layout_marginTop="@dimen/content_vertical_margin"
+                 android:layout_marginBottom="@dimen/content_vertical_margin"
+                 android:layout_width="@dimen/touch_target_width"
+                 android:layout_height="@dimen/touch_target_height"/>
+
+    <ImageButton android:id="@+id/image_button_delete"
+                 android:src="@drawable/ic_delete_black_24dp"
+                 android:background="?android:attr/actionBarItemBackground"
+                 android:tint="@color/tint_image_button_area_description_model"
+                 android:layout_marginStart="@dimen/content_horizontal_margin"
+                 android:layout_marginEnd="@dimen/content_horizontal_margin"
+                 android:layout_marginTop="@dimen/content_vertical_margin"
+                 android:layout_marginBottom="@dimen/content_vertical_margin"
+                 android:layout_width="@dimen/touch_target_width"
+                 android:layout_height="@dimen/touch_target_height"/>
 
 </LinearLayout>

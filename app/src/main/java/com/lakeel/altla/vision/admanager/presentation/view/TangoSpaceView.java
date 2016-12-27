@@ -15,9 +15,5 @@ public interface TangoSpaceView {
 
     void showExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);
 
-    void showUploadProgressDialog();
-
-    void setUploadProgressDialogProgress(long max, long diff);
-
-    void hideUploadProgressDialog();
+    void showDeleteConfirmationDialog(int position);
 }

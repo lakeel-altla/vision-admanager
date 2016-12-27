@@ -9,13 +9,23 @@ public interface AppSpaceView {
 
     void updateItems();
 
+    void updateItem(int position);
+
     void updateItemRemoved(int position);
 
     void showSnackbar(@StringRes int resId);
 
     void showImportActivity(@NonNull File destinationFile);
 
+    void showUploadProgressDialog();
+
+    void setUploadProgressDialogProgress(long max, long diff);
+
+    void hideUploadProgressDialog();
+
     void showDeleteProgressDialog();
 
     void hideDeleteProgressDialog();
+
+    void showDeleteConfirmationDialog(int position);
 }

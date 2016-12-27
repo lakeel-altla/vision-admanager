@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
@@ -11,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -56,9 +56,16 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @BindView(R.id.text_view_id)
         TextView textViewUuid;
 
-        private AppSpacePresenter.AppSpaceItemPresenter itemPresenter;
+        @BindView(R.id.image_button_upload)
+        ImageButton imageButtonUpload;
 
-        private MaterialDialog materialDialog;
+        @BindView(R.id.image_button_download)
+        ImageButton imageButtonDownload;
+
+        @BindView(R.id.image_button_synced)
+        ImageButton imageButtonSynced;
+
+        private AppSpacePresenter.AppSpaceItemPresenter itemPresenter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,40 +79,48 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @Override
         public void showModel(@NonNull AppSpaceItemModel model) {
             textViewName.setText(model.name);
-            textViewUuid.setText(model.id);
-        }
+            textViewUuid.setText(model.areaDescriptionId);
 
-        @Override
-        public void showDeleteAreaDescriptionConfirmationDialog() {
-            if (materialDialog != null && materialDialog.isShowing()) {
-                // Skip to protect against double taps.
-                return;
+            imageButtonUpload.setVisibility(View.GONE);
+            imageButtonDownload.setVisibility(View.GONE);
+            imageButtonSynced.setVisibility(View.GONE);
+
+            if (model.fileUploaded && model.fileCached) {
+                imageButtonSynced.setVisibility(View.VISIBLE);
+            } else if (model.fileUploaded) {
+                imageButtonDownload.setVisibility(View.VISIBLE);
+            } else if (model.fileCached) {
+                imageButtonUpload.setVisibility(View.VISIBLE);
             }
-
-            if (materialDialog == null) {
-                materialDialog = new MaterialDialog.Builder(itemView.getContext())
-                        .content(R.string.dialog_content_confirm_delete_app_area_description)
-                        .positiveText(R.string.dialog_ok)
-                        .negativeText(R.string.dialog_cancel)
-                        .onPositive((dialog, which) -> itemPresenter.onDelete(getAdapterPosition()))
-                        .build();
-            }
-
-            materialDialog.show();
         }
 
         public void onBind(int position) {
             itemPresenter.onBind(position);
         }
 
-        @OnClick(R.id.button_import)
-        void onClickButtonImport() {
-            itemPresenter.onClickButtonImport(getAdapterPosition());
+        @OnClick(R.id.image_button_import)
+        void onClickImageButtonImport() {
+            itemPresenter.onClickImageButtonImport(getAdapterPosition());
         }
 
-        @OnClick(R.id.button_delete)
-        void onClickButtonDelete() {
-            itemPresenter.onClickButtonDelete();
+        @OnClick(R.id.image_button_upload)
+        void onClickImageButtonUpload() {
+            itemPresenter.onClickImageButtonUpload(getAdapterPosition());
+        }
+
+        @OnClick(R.id.image_button_download)
+        void onClickImageButtonDownload() {
+            itemPresenter.onClickImageButtonDownload(getAdapterPosition());
+        }
+
+        @OnClick(R.id.image_button_synced)
+        void onClickImageButtonSynced() {
+            itemPresenter.onClickImageButtonSynced(getAdapterPosition());
+        }
+
+        @OnClick(R.id.image_button_delete)
+        void onClickImageButtonDelete() {
+            itemPresenter.onClickImageButtonDelete(getAdapterPosition());
         }
     }
 }

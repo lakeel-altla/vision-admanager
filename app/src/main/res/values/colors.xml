@@ -3,7 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
     <!-- firebrick -->
     <color name="background_swipe_to_delete_item">#b22222</color>
     <color name="foreground_swipe_to_delete_item">#ffffff</color>
+
+    <!-- royalblue -->
+    <color name="tint_image_button_area_description_model">#4169e1</color>
+
 </resources>

@@ -7,11 +7,16 @@ import android.support.annotation.NonNull;
 
 public final class AppSpaceItemModelMapper {
 
+    private AppSpaceItemModelMapper() {
+    }
+
     @NonNull
-    public AppSpaceItemModel map(@NonNull UserAreaDescription userAreaDescription) {
+    public static AppSpaceItemModel map(@NonNull UserAreaDescription userAreaDescription) {
         AppSpaceItemModel model = new AppSpaceItemModel();
-        model.id = userAreaDescription.areaDescriptionId;
+        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
         model.name = userAreaDescription.name;
+        model.fileCached = userAreaDescription.fileCached;
+        model.fileUploaded = userAreaDescription.fileUploaded;
         return model;
     }
 }

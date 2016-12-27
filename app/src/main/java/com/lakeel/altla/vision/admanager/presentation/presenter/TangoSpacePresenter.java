@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.atap.tangoservice.Tango;
+
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoWrapper;
@@ -11,6 +13,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -23,7 +26,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public final class TangoSpacePresenter {
+public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListener {
 
     private static final Log LOG = LogFactory.getLog(TangoSpacePresenter.class);
 
@@ -34,11 +37,12 @@ public final class TangoSpacePresenter {
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
 
     @Inject
+    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
+
+    @Inject
     DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
 
     private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
-
-    private final TangoSpaceItemModelMapper mapper = new TangoSpaceItemModelMapper();
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -46,26 +50,17 @@ public final class TangoSpacePresenter {
 
     private TangoSpaceView view;
 
-    private String exportingId;
-
-    private long prevBytesTransferred;
+    private String exportingAreaDescriptionId;
 
     @Inject
     public TangoSpacePresenter() {
     }
 
-    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
-        this.tangoWrapper = tangoWrapper;
-    }
-
-    public void onCreateView(@NonNull TangoSpaceView view) {
-        this.view = view;
-    }
-
-    public void onStart() {
+    @Override
+    public void onTangoReady(Tango tango) {
         Subscription subscription = findAllTangoAreaDescriptionsUseCase
                 .execute(tangoWrapper.getTango())
-                .map(mapper::map)
+                .map(TangoSpaceItemModelMapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
@@ -78,8 +73,24 @@ public final class TangoSpacePresenter {
         compositeSubscription.add(subscription);
     }
 
+    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
+        this.tangoWrapper = tangoWrapper;
+    }
+
+    public void onCreateView(@NonNull TangoSpaceView view) {
+        this.view = view;
+    }
+
     public void onStop() {
         compositeSubscription.clear();
+    }
+
+    public void onResume() {
+        tangoWrapper.addOnTangoReadyListener(this);
+    }
+
+    public void onPause() {
+        tangoWrapper.removeOnTangoReadyListener(this);
     }
 
     public void onCreateItemView(@NonNull TangoSpaceItemView itemView) {
@@ -93,33 +104,41 @@ public final class TangoSpacePresenter {
     }
 
     public void onExported() {
-        if (exportingId == null) {
-            throw new IllegalStateException("exportingUuid == null");
+        if (exportingAreaDescriptionId == null) {
+            throw new IllegalStateException("'exportingAreaDescriptionId' is null.");
         }
 
-        prevBytesTransferred = 0;
+        Subscription subscription = saveUserAreaDescriptionUseCase
+                .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userAreaDescription -> {
+                    view.showSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    LOG.e(String.format("Failed to export the tango area description: areaDescriptionId = %s",
+                                        exportingAreaDescriptionId), e);
+                    view.showSnackbar(R.string.snackbar_failed);
+                });
+        compositeSubscription.add(subscription);
 
-        // TODO
-//        view.showUploadProgressDialog();
-//
-//        Subscription subscription = addAreaDescriptionUseCase
-//                .execute(exportingId, (totalBytes, bytesTransferred) -> {
-//                    long increment = bytesTransferred - prevBytesTransferred;
-//                    prevBytesTransferred = bytesTransferred;
-//                    view.setUploadProgressDialogProgress(totalBytes, increment);
-//                })
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(entry -> {
-//                               view.hideUploadProgressDialog();
-//                               view.showSnackbar(R.string.snackbar_done);
-//                           }, e -> {
-//                               LOG.e(String.format("Failed to add the area description: id = %s", exportingId), e);
-//                               view.hideUploadProgressDialog();
-//                               view.showSnackbar(R.string.snackbar_failed);
-//                           }
-//
-//                );
-//        compositeSubscription.add(subscription);
+        view.showSnackbar(R.string.snackbar_done);
+    }
+
+    public void onDelete(int position) {
+        String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+
+        Subscription subscription = deleteTangoAreaDescriptionUseCase
+                .execute(tangoWrapper.getTango(), areaDescriptionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    itemModels.remove(position);
+                    view.updateItemRemoved(position);
+                    view.showSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    LOG.e(String.format("Failed to delete the tango area description: areaDescriptionId = %s",
+                                        areaDescriptionId), e);
+                    view.showSnackbar(R.string.snackbar_failed);
+                });
+        compositeSubscription.add(subscription);
     }
 
     public final class TangoSpaceItemPresenter {
@@ -135,36 +154,19 @@ public final class TangoSpacePresenter {
             itemView.showModel(itemModel);
         }
 
-        public void onClickButtonExport(int position) {
+        public void onClickImageButtonExport(int position) {
             Subscription subscription = getAreaDescriptionCacheDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
-                        exportingId = itemModels.get(position).id;
-                        view.showExportActivity(exportingId, directory);
+                        exportingAreaDescriptionId = itemModels.get(position).areaDescriptionId;
+                        view.showExportActivity(exportingAreaDescriptionId, directory);
                     });
             compositeSubscription.add(subscription);
         }
 
-        public void onClickButtonDelete() {
-            itemView.showDeleteAreaDescriptionConfirmationDialog();
-        }
-
-        public void onDelete(int position) {
-            String areaDescriptionId = itemModels.get(position).id;
-
-            Subscription subscription = deleteTangoAreaDescriptionUseCase
-                    .execute(tangoWrapper.getTango(), areaDescriptionId)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> {
-                        itemModels.remove(position);
-                        view.updateItemRemoved(position);
-                        view.showSnackbar(R.string.snackbar_done);
-                    }, e -> {
-                        LOG.e("Deleting area description failed.", e);
-                        view.showSnackbar(R.string.snackbar_failed);
-                    });
-            compositeSubscription.add(subscription);
+        public void onClickImageButtonDelete(int position) {
+            view.showDeleteConfirmationDialog(position);
         }
     }
 }

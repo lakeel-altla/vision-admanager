@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
@@ -46,6 +47,8 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     private InteractionListener interactionListener;
 
     private ProgressDialog progressDialog;
+
+    private MaterialDialog materialDialog;
 
     public static AppSpaceFragment newInstance() {
         return new AppSpaceFragment();
@@ -111,6 +114,11 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     }
 
     @Override
+    public void updateItem(int position) {
+        recyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    @Override
     public void updateItemRemoved(int position) {
         recyclerView.getAdapter().notifyItemRemoved(position);
     }
@@ -124,6 +132,33 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
     public void showImportActivity(@NonNull File destinationFile) {
         Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void showUploadProgressDialog() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
+    }
+
+    @Override
+    public void setUploadProgressDialogProgress(long max, long diff) {
+        if (progressDialog != null) {
+            progressDialog.setMax((int) max);
+            progressDialog.incrementProgressBy((int) diff);
+        }
+    }
+
+    @Override
+    public void hideUploadProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
     }
 
     @Override
@@ -141,6 +176,23 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
             progressDialog.hide();
             progressDialog = null;
         }
+    }
+
+    @Override
+    public void showDeleteConfirmationDialog(int position) {
+        if (materialDialog != null && materialDialog.isShowing()) {
+            // Skip to protect against double taps.
+            return;
+        }
+
+        materialDialog = new MaterialDialog.Builder(getContext())
+                .content(R.string.dialog_content_confirm_delete)
+                .positiveText(R.string.dialog_ok)
+                .negativeText(R.string.dialog_cancel)
+                .onPositive((dialog, which) -> presenter.onDelete(position))
+                .build();
+
+        materialDialog.show();
     }
 
     public interface InteractionListener {

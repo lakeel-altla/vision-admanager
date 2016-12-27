@@ -42,11 +42,6 @@
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_content_confirm_delete_app_area_description">Are you sure you want to delete the selected app
-        area description ?
-    </string>
-    <string name="dialog_content_confirm_delete_tango_area_description">Are you sure you want to delete the selected
-        Tango area description ?
-    </string>
+    <string name="dialog_content_confirm_delete">Delete this?</string>
 
 </resources>

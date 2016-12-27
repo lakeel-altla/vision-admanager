@@ -23,7 +23,8 @@ public final class DeleteTangoAreaDescriptionUseCase {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return tangoAreaDescriptionMetadataRepository.delete(tango, areaDescriptionId)
-                                                     .subscribeOn(Schedulers.io());
+        return tangoAreaDescriptionMetadataRepository
+                .delete(tango, areaDescriptionId)
+                .subscribeOn(Schedulers.io());
     }
 }

@@ -5,6 +5,8 @@ import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 
 import java.io.File;
 
+import rx.Completable;
+import rx.CompletableSubscriber;
 import rx.Single;
 
 public final class AreaDescriptionCacheRepositoryImpl implements AreaDescriptionCacheRepository {
@@ -20,15 +22,47 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
     }
 
     @Override
+    public Single<Boolean> exists(String areaDescriptionId) {
+        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
+
+        return Single.create(subscriber -> {
+            File file = resolveCacheFile(areaDescriptionId);
+            subscriber.onSuccess(file.exists());
+        });
+    }
+
+    @Override
     public Single<File> getDirectory() {
-        return Single.just(ensureCacheDirectory());
+        return Single.create(subscriber -> {
+            File file = ensureCacheDirectory();
+            subscriber.onSuccess(file);
+        });
     }
 
     @Override
     public Single<File> getFile(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Single.just(resolveCacheFile(areaDescriptionId));
+        return Single.create(subscriber -> {
+            File file = resolveCacheFile(areaDescriptionId);
+            subscriber.onSuccess(file);
+        });
+    }
+
+    @Override
+    public Completable delete(String areaDescriptionId) {
+        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
+
+        return Completable.create(new Completable.OnSubscribe() {
+            @Override
+            public void call(CompletableSubscriber subscriber) {
+                File file = resolveCacheFile(areaDescriptionId);
+                if (file.exists()) {
+                    file.delete();
+                }
+                subscriber.onCompleted();
+            }
+        });
     }
 
     private File ensureCacheDirectory() {
@@ -39,8 +73,8 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
         return directory;
     }
 
-    private File resolveCacheFile(String id) {
+    private File resolveCacheFile(String areaDescriptionId) {
         File directory = ensureCacheDirectory();
-        return new File(directory, id);
+        return new File(directory, areaDescriptionId);
     }
 }

@@ -10,6 +10,4 @@ public interface TangoSpaceItemView {
     void setItemPresenter(@NonNull TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter);
 
     void showModel(@NonNull TangoSpaceItemModel model);
-
-    void showDeleteAreaDescriptionConfirmationDialog();
 }

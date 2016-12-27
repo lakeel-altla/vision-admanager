@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
@@ -11,7 +12,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAdapter;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,7 +45,7 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
     private InteractionListener interactionListener;
 
-    private ProgressDialog progressDialog;
+    private MaterialDialog materialDialog;
 
     public static TangoSpaceFragment newInstance() {
         return new TangoSpaceFragment();
@@ -82,20 +82,26 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        presenter.onStart();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         presenter.onStop();
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        LOG.d("onActivityResult: requestCode = %d, resultCode = %d, inrent = %s", requestCode, resultCode, intent);
+        LOG.d("onActivityResult: requestCode = %d, resultCode = %d, intent = %s", requestCode, resultCode, intent);
 
         if (resultCode == Activity.RESULT_OK) {
             presenter.onExported();
@@ -126,30 +132,20 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
     }
 
     @Override
-    public void showUploadProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setMax(0);
-        progressDialog.show();
-    }
-
-    @Override
-    public void setUploadProgressDialogProgress(long max, long diff) {
-        if (progressDialog != null) {
-            progressDialog.setMax((int) max);
-            progressDialog.incrementProgressBy((int) diff);
+    public void showDeleteConfirmationDialog(int position) {
+        if (materialDialog != null && materialDialog.isShowing()) {
+            // Skip to protect against double taps.
+            return;
         }
-    }
 
-    @Override
-    public void hideUploadProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.hide();
-            progressDialog = null;
-        }
+        materialDialog = new MaterialDialog.Builder(getContext())
+                .content(R.string.dialog_content_confirm_delete)
+                .positiveText(R.string.dialog_ok)
+                .negativeText(R.string.dialog_cancel)
+                .onPositive((dialog, which) -> presenter.onDelete(position))
+                .build();
+
+        materialDialog.show();
     }
 
     public interface InteractionListener {
