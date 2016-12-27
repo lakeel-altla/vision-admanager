@@ -11,7 +11,7 @@ public final class TangoSpaceItemModelMapper {
     }
 
     @NonNull
-    public static final TangoSpaceItemModel map(@NonNull TangoAreaDescription tangoAreaDescription) {
+    public static TangoSpaceItemModel map(@NonNull TangoAreaDescription tangoAreaDescription) {
         TangoSpaceItemModel model = new TangoSpaceItemModel();
         model.areaDescriptionId = tangoAreaDescription.areaDescriptionId;
         model.name = tangoAreaDescription.name;
