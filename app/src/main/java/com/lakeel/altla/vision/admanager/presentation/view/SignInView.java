@@ -12,7 +12,7 @@ public interface SignInView {
 
     void showSnackbar(@StringRes int resId);
 
-    void showTangoPermissionFragment();
+    void closeSignInFragment();
 
     void startActivityForResult(@NonNull Intent intent, int requestCode);
 }

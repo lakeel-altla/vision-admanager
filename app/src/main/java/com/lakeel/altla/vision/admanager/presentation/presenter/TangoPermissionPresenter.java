@@ -31,7 +31,7 @@ public final class TangoPermissionPresenter {
     public void onTangoPermissionResult(boolean isCanceled) {
         if (!isCanceled) {
             LOG.d("Tango permission granted.");
-            view.startManagerActivity();
+            view.closeTangoPermissionFragment();
         } else {
             LOG.d("Tango permission not granted.");
             view.showAreaLearningPermissionRequiredSnackbar();

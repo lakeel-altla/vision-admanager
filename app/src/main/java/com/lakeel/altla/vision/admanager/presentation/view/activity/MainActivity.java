@@ -10,12 +10,11 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoSpaceFragment;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,8 +27,10 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class ManagerActivity extends AppCompatActivity
+public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
+                   SignInFragment.InteractionListener,
+                   TangoPermissionFragment.InteractionListener,
                    TangoSpaceFragment.InteractionListener,
                    AppSpaceFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
@@ -60,7 +61,7 @@ public final class ManagerActivity extends AppCompatActivity
         activityComponent.inject(this);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manager);
+        setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         tangoWrapper = new TangoWrapper(this);
@@ -75,7 +76,7 @@ public final class ManagerActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        fragmentController.showTangoSpaceFragment();
+        showSignInFragment();
     }
 
     @Override
@@ -134,8 +135,7 @@ public final class ManagerActivity extends AppCompatActivity
             fragmentController.showAppSpaceFragment();
         } else if (id == R.id.nav_sign_out) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(StartActivity.getStartActivityIntent(this));
-            finish();
+            showSignInFragment();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -143,16 +143,37 @@ public final class ManagerActivity extends AppCompatActivity
     }
 
     @Override
-    public TangoWrapper getTangoWrapper() {
-        return tangoWrapper;
-    }
-
     public ActivityComponent getActivityComponent() {
         return activityComponent;
     }
 
-    public static Intent getStartActivityIntent(@NonNull Context context) {
-        return new Intent(context, ManagerActivity.class);
+    @Override
+    public TangoWrapper getTangoWrapper() {
+        return tangoWrapper;
+    }
+
+    @Override
+    public void onCloseSignInFragment() {
+        showTangoPermissionFragment();
+    }
+
+    @Override
+    public void onCloseTangoPermissionFragment() {
+        fragmentController.showTangoSpaceFragment();
+    }
+
+    private void showSignInFragment() {
+        SignInFragment fragment = SignInFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
+    }
+
+    public void showTangoPermissionFragment() {
+        TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
     }
 
     private final class FragmentController {

@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoPermissionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoPermissionView;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 
 import android.app.Activity;
 import android.content.Context;
@@ -63,8 +63,8 @@ public final class TangoPermissionFragment extends Fragment implements TangoPerm
     }
 
     @Override
-    public void startManagerActivity() {
-        interactionListener.onStartManagerActivity();
+    public void closeTangoPermissionFragment() {
+        interactionListener.onCloseTangoPermissionFragment();
     }
 
     @Override
@@ -81,6 +81,6 @@ public final class TangoPermissionFragment extends Fragment implements TangoPerm
 
     public interface InteractionListener {
 
-        void onStartManagerActivity();
+        void onCloseTangoPermissionFragment();
     }
 }

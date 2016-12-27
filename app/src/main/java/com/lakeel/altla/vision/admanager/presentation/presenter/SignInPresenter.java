@@ -54,7 +54,7 @@ public final class SignInPresenter {
             if (user != null) {
                 if (!signedInDetected) {
                     LOG.i("Signed in to firebase: %s", user.getUid());
-                    view.showTangoPermissionFragment();
+                    view.closeSignInFragment();
                     signedInDetected = true;
                 } else {
                     LOG.d("onAuthStateChanged() is fired twice.");

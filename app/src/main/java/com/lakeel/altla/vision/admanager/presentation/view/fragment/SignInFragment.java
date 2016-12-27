@@ -98,8 +98,8 @@ public final class SignInFragment extends Fragment implements SignInView {
     }
 
     @Override
-    public void showTangoPermissionFragment() {
-        interactionListener.onShowTangoPermissionFragment();
+    public void closeSignInFragment() {
+        interactionListener.onCloseSignInFragment();
     }
 
     @OnClick(R.id.button_sign_in)
@@ -109,6 +109,6 @@ public final class SignInFragment extends Fragment implements SignInView {
 
     public interface InteractionListener {
 
-        void onShowTangoPermissionFragment();
+        void onCloseSignInFragment();
     }
 }
