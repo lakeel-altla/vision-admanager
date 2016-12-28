@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import rx.Completable;
 
-public final class DownloadUserAreaDescriptionUseCase {
+public final class DownloadUserAreaDescriptionFileUseCase {
 
     @Inject
     AreaDescriptionCacheRepository areaDescriptionCacheRepository;
@@ -21,7 +21,7 @@ public final class DownloadUserAreaDescriptionUseCase {
     UserAreaDescriptionFileRepository userAreaDescriptionFileRepository;
 
     @Inject
-    public DownloadUserAreaDescriptionUseCase() {
+    public DownloadUserAreaDescriptionFileUseCase() {
     }
 
     public Completable execute(String areaDescriptionId, OnProgressListener onProgressListener) {

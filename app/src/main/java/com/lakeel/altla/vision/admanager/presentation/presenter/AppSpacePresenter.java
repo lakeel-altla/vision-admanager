@@ -10,7 +10,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
@@ -38,7 +38,7 @@ public final class AppSpacePresenter {
     UploadUserAreaDescriptionFileUseCase uploadUserAreaDescriptionFileUseCase;
 
     @Inject
-    DownloadUserAreaDescriptionUseCase downloadUserAreaDescriptionUseCase;
+    DownloadUserAreaDescriptionFileUseCase downloadUserAreaDescriptionFileUseCase;
 
     @Inject
     DeleteAreaDescriptionCacheUseCase deleteAreaDescriptionCacheUseCase;
@@ -183,7 +183,7 @@ public final class AppSpacePresenter {
 
             prevBytesTransferred = 0;
 
-            Subscription subscription = downloadUserAreaDescriptionUseCase
+            Subscription subscription = downloadUserAreaDescriptionFileUseCase
                     .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
