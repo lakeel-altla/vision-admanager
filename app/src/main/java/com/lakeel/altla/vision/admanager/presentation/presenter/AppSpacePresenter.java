@@ -222,6 +222,12 @@ public final class AppSpacePresenter {
             compositeSubscription.add(subscription);
         }
 
+        public void onClickImageButtonEdit(int position) {
+            String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+
+            view.showEditUserAreaDescriptionFragment(areaDescriptionId);
+        }
+
         public void onClickImageButtonDelete(int position) {
             view.showDeleteConfirmationDialog(position);
         }

@@ -30,7 +30,8 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
     }
 
     @Override
-    public Completable save(UserAreaDescription userAreaDescription) {
+    public Completable save(String userId, UserAreaDescription userAreaDescription) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
 
         return Completable.create(new Completable.OnSubscribe() {
@@ -41,7 +42,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                 value.creationTime = userAreaDescription.creationTime;
 
                 rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                             .child(userAreaDescription.userId)
+                             .child(userId)
                              .child(userAreaDescription.areaDescriptionId)
                              .setValue(value, (error, reference) -> {
                                  if (error != null) {
@@ -68,7 +69,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
           .filter(DataSnapshot::exists)
-          .map(snapshot -> map(userId, snapshot));
+          .map(this::map);
     }
 
     @Override
@@ -83,7 +84,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
           .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-          .map(snapshot -> map(userId, snapshot));
+          .map(this::map);
     }
 
     @Override
@@ -108,10 +109,10 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         });
     }
 
-    private UserAreaDescription map(String userId, DataSnapshot snapshot) {
+    private UserAreaDescription map(DataSnapshot snapshot) {
         String areaDescriptionId = snapshot.getKey();
         UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-        return new UserAreaDescription(userId, areaDescriptionId, value.name, value.creationTime);
+        return new UserAreaDescription(areaDescriptionId, value.name, value.creationTime);
     }
 
     public static final class UserAreaDescriptionValue {

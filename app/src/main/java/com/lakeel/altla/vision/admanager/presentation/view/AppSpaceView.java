@@ -28,4 +28,6 @@ public interface AppSpaceView {
     void hideDeleteProgressDialog();
 
     void showDeleteConfirmationDialog(int position);
+
+    void showEditUserAreaDescriptionFragment(String areaDescriptionId);
 }

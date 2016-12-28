@@ -11,9 +11,9 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpace
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
-import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -37,7 +37,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
 
     @Inject
-    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
+    ExportUserAreaDescriptionUseCase exportUserAreaDescriptionUseCase;
 
     @Inject
     DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
@@ -108,7 +108,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
             throw new IllegalStateException("'exportingAreaDescriptionId' is null.");
         }
 
-        Subscription subscription = saveUserAreaDescriptionUseCase
+        Subscription subscription = exportUserAreaDescriptionUseCase
                 .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userAreaDescription -> {

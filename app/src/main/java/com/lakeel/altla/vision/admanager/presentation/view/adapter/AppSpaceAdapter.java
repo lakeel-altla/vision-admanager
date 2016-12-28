@@ -118,6 +118,11 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
             itemPresenter.onClickImageButtonSynced(getAdapterPosition());
         }
 
+        @OnClick(R.id.image_button_edit)
+        void onClickImageButtonEdit() {
+            itemPresenter.onClickImageButtonEdit(getAdapterPosition());
+        }
+
         @OnClick(R.id.image_button_delete)
         void onClickImageButtonDelete() {
             itemPresenter.onClickImageButtonDelete(getAdapterPosition());

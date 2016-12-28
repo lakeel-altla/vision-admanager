@@ -10,11 +10,11 @@ public final class UserAreaDescriptionMapper {
     private UserAreaDescriptionMapper() {
     }
 
-    public static UserAreaDescription map(String userId, TangoAreaDescriptionMetaData metaData) {
+    public static UserAreaDescription map(TangoAreaDescriptionMetaData metaData) {
         String areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
         String name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
         long creationTime = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);
 
-        return new UserAreaDescription(userId, areaDescriptionId, name, creationTime);
+        return new UserAreaDescription(areaDescriptionId, name, creationTime);
     }
 }

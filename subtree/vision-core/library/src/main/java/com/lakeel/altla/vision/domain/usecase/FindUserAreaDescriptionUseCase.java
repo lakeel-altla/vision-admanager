@@ -9,26 +9,26 @@ import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
-import rx.Completable;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 
-public final class SaveUserAreaDescriptionUseCase {
+public final class FindUserAreaDescriptionUseCase {
 
     @Inject
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
-    public SaveUserAreaDescriptionUseCase() {
+    public FindUserAreaDescriptionUseCase() {
     }
 
-    public Completable execute(UserAreaDescription userAreaDescription) {
-        if (userAreaDescription == null) throw new ArgumentNullException("areaDescriptionId");
+    public Observable<UserAreaDescription> execute(String areaDescriptionId) {
+        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
         return userAreaDescriptionRepository
-                .save(user.getUid(), userAreaDescription)
+                .find(user.getUid(), areaDescriptionId)
                 .subscribeOn(Schedulers.io());
     }
 }

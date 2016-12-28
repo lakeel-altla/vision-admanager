@@ -10,6 +10,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoSpaceFragment;
@@ -153,6 +154,11 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowEditUserAreaDescriptionFragment(String areaDescriptionId) {
+        showEditUserAreaDescriptionFragment(areaDescriptionId);
+    }
+
+    @Override
     public void onCloseSignInFragment() {
         showTangoPermissionFragment();
     }
@@ -173,6 +179,14 @@ public final class MainActivity extends AppCompatActivity
         TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
+                                   .commit();
+    }
+
+    public void showEditUserAreaDescriptionFragment(String areaDescriptionId) {
+        EditUserAreaDescriptionFragment fragment = EditUserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .addToBackStack(EditUserAreaDescriptionFragment.class.getName())
                                    .commit();
     }
 

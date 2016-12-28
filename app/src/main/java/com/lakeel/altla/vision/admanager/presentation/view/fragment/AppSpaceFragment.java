@@ -195,8 +195,15 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
         materialDialog.show();
     }
 
+    @Override
+    public void showEditUserAreaDescriptionFragment(String areaDescriptionId) {
+        interactionListener.onShowEditUserAreaDescriptionFragment(areaDescriptionId);
+    }
+
     public interface InteractionListener {
 
         TangoWrapper getTangoWrapper();
+
+        void onShowEditUserAreaDescriptionFragment(String areaDescriptionId);
     }
 }

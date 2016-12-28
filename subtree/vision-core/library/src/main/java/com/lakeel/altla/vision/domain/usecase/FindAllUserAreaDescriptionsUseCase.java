@@ -32,10 +32,12 @@ public final class FindAllUserAreaDescriptionsUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
+        String userId = user.getUid();
+
         return userAreaDescriptionRepository
-                .findAll(user.getUid())
+                .findAll(userId)
                 .flatMap(this::checkFileCached)
-                .flatMap(this::checkFileUploaded)
+                .flatMap(userAreaDescription -> checkFileUploaded(userId, userAreaDescription))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -48,9 +50,9 @@ public final class FindAllUserAreaDescriptionsUseCase {
                 }).toObservable();
     }
 
-    private Observable<UserAreaDescription> checkFileUploaded(UserAreaDescription userAreaDescription) {
+    private Observable<UserAreaDescription> checkFileUploaded(String userId, UserAreaDescription userAreaDescription) {
         return userAreaDescriptionFileRepository
-                .exists(userAreaDescription.userId, userAreaDescription.areaDescriptionId)
+                .exists(userId, userAreaDescription.areaDescriptionId)
                 .map(fileUploaded -> {
                     userAreaDescription.fileUploaded = fileUploaded;
                     return userAreaDescription;
