@@ -13,4 +13,6 @@ public interface EditUserAreaDescriptionView {
     void showNameError(@StringRes int resId);
 
     void hideNameError();
+
+    void showPlacePicker();
 }

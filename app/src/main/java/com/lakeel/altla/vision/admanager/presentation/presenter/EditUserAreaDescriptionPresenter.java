@@ -1,5 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
@@ -26,6 +30,9 @@ public final class EditUserAreaDescriptionPresenter {
 
     @Inject
     SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
+
+    @Inject
+    GoogleApiClient googleApiClient;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -55,9 +62,33 @@ public final class EditUserAreaDescriptionPresenter {
                     .subscribe(userAreaDescription -> {
                         model.name = userAreaDescription.name;
                         model.creationTime = userAreaDescription.creationTime;
+                        model.placeId = userAreaDescription.placeId;
 
                         view.showModel(this.model);
                         modelLoaded = true;
+
+                        // TODO: implement as use-case class.
+                        // TODO: implement the progress ring to indicate loading.
+                        if (userAreaDescription.placeId != null && userAreaDescription.placeId.length() != 0) {
+                            Places.GeoDataApi
+                                    .getPlaceById(googleApiClient, userAreaDescription.placeId)
+                                    .setResultCallback(places -> {
+                                        if (places.getStatus().isSuccess()) {
+                                            Place place = places.get(0);
+
+                                            model.placeName = place.getName().toString();
+                                            model.placeAddress = place.getAddress().toString();
+
+                                            view.showModel(model);
+                                        } else if (places.getStatus().isCanceled()) {
+                                            LOG.e("Getting the place was canceled: placeId = %s",
+                                                  userAreaDescription.placeId);
+                                        } else if (places.getStatus().isInterrupted()) {
+                                            LOG.e("Getting the place was interrupted: placeId = %s",
+                                                  userAreaDescription.placeId);
+                                        }
+                                    });
+                        }
                     }, e -> {
                         LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
                                             model.areaDescriptionId), e);
@@ -83,8 +114,35 @@ public final class EditUserAreaDescriptionPresenter {
 
         view.hideNameError();
 
-        UserAreaDescription userAreaDescription = new UserAreaDescription(
-                model.areaDescriptionId, model.name, model.creationTime);
+        saveUserAreaDescription();
+    }
+
+    public void onClickImageButtonPickPlace() {
+        view.showPlacePicker();
+    }
+
+    public void onPlacePicked(@NonNull Place place) {
+        model.placeId = place.getId();
+        model.placeName = place.getName().toString();
+        model.placeAddress = place.getAddress().toString();
+
+        view.showModel(model);
+
+        saveUserAreaDescription();
+    }
+
+    public void onClickImageButtonRemovePlace() {
+        model.placeId = null;
+        model.placeName = null;
+        model.placeAddress = null;
+
+        view.showModel(model);
+
+        saveUserAreaDescription();
+    }
+
+    private void saveUserAreaDescription() {
+        UserAreaDescription userAreaDescription = map(model);
 
         Subscription subscription = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
@@ -96,5 +154,14 @@ public final class EditUserAreaDescriptionPresenter {
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
+    }
+
+    private UserAreaDescription map(EditUserAreaDescriptionModel model) {
+        UserAreaDescription userAreaDescription = new UserAreaDescription(
+                model.areaDescriptionId, model.name, model.creationTime);
+
+        userAreaDescription.placeId = model.placeId;
+
+        return userAreaDescription;
     }
 }

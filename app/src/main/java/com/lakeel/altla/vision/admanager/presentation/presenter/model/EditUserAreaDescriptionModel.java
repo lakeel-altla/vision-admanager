@@ -10,6 +10,12 @@ public final class EditUserAreaDescriptionModel {
 
     public String name;
 
+    public String placeId;
+
+    public String placeName;
+
+    public String placeAddress;
+
     public EditUserAreaDescriptionModel(@NonNull String areaDescriptionId) {
         this.areaDescriptionId = areaDescriptionId;
     }

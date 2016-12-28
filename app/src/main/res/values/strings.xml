@@ -48,5 +48,7 @@
 
     <string name="label_id">ID</string>
     <string name="input_error_name_required">Name is required.</string>
+    <string name="hint_edit_place">Place</string>
+    <string name="label_place">Place</string>
 
 </resources>

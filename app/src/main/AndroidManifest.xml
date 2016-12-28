@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.lakeel.altla.vision.admanager">
 
-    <!-- これを指定しなければエクスポートがエラーも吐かずに失敗する。 -->
+    <!-- to export Tango area descriptions into the external storage. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- to use Google Place API. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
             android:name=".presentation.app.MyApplication"
@@ -12,6 +14,9 @@
             android:label="@string/app_name"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="${GOOGLE_API_KEY}"/>
 
         <activity android:name=".presentation.view.activity.MainActivity"
                   android:theme="@style/AppTheme.NoActionBar">

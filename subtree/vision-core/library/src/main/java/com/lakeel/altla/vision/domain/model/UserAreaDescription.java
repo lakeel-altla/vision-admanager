@@ -10,6 +10,8 @@ public final class UserAreaDescription {
 
     public final long creationTime;
 
+    public String placeId;
+
     public boolean fileCached;
 
     public boolean fileUploaded;

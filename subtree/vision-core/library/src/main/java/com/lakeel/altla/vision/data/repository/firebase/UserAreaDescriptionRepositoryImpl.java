@@ -40,6 +40,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                 UserAreaDescriptionValue value = new UserAreaDescriptionValue();
                 value.name = userAreaDescription.name;
                 value.creationTime = userAreaDescription.creationTime;
+                value.placeId = userAreaDescription.placeId;
 
                 rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
                              .child(userId)
@@ -112,7 +113,14 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
     private UserAreaDescription map(DataSnapshot snapshot) {
         String areaDescriptionId = snapshot.getKey();
         UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-        return new UserAreaDescription(areaDescriptionId, value.name, value.creationTime);
+
+        UserAreaDescription userAreaDescription = new UserAreaDescription(
+                areaDescriptionId,
+                value.name,
+                value.creationTime);
+        userAreaDescription.placeId = value.placeId;
+
+        return userAreaDescription;
     }
 
     public static final class UserAreaDescriptionValue {
@@ -120,5 +128,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         public String name;
 
         public long creationTime;
+
+        public String placeId;
     }
 }
