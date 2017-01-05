@@ -63,6 +63,7 @@ public final class EditUserAreaDescriptionPresenter {
                         model.name = userAreaDescription.name;
                         model.creationTime = userAreaDescription.creationTime;
                         model.placeId = userAreaDescription.placeId;
+                        model.level = userAreaDescription.level;
 
                         view.showModel(this.model);
                         modelLoaded = true;
@@ -99,46 +100,62 @@ public final class EditUserAreaDescriptionPresenter {
 
     public void onPause() {
         compositeSubscription.clear();
+        modelLoaded = false;
     }
 
     public void onAfterTextChangedName(String name) {
-        model.name = name;
+        if (modelLoaded) {
+            model.name = name;
 
-        LOG.d("onAfterTextChangedName: name = %s", name);
+            // Don't save the empty name.
+            if (name == null || name.length() == 0) {
+                view.showNameError(R.string.input_error_name_required);
+                return;
+            }
 
-        // Don't save the empty name.
-        if (name == null || name.length() == 0) {
-            view.showNameError(R.string.input_error_name_required);
-            return;
+            view.hideNameError();
+
+            saveUserAreaDescription();
         }
-
-        view.hideNameError();
-
-        saveUserAreaDescription();
     }
 
     public void onClickImageButtonPickPlace() {
-        view.showPlacePicker();
+        if (modelLoaded) {
+            view.showPlacePicker();
+        }
     }
 
     public void onPlacePicked(@NonNull Place place) {
-        model.placeId = place.getId();
-        model.placeName = place.getName().toString();
-        model.placeAddress = place.getAddress().toString();
+        if (modelLoaded) {
+            model.placeId = place.getId();
+            model.placeName = place.getName().toString();
+            model.placeAddress = place.getAddress().toString();
 
-        view.showModel(model);
+            view.showModel(model);
 
-        saveUserAreaDescription();
+            saveUserAreaDescription();
+        }
     }
 
     public void onClickImageButtonRemovePlace() {
-        model.placeId = null;
-        model.placeName = null;
-        model.placeAddress = null;
+        // TODO: and if place loaded...
+        if (modelLoaded) {
+            model.placeId = null;
+            model.placeName = null;
+            model.placeAddress = null;
 
-        view.showModel(model);
+            view.showModel(model);
 
-        saveUserAreaDescription();
+            saveUserAreaDescription();
+        }
+    }
+
+    public void onItemSelectedSpinnerLevel(int level) {
+        if (modelLoaded) {
+            model.level = level;
+
+            saveUserAreaDescription();
+        }
     }
 
     private void saveUserAreaDescription() {
@@ -161,6 +178,7 @@ public final class EditUserAreaDescriptionPresenter {
                 model.areaDescriptionId, model.name, model.creationTime);
 
         userAreaDescription.placeId = model.placeId;
+        userAreaDescription.level = model.level;
 
         return userAreaDescription;
     }

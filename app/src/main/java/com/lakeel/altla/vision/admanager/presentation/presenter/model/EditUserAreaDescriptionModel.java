@@ -16,6 +16,8 @@ public final class EditUserAreaDescriptionModel {
 
     public String placeAddress;
 
+    public int level;
+
     public EditUserAreaDescriptionModel(@NonNull String areaDescriptionId) {
         this.areaDescriptionId = areaDescriptionId;
     }

@@ -29,13 +29,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
 
 public final class EditUserAreaDescriptionFragment extends Fragment implements EditUserAreaDescriptionView {
@@ -43,6 +51,12 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
     private static final int REQUEST_CODE_PLACE_PICKER = 1;
+
+    private static final int LEVEL_MIN = -100;
+
+    private static final int LEVEL_MAX = 100;
+
+    private static final List<Integer> LEVELS;
 
     @Inject
     EditUserAreaDescriptionPresenter presenter;
@@ -73,6 +87,17 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
 
     @BindView(R.id.text_view_place_address)
     TextView textViewPlaceAddress;
+
+    @BindView(R.id.spinner_level)
+    Spinner spinnerLevel;
+
+    static {
+        List<Integer> levelValues = new ArrayList<>();
+        for (int i = LEVEL_MIN; i <= LEVEL_MAX; i++) {
+            levelValues.add(i);
+        }
+        LEVELS = Collections.unmodifiableList(levelValues);
+    }
 
     public static EditUserAreaDescriptionFragment newInstance(String areaDescriptionId) {
         EditUserAreaDescriptionFragment fragment = new EditUserAreaDescriptionFragment();
@@ -121,6 +146,10 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
             return false;
         });
 
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        adapter.addAll(LEVELS);
+        spinnerLevel.setAdapter(adapter);
+
         return view;
     }
 
@@ -154,6 +183,9 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
         textInputEditTextName.setText(model.name);
         textViewPlaceName.setText(model.placeName);
         textViewPlaceAddress.setText(model.placeAddress);
+
+        int position = LEVELS.indexOf(model.level);
+        spinnerLevel.setSelection(position);
     }
 
     @Override
@@ -197,5 +229,11 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     @OnClick(R.id.image_button_remove_place)
     void onClickImageButtonRemovePlace() {
         presenter.onClickImageButtonRemovePlace();
+    }
+
+    @OnItemSelected(R.id.spinner_level)
+    void onItemSelectedSpinnerLevel(AdapterView<?> parent, View view, int position, long id) {
+        int level = (Integer) spinnerLevel.getSelectedItem();
+        presenter.onItemSelectedSpinnerLevel(level);
     }
 }

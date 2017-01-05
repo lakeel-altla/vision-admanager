@@ -41,6 +41,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                 value.name = userAreaDescription.name;
                 value.creationTime = userAreaDescription.creationTime;
                 value.placeId = userAreaDescription.placeId;
+                value.level = userAreaDescription.level;
 
                 rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
                              .child(userId)
@@ -119,6 +120,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                 value.name,
                 value.creationTime);
         userAreaDescription.placeId = value.placeId;
+        userAreaDescription.level = value.level;
 
         return userAreaDescription;
     }
@@ -130,5 +132,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         public long creationTime;
 
         public String placeId;
+
+        public int level;
     }
 }
