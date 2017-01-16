@@ -12,8 +12,6 @@ final class Names {
 
     static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
 
-    static final String FIREBASE_STORAGE_URI = "firebaseStorage.uri";
-
     static final String FIREBASE_STORAGE_REFERENCE_ROOT = "firebaseStorage.reference.root";
 
     private Names() {

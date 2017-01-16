@@ -21,8 +21,7 @@ public final class FirebaseStorageModule {
     @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT)
     @Singleton
     @Provides
-    public StorageReference provideRootReference(FirebaseStorage storage,
-                                                 @Named(Names.FIREBASE_STORAGE_URI) String uri) {
-        return storage.getReferenceFromUrl(uri);
+    public StorageReference provideRootReference(FirebaseStorage storage) {
+        return storage.getReference();
     }
 }

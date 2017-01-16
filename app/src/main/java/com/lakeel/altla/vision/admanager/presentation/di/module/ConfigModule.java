@@ -11,15 +11,6 @@ import dagger.Provides;
 @Module
 public final class ConfigModule {
 
-    private static final String FIREBASE_STORAGE_URI = "gs://firebase-trial.appspot.com";
-
-    @Named(Names.FIREBASE_STORAGE_URI)
-    @Singleton
-    @Provides
-    public String provideFirebaseStorageUri() {
-        return FIREBASE_STORAGE_URI;
-    }
-
     @Named(Names.GOOGLE_SIGN_IN_WEB_CLIENT_ID)
     @Singleton
     @Provides
