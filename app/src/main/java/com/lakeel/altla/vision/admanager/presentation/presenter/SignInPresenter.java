@@ -93,18 +93,21 @@ public final class SignInPresenter {
         if (resultCode != Activity.RESULT_OK) {
             LOG.d("Canceled to sign in to Google.");
             view.showSnackbar(R.string.snackbar_google_sign_in_reqiured);
+            return;
         }
 
         GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (!googleSignInResult.isSuccess()) {
             LOG.e("Failed to sign in to Google.");
             view.showSnackbar(R.string.snackbar_google_sign_in_failed);
+            return;
         }
 
         GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
         if (googleSignInAccount == null) {
             LOG.e("GoogleSignInAccount is null");
             view.showSnackbar(R.string.snackbar_google_sign_in_failed);
+            return;
         }
 
         Subscription subscription = signInWithGoogleUseCase
