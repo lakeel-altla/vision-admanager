@@ -32,16 +32,10 @@ public final class UserDeviceRepositoryImpl implements UserDeviceRepository {
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                UserDeviceValue value = new UserDeviceValue();
-                value.creationTime = userDevice.creationTime;
-                value.osName = userDevice.osName;
-                value.osModel = userDevice.osModel;
-                value.osVersion = userDevice.osVersion;
-
                 rootReference.child(PATH_USER_DEVICES)
                              .child(userDevice.userId)
                              .child(userDevice.instanceId)
-                             .setValue(value, (error, reference) -> {
+                             .setValue(userDevice, (error, reference) -> {
                                  if (error != null) {
                                      LOG.e(String.format("Failed to save: reference = %s", reference),
                                            error.toException());
@@ -51,16 +45,5 @@ public final class UserDeviceRepositoryImpl implements UserDeviceRepository {
                 subscriber.onCompleted();
             }
         });
-    }
-
-    public static final class UserDeviceValue {
-
-        public long creationTime;
-
-        public String osName;
-
-        public String osModel;
-
-        public String osVersion;
     }
 }

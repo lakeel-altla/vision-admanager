@@ -1,8 +1,5 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
@@ -24,11 +21,8 @@ public final class SaveUserAreaDescriptionUseCase {
     public Completable execute(UserAreaDescription userAreaDescription) {
         if (userAreaDescription == null) throw new ArgumentNullException("areaDescriptionId");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
-
         return userAreaDescriptionRepository
-                .save(user.getUid(), userAreaDescription)
+                .save(userAreaDescription)
                 .subscribeOn(Schedulers.io());
     }
 }

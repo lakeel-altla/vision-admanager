@@ -7,7 +7,7 @@ import rx.Observable;
 
 public interface UserAreaDescriptionRepository {
 
-    Completable save(String userId, UserAreaDescription userAreaDescription);
+    Completable save(UserAreaDescription userAreaDescription);
 
     Observable<UserAreaDescription> find(String userId, String areaDescriptionId);
 

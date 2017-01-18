@@ -30,23 +30,16 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
     }
 
     @Override
-    public Completable save(String userId, UserAreaDescription userAreaDescription) {
-        if (userId == null) throw new ArgumentNullException("userId");
+    public Completable save(UserAreaDescription userAreaDescription) {
         if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
 
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                UserAreaDescriptionValue value = new UserAreaDescriptionValue();
-                value.name = userAreaDescription.name;
-                value.creationTime = userAreaDescription.creationTime;
-                value.placeId = userAreaDescription.placeId;
-                value.level = userAreaDescription.level;
-
                 rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                             .child(userId)
+                             .child(userAreaDescription.userId)
                              .child(userAreaDescription.areaDescriptionId)
-                             .setValue(value, (error, reference) -> {
+                             .setValue(userAreaDescription, (error, reference) -> {
                                  if (error != null) {
                                      LOG.e(String.format("Failed to save: reference = %s", reference),
                                            error.toException());
@@ -71,7 +64,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
           .filter(DataSnapshot::exists)
-          .map(this::map);
+          .map(snapshot -> map(userId, snapshot));
     }
 
     @Override
@@ -81,12 +74,11 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                                        .child(userId)
                                        .orderByValue();
 
-
             subscriber.onNext(query);
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
           .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-          .map(this::map);
+          .map(snapshot -> map(userId, snapshot));
     }
 
     @Override
@@ -111,28 +103,10 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         });
     }
 
-    private UserAreaDescription map(DataSnapshot snapshot) {
-        String areaDescriptionId = snapshot.getKey();
-        UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-
-        UserAreaDescription userAreaDescription = new UserAreaDescription(
-                areaDescriptionId,
-                value.name,
-                value.creationTime);
-        userAreaDescription.placeId = value.placeId;
-        userAreaDescription.level = value.level;
-
+    private UserAreaDescription map(String userId, DataSnapshot snapshot) {
+        UserAreaDescription userAreaDescription = snapshot.getValue(UserAreaDescription.class);
+        userAreaDescription.userId = userId;
+        userAreaDescription.areaDescriptionId = snapshot.getKey();
         return userAreaDescription;
-    }
-
-    public static final class UserAreaDescriptionValue {
-
-        public String name;
-
-        public long creationTime;
-
-        public String placeId;
-
-        public int level;
     }
 }

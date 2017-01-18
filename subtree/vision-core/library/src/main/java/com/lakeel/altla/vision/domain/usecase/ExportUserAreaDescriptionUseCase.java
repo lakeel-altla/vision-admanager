@@ -4,21 +4,17 @@ import com.google.atap.tangoservice.Tango;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.mapper.UserAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.inject.Inject;
 
 import rx.Single;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public final class ExportUserAreaDescriptionUseCase {
@@ -34,14 +30,6 @@ public final class ExportUserAreaDescriptionUseCase {
 
     @Inject
     AreaDescriptionCacheRepository areaDescriptionCacheRepository;
-
-    private final Action1<? super InputStream> closeStream = stream -> {
-        try {
-            stream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    };
 
     @Inject
     public ExportUserAreaDescriptionUseCase() {
@@ -69,7 +57,14 @@ public final class ExportUserAreaDescriptionUseCase {
         return tangoAreaDescriptionMetadataRepository
                 .find(model.tango, model.areaDescriptionId)
                 .map(metaData -> {
-                    model.userAreaDescription = UserAreaDescriptionMapper.map(metaData);
+                    UserAreaDescription userAreaDescription = new UserAreaDescription();
+                    userAreaDescription.userId = model.userId;
+                    userAreaDescription.areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
+                    userAreaDescription.name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
+                    userAreaDescription.creationTime = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);
+
+                    model.userAreaDescription = userAreaDescription;
+
                     return model;
                 })
                 .toSingle();
@@ -77,7 +72,7 @@ public final class ExportUserAreaDescriptionUseCase {
 
     private Single<Model> saveUserAreaDescription(Model model) {
         return userAreaDescriptionRepository
-                .save(model.userId, model.userAreaDescription)
+                .save(model.userAreaDescription)
                 .toSingleDefault(model);
     }
 

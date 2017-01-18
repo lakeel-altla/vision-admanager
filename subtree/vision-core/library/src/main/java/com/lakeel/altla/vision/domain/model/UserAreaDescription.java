@@ -1,29 +1,26 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.lakeel.altla.vision.ArgumentNullException;
+import com.google.firebase.database.Exclude;
 
 public final class UserAreaDescription {
 
-    public final String areaDescriptionId;
+    @Exclude
+    public String userId;
 
-    public final String name;
+    @Exclude
+    public String areaDescriptionId;
 
-    public final long creationTime;
+    public String name;
+
+    public long creationTime;
 
     public String placeId;
 
     public int level;
 
+    @Exclude
     public boolean fileCached;
 
+    @Exclude
     public boolean fileUploaded;
-
-    public UserAreaDescription(String areaDescriptionId, String name, long creationTime) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-        if (name == null) throw new ArgumentNullException("name");
-
-        this.areaDescriptionId = areaDescriptionId;
-        this.name = name;
-        this.creationTime = creationTime;
-    }
 }

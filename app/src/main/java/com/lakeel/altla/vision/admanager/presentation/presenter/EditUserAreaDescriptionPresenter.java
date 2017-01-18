@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -159,7 +160,13 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     private void saveUserAreaDescription() {
-        UserAreaDescription userAreaDescription = map(model);
+        UserAreaDescription userAreaDescription = new UserAreaDescription();
+        userAreaDescription.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userAreaDescription.areaDescriptionId = model.areaDescriptionId;
+        userAreaDescription.name = model.name;
+        userAreaDescription.creationTime = model.creationTime;
+        userAreaDescription.placeId = model.placeId;
+        userAreaDescription.level = model.level;
 
         Subscription subscription = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
@@ -171,15 +178,5 @@ public final class EditUserAreaDescriptionPresenter {
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
-    }
-
-    private UserAreaDescription map(EditUserAreaDescriptionModel model) {
-        UserAreaDescription userAreaDescription = new UserAreaDescription(
-                model.areaDescriptionId, model.name, model.creationTime);
-
-        userAreaDescription.placeId = model.placeId;
-        userAreaDescription.level = model.level;
-
-        return userAreaDescription;
     }
 }
