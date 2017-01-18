@@ -53,7 +53,7 @@ public final class UserDeviceRepositoryImpl implements UserDeviceRepository {
         });
     }
 
-    public final class UserDeviceValue {
+    public static final class UserDeviceValue {
 
         public long creationTime;
 

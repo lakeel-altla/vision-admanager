@@ -43,6 +43,8 @@ public final class SignInPresenter {
 
     private boolean signedInDetected;
 
+    private boolean signInButtonClicked;
+
     @Inject
     public SignInPresenter() {
         // See:
@@ -54,7 +56,10 @@ public final class SignInPresenter {
             if (user != null) {
                 if (!signedInDetected) {
                     LOG.i("Signed in to firebase: %s", user.getUid());
-                    view.closeSignInFragment();
+                    if (!signInButtonClicked) {
+                        // Auto sign in.
+                        view.closeSignInFragment();
+                    }
                     signedInDetected = true;
                 } else {
                     LOG.d("onAuthStateChanged() is fired twice.");
@@ -79,6 +84,8 @@ public final class SignInPresenter {
     }
 
     public void onClickButtonSignIn() {
+        signInButtonClicked = true;
+
         Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
 
         view.startActivityForResult(intent, REQUEST_CODE_GOOGLE_SIGN_IN);
@@ -116,8 +123,7 @@ public final class SignInPresenter {
                 .doOnSubscribe(_subscription -> view.showProgressDialog())
                 .doOnUnsubscribe(() -> view.hideProgressDialog())
                 .subscribe(() -> {
-                    // As the main thread is called first, the fragments are discarded in Firebase's callback,
-                    // so the RX processing is also canceled and will not be called here.
+                    view.closeSignInFragment();
                 }, e -> LOG.e("Failed to sign in to Firebase.", e));
         compositeSubscription.add(subscription);
     }
