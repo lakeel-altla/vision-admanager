@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 
 import com.lakeel.altla.android.log.Log;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 import rx.Single;
 
-public final class UserConnectionRepository {
+public final class UserConnectionRepository extends BaseDatabaseRepository {
 
     private static final Log LOG = LogFactory.getLog(UserConnectionRepository.class);
 
@@ -23,21 +24,17 @@ public final class UserConnectionRepository {
 
     private static final String PATH_LAST_ONLINE_TIME = "lastOnlineTime";
 
-    private final DatabaseReference rootReference;
-
-    public UserConnectionRepository(DatabaseReference rootReference) {
-        if (rootReference == null) throw new ArgumentNullException("rootReference");
-
-        this.rootReference = rootReference;
+    public UserConnectionRepository(FirebaseDatabase database) {
+        super(database);
     }
 
     public Single<UserConnection> markAsOnline(UserConnection userConnection) {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 
         return Single.create(subscriber -> {
-            DatabaseReference connectionReference = rootReference.child(PATH_USER_CONNECTIONS)
-                                                                 .child(userConnection.userId)
-                                                                 .child(userConnection.instanceId);
+            DatabaseReference connectionReference = getRootReference().child(PATH_USER_CONNECTIONS)
+                                                                      .child(userConnection.userId)
+                                                                      .child(userConnection.instanceId);
             DatabaseReference onlineReference = connectionReference.child(PATH_ONLINE);
             DatabaseReference lastOnlineTimeReference = connectionReference.child(PATH_LAST_ONLINE_TIME);
 
@@ -68,9 +65,9 @@ public final class UserConnectionRepository {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 
         return Single.create(subscriber -> {
-            DatabaseReference connectionReference = rootReference.child(PATH_USER_CONNECTIONS)
-                                                                 .child(userConnection.userId)
-                                                                 .child(userConnection.instanceId);
+            DatabaseReference connectionReference = getRootReference().child(PATH_USER_CONNECTIONS)
+                                                                      .child(userConnection.userId)
+                                                                      .child(userConnection.instanceId);
 
             Map<String, Object> children = new HashMap<>(2);
             children.put(PATH_ONLINE, Boolean.FALSE);

@@ -1,15 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.di.module;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
-
-import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -19,29 +17,25 @@ public final class FirebaseRepositoryModule {
 
     @ActivityScope
     @Provides
-    public UserProfileRepository provideUserProfileRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference) {
-        return new UserProfileRepository(reference);
+    public UserProfileRepository provideUserProfileRepository(FirebaseDatabase database) {
+        return new UserProfileRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserDeviceRepository provideUserDeviceRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference) {
-        return new UserDeviceRepository(reference);
+    public UserDeviceRepository provideUserDeviceRepository(FirebaseDatabase database) {
+        return new UserDeviceRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserAreaDescriptionRepository provideUserAreaDescriptionRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference) {
-        return new UserAreaDescriptionRepository(reference);
+    public UserAreaDescriptionRepository provideUserAreaDescriptionRepository(FirebaseDatabase database) {
+        return new UserAreaDescriptionRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserAreaDescriptionFileRepository provideUserAreaDescriptionFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference) {
-        return new UserAreaDescriptionFileRepository(reference);
+    public UserAreaDescriptionFileRepository provideUserAreaDescriptionFileRepository(FirebaseStorage storage) {
+        return new UserAreaDescriptionFileRepository(storage);
     }
 }

@@ -10,10 +10,6 @@ final class Names {
 
     static final String EXTERNAL_STORAGE_ROOT = "external.storage.root";
 
-    static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
-
-    static final String FIREBASE_STORAGE_REFERENCE_ROOT = "firebaseStorage.reference.root";
-
     private Names() {
     }
 }

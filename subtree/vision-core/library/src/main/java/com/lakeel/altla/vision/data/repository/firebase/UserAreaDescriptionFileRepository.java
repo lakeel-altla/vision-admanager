@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -18,16 +19,12 @@ import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Single;
 
-public final class UserAreaDescriptionFileRepository {
+public final class UserAreaDescriptionFileRepository extends BaseStorageRepository {
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
-    private final StorageReference rootReference;
-
-    public UserAreaDescriptionFileRepository(StorageReference rootReference) {
-        if (rootReference == null) throw new ArgumentNullException("rootReference");
-
-        this.rootReference = rootReference;
+    public UserAreaDescriptionFileRepository(FirebaseStorage storage) {
+        super(storage);
     }
 
     public Single<Boolean> exists(String userId, String areaDescriptionId) {
@@ -35,9 +32,9 @@ public final class UserAreaDescriptionFileRepository {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         return Single.<Task<StorageMetadata>>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                      .child(userId)
-                                                      .child(areaDescriptionId);
+            StorageReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                                           .child(userId)
+                                                           .child(areaDescriptionId);
             Task<StorageMetadata> task = reference.getMetadata();
 
             subscriber.onSuccess(task);
@@ -63,9 +60,9 @@ public final class UserAreaDescriptionFileRepository {
         if (stream == null) throw new ArgumentNullException("stream");
 
         return Single.<UploadTask>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                      .child(userId)
-                                                      .child(areaDescriptionId);
+            StorageReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                                           .child(userId)
+                                                           .child(areaDescriptionId);
             UploadTask task = reference.putStream(stream);
 
             subscriber.onSuccess(task);
@@ -80,9 +77,9 @@ public final class UserAreaDescriptionFileRepository {
         if (destination == null) throw new ArgumentNullException("destination");
 
         return Single.<FileDownloadTask>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                      .child(userId)
-                                                      .child(areaDescriptionId);
+            StorageReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                                           .child(userId)
+                                                           .child(areaDescriptionId);
             FileDownloadTask task = reference.getFile(destination);
 
             subscriber.onSuccess(task);
@@ -95,9 +92,9 @@ public final class UserAreaDescriptionFileRepository {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         return Single.<Task<Void>>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                      .child(userId)
-                                                      .child(areaDescriptionId);
+            StorageReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                                           .child(userId)
+                                                           .child(areaDescriptionId);
             Task<Void> task = reference.delete();
 
             subscriber.onSuccess(task);

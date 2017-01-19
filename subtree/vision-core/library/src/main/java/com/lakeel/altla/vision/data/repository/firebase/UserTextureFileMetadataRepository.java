@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageReference;
 
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
@@ -11,16 +11,12 @@ import com.lakeel.altla.vision.domain.model.TextureFileMetadata;
 import rx.Observable;
 import rx.Single;
 
-public final class UserTextureFileMetadataRepository {
+public final class UserTextureFileMetadataRepository extends BaseStorageRepository {
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
-    private final StorageReference rootReference;
-
-    public UserTextureFileMetadataRepository(StorageReference rootReference) {
-        if (rootReference == null) throw new ArgumentNullException("rootReference");
-
-        this.rootReference = rootReference;
+    public UserTextureFileMetadataRepository(FirebaseStorage storage) {
+        super(storage);
     }
 
     public Observable<TextureFileMetadata> find(String userId, String textureId) {
@@ -28,10 +24,10 @@ public final class UserTextureFileMetadataRepository {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
         return Single.<Task<StorageMetadata>>create(subscriber -> {
-            Task<StorageMetadata> task = rootReference.child(PATH_USER_TEXTURES)
-                                                      .child(userId)
-                                                      .child(textureId)
-                                                      .getMetadata();
+            Task<StorageMetadata> task = getRootReference().child(PATH_USER_TEXTURES)
+                                                           .child(userId)
+                                                           .child(textureId)
+                                                           .getMetadata();
             subscriber.onSuccess(task);
         }).flatMapObservable(RxGmsTask::asObservable)
           .map(storageMetadata -> {

@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -16,16 +17,12 @@ import java.io.InputStream;
 import rx.Completable;
 import rx.Single;
 
-public final class UserTextureFileRepository {
+public final class UserTextureFileRepository extends BaseStorageRepository {
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
-    private final StorageReference rootReference;
-
-    public UserTextureFileRepository(StorageReference rootReference) {
-        if (rootReference == null) throw new ArgumentNullException("rootReference");
-
-        this.rootReference = rootReference;
+    public UserTextureFileRepository(FirebaseStorage storage) {
+        super(storage);
     }
 
     public Completable save(String userId, String textureId, InputStream stream,
@@ -35,9 +32,9 @@ public final class UserTextureFileRepository {
         if (stream == null) throw new ArgumentNullException("stream");
 
         return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                      .child(userId)
-                                                      .child(textureId);
+            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
+                                                           .child(userId)
+                                                           .child(textureId);
             subscriber.onSuccess(reference);
         }).flatMapCompletable(reference -> {
             UploadTask task = reference.putStream(stream);
@@ -50,9 +47,9 @@ public final class UserTextureFileRepository {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
         return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                      .child(userId)
-                                                      .child(textureId);
+            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
+                                                           .child(userId)
+                                                           .child(textureId);
             subscriber.onSuccess(reference);
         }).flatMapCompletable(reference -> {
             Task<Void> task = reference.delete();
@@ -67,9 +64,9 @@ public final class UserTextureFileRepository {
         if (destination == null) throw new ArgumentNullException("destination");
 
         return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                      .child(userId)
-                                                      .child(textureId);
+            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
+                                                           .child(userId)
+                                                           .child(textureId);
             subscriber.onSuccess(reference);
         }).flatMapCompletable(reference -> {
             FileDownloadTask task = reference.getFile(destination);

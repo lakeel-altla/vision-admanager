@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import com.lakeel.altla.android.log.Log;
@@ -14,18 +15,14 @@ import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Observable;
 
-public final class UserAreaDescriptionRepository {
+public final class UserAreaDescriptionRepository extends BaseDatabaseRepository {
 
     private static final Log LOG = LogFactory.getLog(UserAreaDescriptionRepository.class);
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
-    private final DatabaseReference rootReference;
-
-    public UserAreaDescriptionRepository(DatabaseReference rootReference) {
-        if (rootReference == null) throw new ArgumentNullException("rootReference");
-
-        this.rootReference = rootReference;
+    public UserAreaDescriptionRepository(FirebaseDatabase database) {
+        super(database);
     }
 
     public Completable save(UserAreaDescription userAreaDescription) {
@@ -34,15 +31,15 @@ public final class UserAreaDescriptionRepository {
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                             .child(userAreaDescription.userId)
-                             .child(userAreaDescription.areaDescriptionId)
-                             .setValue(userAreaDescription, (error, reference) -> {
-                                 if (error != null) {
-                                     LOG.e(String.format("Failed to save: reference = %s", reference),
-                                           error.toException());
-                                 }
-                             });
+                getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                  .child(userAreaDescription.userId)
+                                  .child(userAreaDescription.areaDescriptionId)
+                                  .setValue(userAreaDescription, (error, reference) -> {
+                                      if (error != null) {
+                                          LOG.e(String.format("Failed to save: reference = %s", reference),
+                                                error.toException());
+                                      }
+                                  });
 
                 subscriber.onCompleted();
             }
@@ -53,9 +50,9 @@ public final class UserAreaDescriptionRepository {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         return Observable.<DatabaseReference>create(subscriber -> {
-            DatabaseReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                       .child(userId)
-                                                       .child(areaDescriptionId);
+            DatabaseReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                                            .child(userId)
+                                                            .child(areaDescriptionId);
 
             subscriber.onNext(reference);
             subscriber.onCompleted();
@@ -66,9 +63,9 @@ public final class UserAreaDescriptionRepository {
 
     public Observable<UserAreaDescription> findAll(String userId) {
         return Observable.<Query>create(subscriber -> {
-            Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                       .child(userId)
-                                       .orderByValue();
+            Query query = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                            .child(userId)
+                                            .orderByValue();
 
             subscriber.onNext(query);
             subscriber.onCompleted();
@@ -83,15 +80,15 @@ public final class UserAreaDescriptionRepository {
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                             .child(userId)
-                             .child(areaDescriptionId)
-                             .removeValue((error, reference) -> {
-                                 if (error != null) {
-                                     LOG.e(String.format("Failed to remove: reference = %s", reference),
-                                           error.toException());
-                                 }
-                             });
+                getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
+                                  .child(userId)
+                                  .child(areaDescriptionId)
+                                  .removeValue((error, reference) -> {
+                                      if (error != null) {
+                                          LOG.e(String.format("Failed to remove: reference = %s", reference),
+                                                error.toException());
+                                      }
+                                  });
 
                 subscriber.onCompleted();
             }
