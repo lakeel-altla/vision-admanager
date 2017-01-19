@@ -4,8 +4,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.domain.model.UserConnection;
-import com.lakeel.altla.vision.domain.repository.UserConnectionRepository;
 
 import javax.inject.Inject;
 

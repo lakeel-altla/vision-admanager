@@ -9,15 +9,14 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserTexture;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Observable;
 
-public final class UserTextureRepositoryImpl implements UserTextureRepository {
+public final class UserTextureRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserTextureRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserTextureRepository.class);
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
@@ -25,13 +24,12 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
 
     private final DatabaseReference rootReference;
 
-    public UserTextureRepositoryImpl(DatabaseReference rootReference) {
+    public UserTextureRepository(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Completable save(UserTexture userTexture) {
         if (userTexture == null) throw new ArgumentNullException("userTexture");
 
@@ -52,7 +50,6 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
         });
     }
 
-    @Override
     public Observable<UserTexture> find(String userId, String textureId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");
@@ -68,7 +65,6 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
           .map(snapshot -> map(userId, snapshot));
     }
 
-    @Override
     public Observable<UserTexture> findAll(String userId) {
         if (userId == null) throw new ArgumentNullException("userId");
 
@@ -83,7 +79,6 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
           .map(snapshot -> map(userId, snapshot));
     }
 
-    @Override
     public Completable delete(String userId, String textureId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");

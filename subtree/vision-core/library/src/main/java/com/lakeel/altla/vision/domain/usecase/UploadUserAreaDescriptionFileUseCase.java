@@ -4,9 +4,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -6,26 +6,24 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserDevice;
-import com.lakeel.altla.vision.domain.repository.UserDeviceRepository;
 
 import rx.Completable;
 import rx.CompletableSubscriber;
 
-public final class UserDeviceRepositoryImpl implements UserDeviceRepository {
+public final class UserDeviceRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserDeviceRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserDeviceRepository.class);
 
     private static final String PATH_USER_DEVICES = "userDevices";
 
     private final DatabaseReference rootReference;
 
-    public UserDeviceRepositoryImpl(DatabaseReference rootReference) {
+    public UserDeviceRepository(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Completable save(UserDevice userDevice) {
         if (userDevice == null) throw new ArgumentNullException("userDevice");
 

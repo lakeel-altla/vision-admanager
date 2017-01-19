@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.DocumentFilenameRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentFilenameRepository;
 
 import android.net.Uri;
 

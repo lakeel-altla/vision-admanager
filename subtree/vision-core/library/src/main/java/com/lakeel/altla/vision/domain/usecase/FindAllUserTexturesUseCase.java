@@ -3,8 +3,8 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.model.UserTexture;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import javax.inject.Inject;
 

@@ -1,7 +1,6 @@
 package com.lakeel.altla.vision.data.repository.android;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.DocumentBitmapRepository;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -15,17 +14,16 @@ import java.io.IOException;
 
 import rx.Single;
 
-public final class DocumentBitmapRepositoryImpl implements DocumentBitmapRepository {
+public final class DocumentBitmapRepository {
 
     private final ContentResolver contentResolver;
 
-    public DocumentBitmapRepositoryImpl(ContentResolver contentResolver) {
+    public DocumentBitmapRepository(ContentResolver contentResolver) {
         if (contentResolver == null) throw new ArgumentNullException("contentResolver");
 
         this.contentResolver = contentResolver;
     }
 
-    @Override
     public Single<Bitmap> find(Uri uri) {
         return Single.create(subscriber -> {
             contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);

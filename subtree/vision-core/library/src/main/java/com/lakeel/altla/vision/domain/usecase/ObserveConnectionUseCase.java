@@ -6,9 +6,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.domain.model.UserConnection;
-import com.lakeel.altla.vision.domain.repository.ConnectionRepository;
-import com.lakeel.altla.vision.domain.repository.UserConnectionRepository;
 
 import javax.inject.Inject;
 

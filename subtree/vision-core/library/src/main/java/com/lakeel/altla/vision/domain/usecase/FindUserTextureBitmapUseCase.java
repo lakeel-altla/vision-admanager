@@ -6,12 +6,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.FileBitmapRepository;
+import com.lakeel.altla.vision.data.repository.android.TextureCacheRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileMetadataRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.repository.FileBitmapRepository;
-import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileMetadataRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import android.graphics.Bitmap;
 

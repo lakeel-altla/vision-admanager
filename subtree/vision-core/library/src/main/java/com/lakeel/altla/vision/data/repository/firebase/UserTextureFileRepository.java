@@ -9,7 +9,6 @@ import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
 
 import java.io.File;
 import java.io.InputStream;
@@ -17,19 +16,18 @@ import java.io.InputStream;
 import rx.Completable;
 import rx.Single;
 
-public final class UserTextureFileRepositoryImpl implements UserTextureFileRepository {
+public final class UserTextureFileRepository {
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
     private final StorageReference rootReference;
 
-    public UserTextureFileRepositoryImpl(StorageReference rootReference) {
+    public UserTextureFileRepository(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Completable save(String userId, String textureId, InputStream stream,
                             OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");
@@ -47,7 +45,6 @@ public final class UserTextureFileRepositoryImpl implements UserTextureFileRepos
         });
     }
 
-    @Override
     public Completable delete(String userId, String textureId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");
@@ -63,7 +60,6 @@ public final class UserTextureFileRepositoryImpl implements UserTextureFileRepos
         });
     }
 
-    @Override
     public Completable download(String userId, String textureId, File destination,
                                 OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");

@@ -1,7 +1,6 @@
 package com.lakeel.altla.vision.data.repository.android;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.DocumentRepository;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -12,17 +11,16 @@ import java.io.InputStream;
 
 import rx.Single;
 
-public final class DocumentRepositoryImpl implements DocumentRepository {
+public final class DocumentRepository {
 
     private final ContentResolver contentResolver;
 
-    public DocumentRepositoryImpl(ContentResolver contentResolver) {
+    public DocumentRepository(ContentResolver contentResolver) {
         if (contentResolver == null) throw new ArgumentNullException("contentResolver");
 
         this.contentResolver = contentResolver;
     }
 
-    @Override
     public Single<InputStream> openStream(String uriString) {
         return Single.create(subscriber -> {
 

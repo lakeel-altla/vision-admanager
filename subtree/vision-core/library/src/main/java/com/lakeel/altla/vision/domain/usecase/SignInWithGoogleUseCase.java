@@ -10,10 +10,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.rx.tasks.RxGmsTask;
+import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.domain.model.UserDevice;
 import com.lakeel.altla.vision.domain.model.UserProfile;
-import com.lakeel.altla.vision.domain.repository.UserDeviceRepository;
-import com.lakeel.altla.vision.domain.repository.UserProfileRepository;
 
 import android.os.Build;
 

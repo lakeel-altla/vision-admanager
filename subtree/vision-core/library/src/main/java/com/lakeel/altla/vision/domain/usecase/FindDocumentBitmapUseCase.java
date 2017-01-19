@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.DocumentBitmapRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepository;
 
 import android.graphics.Bitmap;
 import android.net.Uri;

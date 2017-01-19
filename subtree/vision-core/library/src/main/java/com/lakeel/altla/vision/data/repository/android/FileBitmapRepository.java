@@ -1,7 +1,5 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.lakeel.altla.vision.domain.repository.FileBitmapRepository;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -11,9 +9,8 @@ import java.io.IOException;
 
 import rx.Single;
 
-public final class FileBitmapRepositoryImpl implements FileBitmapRepository {
+public final class FileBitmapRepository {
 
-    @Override
     public Single<Bitmap> find(File file) {
         return Single.create(subscriber -> {
             try (FileInputStream stream = new FileInputStream(file)) {

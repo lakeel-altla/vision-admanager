@@ -9,27 +9,25 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Observable;
 
-public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescriptionRepository {
+public final class UserAreaDescriptionRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserAreaDescriptionRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserAreaDescriptionRepository.class);
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
     private final DatabaseReference rootReference;
 
-    public UserAreaDescriptionRepositoryImpl(DatabaseReference rootReference) {
+    public UserAreaDescriptionRepository(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Completable save(UserAreaDescription userAreaDescription) {
         if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
 
@@ -51,7 +49,6 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         });
     }
 
-    @Override
     public Observable<UserAreaDescription> find(String userId, String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
@@ -67,7 +64,6 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
           .map(snapshot -> map(userId, snapshot));
     }
 
-    @Override
     public Observable<UserAreaDescription> findAll(String userId) {
         return Observable.<Query>create(subscriber -> {
             Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
@@ -81,7 +77,6 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
           .map(snapshot -> map(userId, snapshot));
     }
 
-    @Override
     public Completable delete(String userId, String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 

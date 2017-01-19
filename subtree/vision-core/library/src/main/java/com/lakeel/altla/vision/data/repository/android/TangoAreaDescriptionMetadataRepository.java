@@ -6,7 +6,6 @@ import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import java.util.List;
 
@@ -14,11 +13,10 @@ import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Observable;
 
-public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAreaDescriptionMetadataRepository {
+public final class TangoAreaDescriptionMetadataRepository {
 
-    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionMetadataRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionMetadataRepository.class);
 
-    @Override
     public Observable<TangoAreaDescriptionMetaData> find(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
@@ -30,7 +28,6 @@ public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAr
         });
     }
 
-    @Override
     public Observable<TangoAreaDescriptionMetaData> findAll(Tango tango) {
         if (tango == null) throw new ArgumentNullException("tango");
 
@@ -43,7 +40,6 @@ public final class TangoAreaDescriptionMetadataRepositoryImpl implements TangoAr
         }).flatMap(areaDescriptionId -> find(tango, areaDescriptionId));
     }
 
-    @Override
     public Completable delete(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");

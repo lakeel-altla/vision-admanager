@@ -4,11 +4,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.model.UserTexture;
-import com.lakeel.altla.vision.domain.repository.DocumentRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import java.io.IOException;
 import java.io.InputStream;

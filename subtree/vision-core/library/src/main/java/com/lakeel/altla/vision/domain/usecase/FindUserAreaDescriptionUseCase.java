@@ -4,8 +4,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 

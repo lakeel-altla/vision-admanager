@@ -10,7 +10,6 @@ import com.google.firebase.storage.UploadTask;
 import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,19 +18,18 @@ import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Single;
 
-public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDescriptionFileRepository {
+public final class UserAreaDescriptionFileRepository {
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
     private final StorageReference rootReference;
 
-    public UserAreaDescriptionFileRepositoryImpl(StorageReference rootReference) {
+    public UserAreaDescriptionFileRepository(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Single<Boolean> exists(String userId, String areaDescriptionId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
@@ -58,7 +56,6 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
         }));
     }
 
-    @Override
     public Completable upload(String userId, String areaDescriptionId, InputStream stream,
                               OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");
@@ -76,7 +73,6 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
           .toCompletable();
     }
 
-    @Override
     public Completable download(String userId, String areaDescriptionId, File destination,
                                 OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");
@@ -94,7 +90,6 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
           .toCompletable();
     }
 
-    @Override
     public Completable delete(String userId, String areaDescriptionId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");

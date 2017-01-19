@@ -6,11 +6,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
-import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 

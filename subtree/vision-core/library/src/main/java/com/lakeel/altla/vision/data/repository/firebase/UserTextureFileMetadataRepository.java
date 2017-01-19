@@ -7,24 +7,22 @@ import com.google.firebase.storage.StorageReference;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.TextureFileMetadata;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileMetadataRepository;
 
 import rx.Observable;
 import rx.Single;
 
-public final class UserTextureFileMetadataRepositoryImpl implements UserTextureFileMetadataRepository {
+public final class UserTextureFileMetadataRepository {
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
     private final StorageReference rootReference;
 
-    public UserTextureFileMetadataRepositoryImpl(StorageReference rootReference) {
+    public UserTextureFileMetadataRepository(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Observable<TextureFileMetadata> find(String userId, String textureId) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");

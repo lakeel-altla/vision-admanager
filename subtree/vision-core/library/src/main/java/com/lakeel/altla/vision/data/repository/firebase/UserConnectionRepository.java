@@ -7,16 +7,15 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserConnection;
-import com.lakeel.altla.vision.domain.repository.UserConnectionRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Single;
 
-public final class UserConnectionRepositoryImpl implements UserConnectionRepository {
+public final class UserConnectionRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserConnectionRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserConnectionRepository.class);
 
     private static final String PATH_USER_CONNECTIONS = "userConnections";
 
@@ -26,13 +25,12 @@ public final class UserConnectionRepositoryImpl implements UserConnectionReposit
 
     private final DatabaseReference rootReference;
 
-    public UserConnectionRepositoryImpl(DatabaseReference rootReference) {
+    public UserConnectionRepository(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Single<UserConnection> markAsOnline(UserConnection userConnection) {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 
@@ -66,7 +64,6 @@ public final class UserConnectionRepositoryImpl implements UserConnectionReposit
         });
     }
 
-    @Override
     public Single<UserConnection> markAsOffline(UserConnection userConnection) {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 

@@ -1,7 +1,6 @@
 package com.lakeel.altla.vision.data.repository.android;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 
 import java.io.File;
 
@@ -9,19 +8,18 @@ import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Single;
 
-public final class AreaDescriptionCacheRepositoryImpl implements AreaDescriptionCacheRepository {
+public final class AreaDescriptionCacheRepository {
 
     private static final String PATH = "areaDescriptions";
 
     private final File rootDirectory;
 
-    public AreaDescriptionCacheRepositoryImpl(File rootDirectory) {
+    public AreaDescriptionCacheRepository(File rootDirectory) {
         if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
 
         this.rootDirectory = rootDirectory;
     }
 
-    @Override
     public Single<Boolean> exists(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
@@ -31,7 +29,6 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
         });
     }
 
-    @Override
     public Single<File> getDirectory() {
         return Single.create(subscriber -> {
             File file = ensureCacheDirectory();
@@ -39,7 +36,6 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
         });
     }
 
-    @Override
     public Single<File> getFile(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
@@ -49,7 +45,6 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
         });
     }
 
-    @Override
     public Completable delete(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 

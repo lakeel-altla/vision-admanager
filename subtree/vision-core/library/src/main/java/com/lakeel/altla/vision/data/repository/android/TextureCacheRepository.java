@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.data.repository.android;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
 
 import android.content.Context;
 
@@ -15,19 +14,18 @@ import rx.CompletableSubscriber;
 import rx.Observable;
 import rx.Single;
 
-public final class TextureCacheRepositoryImpl implements TextureCacheRepository {
+public final class TextureCacheRepository {
 
-    private static final Log LOG = LogFactory.getLog(TextureCacheRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(TextureCacheRepository.class);
 
     private final Context context;
 
-    public TextureCacheRepositoryImpl(Context context) {
+    public TextureCacheRepository(Context context) {
         if (context == null) throw new ArgumentNullException("context");
 
         this.context = context;
     }
 
-    @Override
     public Observable<File> find(String textureId) {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
@@ -43,7 +41,6 @@ public final class TextureCacheRepositoryImpl implements TextureCacheRepository 
         });
     }
 
-    @Override
     public Single<File> create(String textureId) {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
@@ -63,7 +60,6 @@ public final class TextureCacheRepositoryImpl implements TextureCacheRepository 
         });
     }
 
-    @Override
     public Completable delete(String textureId) {
         if (textureId == null) throw new ArgumentNullException("textureId");
 

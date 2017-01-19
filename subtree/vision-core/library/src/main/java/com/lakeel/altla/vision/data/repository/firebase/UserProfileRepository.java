@@ -8,27 +8,25 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserProfile;
-import com.lakeel.altla.vision.domain.repository.UserProfileRepository;
 
 import rx.Completable;
 import rx.CompletableSubscriber;
 import rx.Observable;
 
-public final class UserProfileRepositoryImpl implements UserProfileRepository {
+public final class UserProfileRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserProfileRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserProfileRepository.class);
 
     private static final String PATH_USER_PROFILES = "userProfiles";
 
     private final DatabaseReference rootReference;
 
-    public UserProfileRepositoryImpl(DatabaseReference rootReference) {
+    public UserProfileRepository(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;
     }
 
-    @Override
     public Completable save(UserProfile userProfile) {
         if (userProfile == null) throw new ArgumentNullException("userProfile");
 
@@ -48,7 +46,6 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
         });
     }
 
-    @Override
     public Observable<UserProfile> find(String userId) {
         if (userId == null) throw new ArgumentNullException("userId");
 
@@ -63,7 +60,6 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
           .map(snapshot -> map(userId, snapshot));
     }
 
-    @Override
     public Observable<UserProfile> observe(String userId) {
         if (userId == null) throw new ArgumentNullException("userId");
 

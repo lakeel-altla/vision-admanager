@@ -1,7 +1,5 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.lakeel.altla.vision.domain.repository.DocumentFilenameRepository;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,15 +7,14 @@ import android.provider.OpenableColumns;
 
 import rx.Single;
 
-public final class DocumentFilenameRepositoryImpl implements DocumentFilenameRepository {
+public final class DocumentFilenameRepository {
 
-    public final ContentResolver contentResolver;
+    private final ContentResolver contentResolver;
 
-    public DocumentFilenameRepositoryImpl(ContentResolver contentResolver) {
+    public DocumentFilenameRepository(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
     }
 
-    @Override
     public Single<String> find(Uri uri) {
         return Single.create(subscriber -> {
             Cursor cursor = contentResolver.query(uri, null, null, null, null);

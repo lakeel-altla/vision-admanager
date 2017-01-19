@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;
 

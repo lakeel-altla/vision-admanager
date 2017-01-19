@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
