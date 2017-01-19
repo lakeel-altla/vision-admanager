@@ -21,6 +21,8 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
+    private static final String FIELD_NAME = "name";
+
     private final DatabaseReference rootReference;
 
     public UserTextureRepositoryImpl(DatabaseReference rootReference) {
@@ -36,13 +38,10 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                UserTextureValue value = new UserTextureValue();
-                value.name = userTexture.name;
-
                 rootReference.child(PATH_USER_TEXTURES)
                              .child(userTexture.userId)
                              .child(userTexture.textureId)
-                             .setValue(value, (error, reference) -> {
+                             .setValue(userTexture, (error, reference) -> {
                                  if (error != null) {
                                      LOG.e("Failed to save.", error.toException());
                                  }
@@ -76,7 +75,7 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
         return Observable.<Query>create(subscriber -> {
             Query query = rootReference.child(PATH_USER_TEXTURES)
                                        .child(userId)
-                                       .orderByChild(UserTextureValue.FIELD_NAME);
+                                       .orderByChild(FIELD_NAME);
             subscriber.onNext(query);
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
@@ -107,16 +106,9 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
     }
 
     private UserTexture map(String userId, DataSnapshot snapshot) {
-        String textureId = snapshot.getKey();
-        UserTextureValue value = snapshot.getValue(UserTextureValue.class);
-
-        return new UserTexture(userId, textureId, value.name);
-    }
-
-    public static final class UserTextureValue {
-
-        private static final String FIELD_NAME = "name";
-
-        public String name;
+        UserTexture userTexture = snapshot.getValue(UserTexture.class);
+        userTexture.userId = userId;
+        userTexture.textureId = snapshot.getKey();
+        return userTexture;
     }
 }

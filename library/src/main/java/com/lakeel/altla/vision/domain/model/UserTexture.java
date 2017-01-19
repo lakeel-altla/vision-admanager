@@ -1,22 +1,14 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.lakeel.altla.vision.ArgumentNullException;
+import com.google.firebase.database.Exclude;
 
 public final class UserTexture {
 
+    @Exclude
     public String userId;
 
-    public final String textureId;
+    @Exclude
+    public String textureId;
 
-    public final String name;
-
-    public UserTexture(String userId, String textureId, String name) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (textureId == null) throw new ArgumentNullException("textureId");
-        if (name == null) throw new ArgumentNullException("name");
-
-        this.userId = userId;
-        this.textureId = textureId;
-        this.name = name;
-    }
+    public String name;
 }

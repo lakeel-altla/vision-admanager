@@ -1,6 +1,9 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -29,8 +32,36 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
     }
 
     @Override
+    public Single<Boolean> exists(String userId, String areaDescriptionId) {
+        if (userId == null) throw new ArgumentNullException("userId");
+        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
+
+        return Single.<Task<StorageMetadata>>create(subscriber -> {
+            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
+                                                      .child(userId)
+                                                      .child(areaDescriptionId);
+            Task<StorageMetadata> task = reference.getMetadata();
+
+            subscriber.onSuccess(task);
+        }).flatMap(task -> Single.create(subscriber -> {
+            task.addOnSuccessListener(metadata -> subscriber.onSuccess(true));
+            task.addOnFailureListener(e -> {
+                if (e instanceof StorageException) {
+                    StorageException storageException = (StorageException) e;
+                    if (storageException.getErrorCode() == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                        subscriber.onSuccess(false);
+                    }
+                } else {
+                    subscriber.onError(e);
+                }
+            });
+        }));
+    }
+
+    @Override
     public Completable upload(String userId, String areaDescriptionId, InputStream stream,
                               OnProgressListener onProgressListener) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
         if (stream == null) throw new ArgumentNullException("stream");
 
@@ -48,6 +79,7 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
     @Override
     public Completable download(String userId, String areaDescriptionId, File destination,
                                 OnProgressListener onProgressListener) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
         if (destination == null) throw new ArgumentNullException("destination");
 
@@ -64,18 +96,31 @@ public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDesc
 
     @Override
     public Completable delete(String userId, String areaDescriptionId) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Completable.create(new Completable.OnSubscribe() {
+        return Single.<Task<Void>>create(subscriber -> {
+            StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
+                                                      .child(userId)
+                                                      .child(areaDescriptionId);
+            Task<Void> task = reference.delete();
+
+            subscriber.onSuccess(task);
+        }).flatMapCompletable(task -> Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                          .child(userId)
-                                                          .child(areaDescriptionId);
-                reference.delete();
-
-                subscriber.onCompleted();
+                task.addOnSuccessListener(aVoid -> subscriber.onCompleted());
+                task.addOnFailureListener(e -> {
+                    if (e instanceof StorageException) {
+                        StorageException storageException = (StorageException) e;
+                        if (storageException.getErrorCode() == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                            subscriber.onCompleted();
+                        }
+                    } else {
+                        subscriber.onError(e);
+                    }
+                });
             }
-        });
+        }));
     }
 }

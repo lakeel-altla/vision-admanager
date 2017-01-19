@@ -5,8 +5,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.mapper.UserAreaDescriptionMapper;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.mapper.TangoAreaDescriptionMapper;
+import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ public final class FindAllTangoAreaDescriptionsUseCase {
     public FindAllTangoAreaDescriptionsUseCase() {
     }
 
-    public Observable<UserAreaDescription> execute(Tango tango) {
+    public Observable<TangoAreaDescription> execute(Tango tango) {
         if (tango == null) throw new ArgumentNullException("tango");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -31,7 +31,7 @@ public final class FindAllTangoAreaDescriptionsUseCase {
 
         return tangoAreaDescriptionMetadataRepository
                 .findAll(tango)
-                .map(metaData -> UserAreaDescriptionMapper.map(user.getUid(), metaData))
+                .map(TangoAreaDescriptionMapper::map)
                 .subscribeOn(Schedulers.io());
     }
 }

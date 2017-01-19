@@ -1,29 +1,20 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.lakeel.altla.vision.ArgumentNullException;
-
-import android.os.Build;
+import com.google.firebase.database.Exclude;
 
 public final class UserDevice {
 
-    public final String userId;
+    @Exclude
+    public String userId;
 
-    public final String instanceId;
+    @Exclude
+    public String instanceId;
 
-    public final long creationTime;
+    public long creationTime;
 
-    public final String osName = "android";
+    public String osName;
 
-    public final String osModel = Build.MODEL;
+    public String osModel;
 
-    public final String osVersion = Build.VERSION.RELEASE;
-
-    public UserDevice(String userId, String instanceId, long creationTime) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (instanceId == null) throw new ArgumentNullException("instanceId");
-
-        this.userId = userId;
-        this.instanceId = instanceId;
-        this.creationTime = creationTime;
-    }
+    public String osVersion;
 }

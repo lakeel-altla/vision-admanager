@@ -3,18 +3,18 @@ package com.lakeel.altla.vision.domain.mapper;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 
-public final class UserAreaDescriptionMapper {
+public final class TangoAreaDescriptionMapper {
 
-    private UserAreaDescriptionMapper() {
+    private TangoAreaDescriptionMapper() {
     }
 
-    public static UserAreaDescription map(String userId, TangoAreaDescriptionMetaData metaData) {
+    public static final TangoAreaDescription map(TangoAreaDescriptionMetaData metaData) {
         String areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
         String name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
         long creationTime = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);
 
-        return new UserAreaDescription(userId, areaDescriptionId, name, creationTime);
+        return new TangoAreaDescription(areaDescriptionId, name, creationTime);
     }
 }

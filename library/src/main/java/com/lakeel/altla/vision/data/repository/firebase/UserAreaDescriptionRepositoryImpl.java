@@ -36,14 +36,10 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                UserAreaDescriptionValue value = new UserAreaDescriptionValue();
-                value.name = userAreaDescription.name;
-                value.creationTime = userAreaDescription.creationTime;
-
                 rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
                              .child(userAreaDescription.userId)
                              .child(userAreaDescription.areaDescriptionId)
-                             .setValue(value, (error, reference) -> {
+                             .setValue(userAreaDescription, (error, reference) -> {
                                  if (error != null) {
                                      LOG.e(String.format("Failed to save: reference = %s", reference),
                                            error.toException());
@@ -78,7 +74,6 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                                        .child(userId)
                                        .orderByValue();
 
-
             subscriber.onNext(query);
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
@@ -109,15 +104,9 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
     }
 
     private UserAreaDescription map(String userId, DataSnapshot snapshot) {
-        String areaDescriptionId = snapshot.getKey();
-        UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-        return new UserAreaDescription(userId, areaDescriptionId, value.name, value.creationTime);
-    }
-
-    public static final class UserAreaDescriptionValue {
-
-        public String name;
-
-        public long creationTime;
+        UserAreaDescription userAreaDescription = snapshot.getValue(UserAreaDescription.class);
+        userAreaDescription.userId = userId;
+        userAreaDescription.areaDescriptionId = snapshot.getKey();
+        return userAreaDescription;
     }
 }

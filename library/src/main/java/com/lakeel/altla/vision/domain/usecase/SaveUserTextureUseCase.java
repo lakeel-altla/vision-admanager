@@ -47,7 +47,10 @@ public final class SaveUserTextureUseCase {
             textureId = UUID.randomUUID().toString();
         }
 
-        UserTexture userTexture = new UserTexture(user.getUid(), textureId, name);
+        UserTexture userTexture = new UserTexture();
+        userTexture.userId = user.getUid();
+        userTexture.textureId = textureId;
+        userTexture.name = name;
 
         Single<Model> single = Single.just(new Model(userTexture, localUri, onProgressListener));
 

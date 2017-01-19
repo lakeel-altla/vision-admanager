@@ -35,14 +35,9 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
         return Completable.create(new Completable.OnSubscribe() {
             @Override
             public void call(CompletableSubscriber subscriber) {
-                UserProfileValue value = new UserProfileValue();
-                value.displayName = userProfile.displayName;
-                value.email = userProfile.email;
-                value.photoUri = userProfile.photoUri;
-
                 rootReference.child(PATH_USER_PROFILES)
                              .child(userProfile.userId)
-                             .setValue(value, (error, reference) -> {
+                             .setValue(userProfile, (error, reference) -> {
                                  if (error != null) {
                                      LOG.e("Failed to save.", error.toException());
                                  }
@@ -65,7 +60,7 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
             subscriber.onCompleted();
         }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
           .filter(DataSnapshot::exists)
-          .map(this::map);
+          .map(snapshot -> map(userId, snapshot));
     }
 
     @Override
@@ -79,27 +74,12 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
             subscriber.onNext(reference);
         }).flatMap(RxFirebaseQuery::asObservable)
           .filter(DataSnapshot::exists)
-          .map(this::map);
+          .map(snapshot -> map(userId, snapshot));
     }
 
-    private UserProfile map(DataSnapshot snapshot) {
-        String id = snapshot.getKey();
-        UserProfileValue value = snapshot.getValue(UserProfileValue.class);
-
-        UserProfile userProfile = new UserProfile(id);
-        userProfile.displayName = value.displayName;
-        userProfile.email = value.email;
-        userProfile.photoUri = value.photoUri;
-
+    private UserProfile map(String userId, DataSnapshot snapshot) {
+        UserProfile userProfile = snapshot.getValue(UserProfile.class);
+        userProfile.userId = userId;
         return userProfile;
-    }
-
-    public static final class UserProfileValue {
-
-        public String displayName;
-
-        public String email;
-
-        public String photoUri;
     }
 }
