@@ -8,9 +8,13 @@ import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepos
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import rx.Completable;
+import rx.CompletableSubscriber;
+import rx.schedulers.Schedulers;
 
 public final class DownloadUserAreaDescriptionFileUseCase {
 
@@ -30,9 +34,16 @@ public final class DownloadUserAreaDescriptionFileUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return areaDescriptionCacheRepository
-                .getFile(areaDescriptionId)
-                .flatMapCompletable(file -> userAreaDescriptionFileRepository.download(
-                        user.getUid(), areaDescriptionId, file, onProgressListener));
+        return Completable.create(new Completable.OnSubscribe() {
+            @Override
+            public void call(CompletableSubscriber subscriber) {
+                File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
+                userAreaDescriptionFileRepository.download(
+                        user.getUid(), areaDescriptionId, file,
+                        aVoid -> subscriber.onCompleted(),
+                        subscriber::onError,
+                        onProgressListener);
+            }
+        }).subscribeOn(Schedulers.io());
     }
 }

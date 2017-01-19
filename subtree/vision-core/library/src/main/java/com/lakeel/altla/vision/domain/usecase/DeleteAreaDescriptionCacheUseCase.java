@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepos
 import javax.inject.Inject;
 
 import rx.Completable;
+import rx.CompletableSubscriber;
 import rx.schedulers.Schedulers;
 
 public final class DeleteAreaDescriptionCacheUseCase {
@@ -20,8 +21,12 @@ public final class DeleteAreaDescriptionCacheUseCase {
     public Completable execute(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return areaDescriptionCacheRepository
-                .delete(areaDescriptionId)
-                .subscribeOn(Schedulers.io());
+        return Completable.create(new Completable.OnSubscribe() {
+            @Override
+            public void call(CompletableSubscriber subscriber) {
+                areaDescriptionCacheRepository.delete(areaDescriptionId);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io());
     }
 }

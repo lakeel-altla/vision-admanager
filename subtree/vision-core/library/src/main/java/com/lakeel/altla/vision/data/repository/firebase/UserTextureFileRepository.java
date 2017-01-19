@@ -1,21 +1,14 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
-import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
+import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 
 import java.io.File;
 import java.io.InputStream;
-
-import rx.Completable;
-import rx.Single;
 
 public final class UserTextureFileRepository extends BaseStorageRepository {
 
@@ -25,52 +18,72 @@ public final class UserTextureFileRepository extends BaseStorageRepository {
         super(storage);
     }
 
-    public Completable save(String userId, String textureId, InputStream stream,
-                            OnProgressListener onProgressListener) {
+    public void save(String userId, String textureId, InputStream stream, OnSuccessListener<Void> onSuccessListener,
+                     OnFailureListener onFailureListener, OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");
         if (stream == null) throw new ArgumentNullException("stream");
 
-        return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
-                                                           .child(userId)
-                                                           .child(textureId);
-            subscriber.onSuccess(reference);
-        }).flatMapCompletable(reference -> {
-            UploadTask task = reference.putStream(stream);
-            return RxFirebaseStorageTask.asCompletable(task, onProgressListener::onProgress);
-        });
+        getStorage().getReference()
+                    .child(PATH_USER_TEXTURES)
+                    .child(userId)
+                    .child(textureId)
+                    .putStream(stream)
+                    .addOnSuccessListener(snapshot -> {
+                        if (onSuccessListener != null) onSuccessListener.onSuccess(null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (onFailureListener != null) onFailureListener.onFailure(e);
+                    })
+                    .addOnProgressListener(snapshot -> {
+                        if (onProgressListener != null) {
+                            onProgressListener.onProgress(snapshot.getTotalByteCount(),
+                                                          snapshot.getBytesTransferred());
+                        }
+                    });
     }
 
-    public Completable delete(String userId, String textureId) {
+    public void delete(String userId, String textureId, OnSuccessListener<Void> onSuccessListener,
+                       OnFailureListener onFailureListener) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");
 
-        return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
-                                                           .child(userId)
-                                                           .child(textureId);
-            subscriber.onSuccess(reference);
-        }).flatMapCompletable(reference -> {
-            Task<Void> task = reference.delete();
-            return RxGmsTask.asCompletable(task);
-        });
+        getStorage().getReference()
+                    .child(PATH_USER_TEXTURES)
+                    .child(userId)
+                    .child(textureId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        if (onSuccessListener != null) onSuccessListener.onSuccess(null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (onFailureListener != null) onFailureListener.onFailure(e);
+                    });
     }
 
-    public Completable download(String userId, String textureId, File destination,
-                                OnProgressListener onProgressListener) {
+    public void download(String userId, String textureId, File destination,
+                         OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
+                         OnProgressListener onProgressListener) {
         if (userId == null) throw new ArgumentNullException("userId");
         if (textureId == null) throw new ArgumentNullException("textureId");
         if (destination == null) throw new ArgumentNullException("destination");
 
-        return Single.<StorageReference>create(subscriber -> {
-            StorageReference reference = getRootReference().child(PATH_USER_TEXTURES)
-                                                           .child(userId)
-                                                           .child(textureId);
-            subscriber.onSuccess(reference);
-        }).flatMapCompletable(reference -> {
-            FileDownloadTask task = reference.getFile(destination);
-            return RxFirebaseStorageTask.asCompletable(task, onProgressListener::onProgress);
-        });
+        getStorage().getReference()
+                    .child(PATH_USER_TEXTURES)
+                    .child(userId)
+                    .child(textureId)
+                    .getFile(destination)
+                    .addOnSuccessListener(snapshot -> {
+                        if (onSuccessListener != null) onSuccessListener.onSuccess(null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (onFailureListener != null) onFailureListener.onFailure(e);
+                    })
+                    .addOnProgressListener(snapshot -> {
+                        if (onProgressListener != null) {
+                            onProgressListener.onProgress(snapshot.getTotalByteCount(),
+                                                          snapshot.getBytesTransferred());
+                        }
+                    });
     }
 }

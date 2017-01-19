@@ -19,7 +19,9 @@ public final class GetAreaDescriptionCacheDirectoryUseCase {
     }
 
     public Single<File> execute() {
-        return areaDescriptionCacheRepository.getDirectory()
-                                             .subscribeOn(Schedulers.io());
+        return Single.<File>create(subscriber -> {
+            File file = areaDescriptionCacheRepository.getDirectory();
+            subscriber.onSuccess(file);
+        }).subscribeOn(Schedulers.io());
     }
 }

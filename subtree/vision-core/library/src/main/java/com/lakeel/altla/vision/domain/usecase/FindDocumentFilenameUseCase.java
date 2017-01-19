@@ -21,6 +21,9 @@ public final class FindDocumentFilenameUseCase {
     public Single<String> execute(Uri uri) {
         if (uri == null) throw new ArgumentNullException("uri");
 
-        return documentFilenameRepository.find(uri);
+        return Single.create(subscriber -> {
+            String filename = documentFilenameRepository.find(uri);
+            subscriber.onSuccess(filename);
+        });
     }
 }

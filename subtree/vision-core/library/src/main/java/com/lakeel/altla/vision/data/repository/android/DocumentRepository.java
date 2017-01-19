@@ -9,8 +9,6 @@ import android.net.Uri;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import rx.Single;
-
 public final class DocumentRepository {
 
     private final ContentResolver contentResolver;
@@ -21,18 +19,10 @@ public final class DocumentRepository {
         this.contentResolver = contentResolver;
     }
 
-    public Single<InputStream> openStream(String uriString) {
-        return Single.create(subscriber -> {
+    public InputStream openStream(String uriString) throws FileNotFoundException {
+        Uri uri = Uri.parse(uriString);
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            Uri uri = Uri.parse(uriString);
-            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            try {
-                InputStream inputStream = contentResolver.openInputStream(uri);
-                subscriber.onSuccess(inputStream);
-            } catch (FileNotFoundException e) {
-                subscriber.onError(e);
-            }
-        });
+        return contentResolver.openInputStream(uri);
     }
 }

@@ -8,6 +8,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
+import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
 import com.lakeel.altla.vision.domain.model.UserConnection;
 
 import javax.inject.Inject;
@@ -30,8 +31,8 @@ public final class ObserveConnectionUseCase {
     }
 
     public Observable<Boolean> execute() {
-        return connectionRepository
-                .observe()
+        return ObservableDataObservable
+                .using(() -> connectionRepository.observe())
                 .doOnNext(connected -> LOG.d("The connection state changed: connected = %b", connected))
                 .flatMap(this::registerUserConnection)
                 .subscribeOn(Schedulers.io());
@@ -46,12 +47,12 @@ public final class ObserveConnectionUseCase {
             String instanceId = FirebaseInstanceId.getInstance().getId();
             UserConnection userConnection = new UserConnection(userId, instanceId);
 
-            return userConnectionRepository
-                    .markAsOnline(userConnection)
-                    .doOnSuccess(_userConnection -> LOG.i("Mark the user online: userId = %s, instanceId = %s",
-                                                          userId, instanceId))
-                    .toObservable()
-                    .map(_userConnection -> true);
+            return Observable.create(subscriber -> {
+                userConnectionRepository.markAsOnline(userConnection);
+                LOG.i("Mark the user online: userId = %s, instanceId = %s", userId, instanceId);
+                subscriber.onNext(true);
+                subscriber.onCompleted();
+            });
         } else {
             return Observable.just(false);
         }

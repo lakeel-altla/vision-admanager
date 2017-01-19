@@ -22,7 +22,9 @@ public final class GetAreaDescriptionCacheFileUseCase {
     public Single<File> execute(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return areaDescriptionCacheRepository.getFile(areaDescriptionId)
-                                             .subscribeOn(Schedulers.io());
+        return Single.<File>create(subscriber -> {
+            File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
+            subscriber.onSuccess(file);
+        }).subscribeOn(Schedulers.io());
     }
 }

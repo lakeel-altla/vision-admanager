@@ -9,11 +9,6 @@ import android.content.Context;
 import java.io.File;
 import java.io.IOException;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Observable;
-import rx.Single;
-
 public final class TextureCacheRepository {
 
     private static final Log LOG = LogFactory.getLog(TextureCacheRepository.class);
@@ -26,56 +21,39 @@ public final class TextureCacheRepository {
         this.context = context;
     }
 
-    public Observable<File> find(String textureId) {
+    public File find(String textureId) {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
-        return Observable.create(subscriber -> {
-            File file = resolveCacheFile(textureId);
-            if (file.exists()) {
-                LOG.d("The cache file exists: textureId = %s", textureId);
-
-                subscriber.onNext(file);
-            }
-
-            subscriber.onCompleted();
-        });
+        File file = resolveCacheFile(textureId);
+        if (file.exists()) {
+            LOG.d("The cache file exists: textureId = %s", textureId);
+            return file;
+        } else {
+            return null;
+        }
     }
 
-    public Single<File> create(String textureId) {
+    public File create(String textureId) throws IOException {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
-        return Single.create(subscriber -> {
-            File file = resolveCacheFile(textureId);
-            try {
-                if (file.createNewFile()) {
-                    LOG.d("Created the new cache file: textureId = %s", textureId);
-                } else {
-                    LOG.w("The cache file already exists: textureId = %s", textureId);
-                }
-
-                subscriber.onSuccess(file);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
-        });
+        File file = resolveCacheFile(textureId);
+        if (file.createNewFile()) {
+            LOG.d("Created the new cache file: textureId = %s", textureId);
+        } else {
+            LOG.w("The cache file already exists: textureId = %s", textureId);
+        }
+        return file;
     }
 
-    public Completable delete(String textureId) {
+    public void delete(String textureId) {
         if (textureId == null) throw new ArgumentNullException("textureId");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                File file = resolveCacheFile(textureId);
-                if (file.delete()) {
-                    LOG.d("Deleted the new cache file: textureId = %s", textureId);
-                } else {
-                    LOG.w("The cache file does not exist: textureId = %s", textureId);
-                }
-
-                subscriber.onCompleted();
-            }
-        });
+        File file = resolveCacheFile(textureId);
+        if (file.delete()) {
+            LOG.d("Deleted the new cache file: textureId = %s", textureId);
+        } else {
+            LOG.w("The cache file does not exist: textureId = %s", textureId);
+        }
     }
 
     private File resolveCacheFile(String textureId) {

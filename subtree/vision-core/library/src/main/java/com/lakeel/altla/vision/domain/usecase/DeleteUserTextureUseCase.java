@@ -11,6 +11,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import javax.inject.Inject;
 
 import rx.Completable;
+import rx.CompletableSubscriber;
 import rx.schedulers.Schedulers;
 
 public final class DeleteUserTextureUseCase {
@@ -36,13 +37,18 @@ public final class DeleteUserTextureUseCase {
 
         String userId = user.getUid();
 
-        return userTextureRepository
+        return Completable.create(new Completable.OnSubscribe() {
+            @Override
+            public void call(CompletableSubscriber subscriber) {
                 // Delete the user texture in Firebase Database.
-                .delete(userId, textureId)
+                userTextureRepository.delete(userId, textureId);
                 // Delete the user texture file in Firebase Storage.
-                .andThen(userTextureFileRepository.delete(userId, textureId))
-                // Delete the local cache of the user texture.
-                .andThen(textureCacheRepository.delete(textureId))
-                .subscribeOn(Schedulers.io());
+                userTextureFileRepository.delete(userId, textureId, aVoid -> {
+                    // Delete the local cache of the user texture.
+                    textureCacheRepository.delete(textureId);
+                    subscriber.onCompleted();
+                }, subscriber::onError);
+            }
+        }).subscribeOn(Schedulers.io());
     }
 }

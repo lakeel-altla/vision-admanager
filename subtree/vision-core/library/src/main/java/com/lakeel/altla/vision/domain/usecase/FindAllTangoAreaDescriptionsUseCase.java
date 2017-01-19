@@ -10,6 +10,8 @@ import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import rx.Observable;
@@ -30,10 +32,14 @@ public final class FindAllTangoAreaDescriptionsUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return tangoAreaDescriptionMetadataRepository
-                .findAll(tango)
-                .map(FindAllTangoAreaDescriptionsUseCase::map)
-                .subscribeOn(Schedulers.io());
+        return Observable.<TangoAreaDescription>create(subscriber -> {
+            List<TangoAreaDescriptionMetaData> metaDatas = tangoAreaDescriptionMetadataRepository.findAll(tango);
+            for (TangoAreaDescriptionMetaData metaData : metaDatas) {
+                TangoAreaDescription tangoAreaDescription = map(metaData);
+                subscriber.onNext(tangoAreaDescription);
+            }
+            subscriber.onCompleted();
+        }).subscribeOn(Schedulers.io());
     }
 
     private static final TangoAreaDescription map(TangoAreaDescriptionMetaData metaData) {

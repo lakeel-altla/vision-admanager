@@ -108,12 +108,11 @@ public final class AppSpacePresenter {
     public void onDelete(int position) {
         String areaDescriptionId = itemModels.get(position).areaDescriptionId;
 
-        view.showDeleteProgressDialog();
-
         Subscription subscription = deleteUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(_subscription -> view.showDeleteProgressDialog())
+                .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
                 .subscribe(() -> {
                     itemModels.remove(position);
 

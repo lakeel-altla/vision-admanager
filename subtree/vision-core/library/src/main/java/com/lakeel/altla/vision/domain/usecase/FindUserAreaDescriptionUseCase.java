@@ -10,7 +10,6 @@ import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 public final class FindUserAreaDescriptionUseCase {
 
@@ -27,8 +26,13 @@ public final class FindUserAreaDescriptionUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return userAreaDescriptionRepository
-                .find(user.getUid(), areaDescriptionId)
-                .subscribeOn(Schedulers.io());
+        return Observable.create(subscriber -> {
+            userAreaDescriptionRepository.find(user.getUid(), areaDescriptionId, userAreaDescription -> {
+                if (userAreaDescription != null) {
+                    subscriber.onNext(userAreaDescription);
+                }
+                subscriber.onCompleted();
+            }, subscriber::onError);
+        });
     }
 }

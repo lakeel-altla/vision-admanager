@@ -24,7 +24,13 @@ public final class FindAllUserTexturesUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return userTextureRepository.findAll(user.getUid())
-                                    .subscribeOn(Schedulers.io());
+        return Observable.<UserTexture>create(subscriber -> {
+            userTextureRepository.findAll(user.getUid(), userTextures -> {
+                for (UserTexture userTexture : userTextures) {
+                    subscriber.onNext(userTexture);
+                }
+                subscriber.onCompleted();
+            }, subscriber::onError);
+        }).subscribeOn(Schedulers.io());
     }
 }

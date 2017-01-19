@@ -9,7 +9,8 @@ import com.lakeel.altla.vision.domain.model.UserConnection;
 
 import javax.inject.Inject;
 
-import rx.Single;
+import rx.Completable;
+import rx.CompletableSubscriber;
 import rx.schedulers.Schedulers;
 
 public final class SignOutUseCase {
@@ -21,7 +22,7 @@ public final class SignOutUseCase {
     public SignOutUseCase() {
     }
 
-    public Single<UserConnection> execute() {
+    public Completable execute() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser == null) {
             throw new IllegalStateException("The current user not found.");
@@ -31,13 +32,15 @@ public final class SignOutUseCase {
         String instanceId = FirebaseInstanceId.getInstance().getId();
         UserConnection userConnection = new UserConnection(userId, instanceId);
 
-        return userConnectionRepository.markAsOffline(userConnection)
-                                       .flatMap(this::signOut)
-                                       .subscribeOn(Schedulers.io());
-    }
-
-    private Single<UserConnection> signOut(UserConnection userConnection) {
-        FirebaseAuth.getInstance().signOut();
-        return Single.just(userConnection);
+        return Completable
+                .create(new Completable.OnSubscribe() {
+                    @Override
+                    public void call(CompletableSubscriber subscriber) {
+                        userConnectionRepository.markAsOffline(userConnection);
+                        FirebaseAuth.getInstance().signOut();
+                        subscriber.onCompleted();
+                    }
+                })
+                .subscribeOn(Schedulers.io());
     }
 }

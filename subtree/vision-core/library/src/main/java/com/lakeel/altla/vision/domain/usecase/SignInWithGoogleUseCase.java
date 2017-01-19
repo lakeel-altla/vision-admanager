@@ -20,7 +20,7 @@ import android.os.Build;
 import javax.inject.Inject;
 
 import rx.Completable;
-import rx.Observable;
+import rx.CompletableSubscriber;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
@@ -54,38 +54,41 @@ public final class SignInWithGoogleUseCase {
 
     private Single<FirebaseUser> ensureUserProfile(FirebaseUser firebaseUser) {
         // Check if the user profile exists.
-        return userProfileRepository.find(firebaseUser.getUid())
-                                    .map(userProfile -> firebaseUser)
-                                    // Create the user profile if it does not exist.
-                                    .switchIfEmpty(saveUserProfile(firebaseUser))
-                                    .toSingle();
-    }
+        return Single.create(subscriber -> {
+            userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
+                // Create the user profile if it does not exist.
+                if (userProfile == null) {
+                    userProfile = new UserProfile();
+                    userProfile.userId = firebaseUser.getUid();
+                    userProfile.displayName = firebaseUser.getDisplayName();
+                    userProfile.email = firebaseUser.getEmail();
+                    if (firebaseUser.getPhotoUrl() != null) {
+                        userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
+                    }
 
-    private Observable<FirebaseUser> saveUserProfile(final FirebaseUser firebaseUser) {
-        return Single.<UserProfile>create(subscriber -> {
-            UserProfile userProfile = new UserProfile();
-            userProfile.userId = firebaseUser.getUid();
-            userProfile.displayName = firebaseUser.getDisplayName();
-            userProfile.email = firebaseUser.getEmail();
-            if (firebaseUser.getPhotoUrl() != null) {
-                userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
-            }
-
-            subscriber.onSuccess(userProfile);
-        }).flatMap(userProfile -> userProfileRepository.save(userProfile)
-                                                       .toSingleDefault(firebaseUser))
-          .toObservable();
+                    userProfileRepository.save(userProfile);
+                }
+                subscriber.onSuccess(firebaseUser);
+            }, subscriber::onError);
+        });
     }
 
     private Completable saveUserDevice(FirebaseUser firebaseUser) {
-        UserDevice userDevice = new UserDevice();
-        userDevice.userId = firebaseUser.getUid();
-        userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
-        userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
-        userDevice.osName = "android";
-        userDevice.osModel = Build.MODEL;
-        userDevice.osVersion = Build.VERSION.RELEASE;
+        return Completable.create(new Completable.OnSubscribe() {
+            @Override
+            public void call(CompletableSubscriber subscriber) {
+                UserDevice userDevice = new UserDevice();
+                userDevice.userId = firebaseUser.getUid();
+                userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
+                userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
+                userDevice.osName = "android";
+                userDevice.osModel = Build.MODEL;
+                userDevice.osVersion = Build.VERSION.RELEASE;
 
-        return userDeviceRepository.save(userDevice);
+                userDeviceRepository.save(userDevice);
+
+                subscriber.onCompleted();
+            }
+        });
     }
 }

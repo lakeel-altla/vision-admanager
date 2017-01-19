@@ -12,8 +12,6 @@ import com.lakeel.altla.vision.domain.model.UserConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Single;
-
 public final class UserConnectionRepository extends BaseDatabaseRepository {
 
     private static final Log LOG = LogFactory.getLog(UserConnectionRepository.class);
@@ -28,58 +26,52 @@ public final class UserConnectionRepository extends BaseDatabaseRepository {
         super(database);
     }
 
-    public Single<UserConnection> markAsOnline(UserConnection userConnection) {
+    public void markAsOnline(UserConnection userConnection) {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 
-        return Single.create(subscriber -> {
-            DatabaseReference connectionReference = getRootReference().child(PATH_USER_CONNECTIONS)
-                                                                      .child(userConnection.userId)
-                                                                      .child(userConnection.instanceId);
-            DatabaseReference onlineReference = connectionReference.child(PATH_ONLINE);
-            DatabaseReference lastOnlineTimeReference = connectionReference.child(PATH_LAST_ONLINE_TIME);
+        DatabaseReference connectionReference = getDatabase().getReference()
+                                                             .child(PATH_USER_CONNECTIONS)
+                                                             .child(userConnection.userId)
+                                                             .child(userConnection.instanceId);
+        DatabaseReference onlineReference = connectionReference.child(PATH_ONLINE);
+        DatabaseReference lastOnlineTimeReference = connectionReference.child(PATH_LAST_ONLINE_TIME);
 
-            // when connected.
-            onlineReference.setValue(Boolean.TRUE, (error, reference) -> {
-                if (error != null) {
-                    LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
-                }
-            });
+        // when connected.
+        onlineReference.setValue(Boolean.TRUE, (error, reference) -> {
+            if (error != null) {
+                LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
+            }
+        });
 
-            // when disconnected.
-            onlineReference.onDisconnect().setValue(Boolean.FALSE, (error, reference) -> {
-                if (error != null) {
-                    LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
-                }
-            });
-            lastOnlineTimeReference.onDisconnect().setValue(ServerValue.TIMESTAMP, (error, reference) -> {
-                if (error != null) {
-                    LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
-                }
-            });
-
-            subscriber.onSuccess(userConnection);
+        // when disconnected.
+        onlineReference.onDisconnect().setValue(Boolean.FALSE, (error, reference) -> {
+            if (error != null) {
+                LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
+            }
+        });
+        lastOnlineTimeReference.onDisconnect().setValue(ServerValue.TIMESTAMP, (error, reference) -> {
+            if (error != null) {
+                LOG.e(String.format("Failed to do setValue: reference = %s", reference), error.toException());
+            }
         });
     }
 
-    public Single<UserConnection> markAsOffline(UserConnection userConnection) {
+    public void markAsOffline(UserConnection userConnection) {
         if (userConnection == null) throw new ArgumentNullException("userConnection");
 
-        return Single.create(subscriber -> {
-            DatabaseReference connectionReference = getRootReference().child(PATH_USER_CONNECTIONS)
-                                                                      .child(userConnection.userId)
-                                                                      .child(userConnection.instanceId);
+        DatabaseReference connectionReference = getDatabase().getReference()
+                                                             .child(PATH_USER_CONNECTIONS)
+                                                             .child(userConnection.userId)
+                                                             .child(userConnection.instanceId);
 
-            Map<String, Object> children = new HashMap<>(2);
-            children.put(PATH_ONLINE, Boolean.FALSE);
-            children.put(PATH_LAST_ONLINE_TIME, ServerValue.TIMESTAMP);
+        Map<String, Object> children = new HashMap<>(2);
+        children.put(PATH_ONLINE, Boolean.FALSE);
+        children.put(PATH_LAST_ONLINE_TIME, ServerValue.TIMESTAMP);
 
-            connectionReference.updateChildren(children, (error, reference) -> {
-                if (error != null) {
-                    LOG.e(String.format("Failed to do updateChildren: reference = %s", reference), error.toException());
-                }
-            });
-
-            subscriber.onSuccess(userConnection);
+        connectionReference.updateChildren(children, (error, reference) -> {
+            if (error != null) {
+                LOG.e(String.format("Failed to do updateChildren: reference = %s", reference), error.toException());
+            }
         });
     }
 }

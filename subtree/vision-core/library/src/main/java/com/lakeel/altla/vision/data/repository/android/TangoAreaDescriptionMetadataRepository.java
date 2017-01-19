@@ -3,54 +3,38 @@ package com.lakeel.altla.vision.data.repository.android;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Observable;
 
 public final class TangoAreaDescriptionMetadataRepository {
 
-    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionMetadataRepository.class);
-
-    public Observable<TangoAreaDescriptionMetaData> find(Tango tango, String areaDescriptionId) {
+    public TangoAreaDescriptionMetaData find(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Observable.create(subscriber -> {
-            TangoAreaDescriptionMetaData metaData = tango.loadAreaDescriptionMetaData(areaDescriptionId);
-            subscriber.onNext(metaData);
-            subscriber.onCompleted();
-        });
+        return tango.loadAreaDescriptionMetaData(areaDescriptionId);
     }
 
-    public Observable<TangoAreaDescriptionMetaData> findAll(Tango tango) {
+    public List<TangoAreaDescriptionMetaData> findAll(Tango tango) {
         if (tango == null) throw new ArgumentNullException("tango");
 
-        return Observable.<String>create(subscriber -> {
-            List<String> areaDescriptionIds = tango.listAreaDescriptions();
-            for (String areaDescriptionId : areaDescriptionIds) {
-                subscriber.onNext(areaDescriptionId);
-            }
-            subscriber.onCompleted();
-        }).flatMap(areaDescriptionId -> find(tango, areaDescriptionId));
+        List<String> areaDescriptionIds = tango.listAreaDescriptions();
+        List<TangoAreaDescriptionMetaData> metaDatas = new ArrayList<>(areaDescriptionIds.size());
+
+        for (String areaDescriptionId : areaDescriptionIds) {
+            TangoAreaDescriptionMetaData metaData = find(tango, areaDescriptionId);
+            metaDatas.add(metaData);
+        }
+
+        return metaDatas;
     }
 
-    public Completable delete(Tango tango, String areaDescriptionId) {
+    public void delete(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                tango.deleteAreaDescription(areaDescriptionId);
-
-                subscriber.onCompleted();
-            }
-        });
+        tango.deleteAreaDescription(areaDescriptionId);
     }
 }

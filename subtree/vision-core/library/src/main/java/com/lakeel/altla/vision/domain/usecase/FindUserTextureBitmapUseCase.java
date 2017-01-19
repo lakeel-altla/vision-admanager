@@ -16,10 +16,10 @@ import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import android.graphics.Bitmap;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
@@ -53,7 +53,6 @@ public final class FindUserTextureBitmapUseCase {
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
         Model model = new Model(user.getUid(), textureId, onProgressListener);
-
         return Single.just(model)
                      .flatMap(this::ensureCacheFile)
                      .flatMap(this::findRemoteUpdateTime)
@@ -63,50 +62,49 @@ public final class FindUserTextureBitmapUseCase {
     }
 
     private Single<Model> ensureCacheFile(Model model) {
-        return textureCacheRepository
-                .find(model.textureId)
-                .doOnNext(file -> LOG.d("Found the cache: file = %s", file))
-                .map(file -> {
-                    model.cacheFile = file;
-                    model.cached = true;
-                    return model;
-                }).switchIfEmpty(createCacheFile(model).toObservable())
-                .toSingle();
-    }
+        return Single.create(subscriber -> {
+            File file = textureCacheRepository.find(model.textureId);
+            if (file != null) {
+                LOG.d("Found the cache: file = %s", file);
+                model.cached = true;
+            } else {
+                try {
+                    file = textureCacheRepository.create(model.textureId);
+                    LOG.d("Created the new cache: file = %s", file);
+                } catch (IOException e) {
+                    subscriber.onError(e);
+                }
+            }
+            model.cacheFile = file;
 
-    private Single<Model> createCacheFile(Model model) {
-        return textureCacheRepository
-                .create(model.textureId)
-                .doOnSuccess(file -> LOG.d("Created the new cache: file = %s", file))
-                .map(file -> {
-                    model.cacheFile = file;
-                    return model;
-                });
+            subscriber.onSuccess(model);
+        });
     }
 
     private Single<Model> findRemoteUpdateTime(Model model) {
-        return userTextureFileMetadataRepository
-                .find(model.userId, model.textureId)
-                .doOnNext(metadata -> LOG.d("Found the texture metadata: textureId = %s", model.textureId))
-                .map(metadata -> {
+        return Single.create(subscriber -> {
+            userTextureFileMetadataRepository.find(model.userId, model.textureId, metadata -> {
+                if (metadata != null) {
+                    LOG.d("Found the texture metadata: textureId = %s", model.textureId);
                     model.remoteUpdateTimeMillis = metadata.updateTimeMillis;
-                    return model;
-                })
-                .switchIfEmpty(Observable.create(subscriber -> {
-                    // TODO
+                    subscriber.onSuccess(model);
+                } else {
                     subscriber.onError(new RuntimeException(String.format(
                             "The user texture metadata not found: textureId = %s",
                             model.textureId)));
-                }))
-                .toSingle();
+                }
+            }, subscriber::onError);
+        });
     }
 
     private Single<Model> cacheIfOutdated(Model model) {
         if (model.isCacheOutdated()) {
-            return userTextureFileRepository
-                    .download(model.userId, model.textureId, model.cacheFile, model.onProgressListener)
-                    .doOnCompleted(() -> LOG.d("Donwloaded the texture: textureId = %s", model.textureId))
-                    .toSingleDefault(model);
+            return Single.create(subscriber -> {
+                userTextureFileRepository.download(model.userId, model.textureId, model.cacheFile, aVoid -> {
+                    LOG.d("Donwloaded the texture: textureId = %s", model.textureId);
+                    subscriber.onSuccess(model);
+                }, subscriber::onError, model.onProgressListener);
+            });
         } else {
             return Single.just(model)
                          .doOnSuccess(_model -> LOG.d("The cache is fresh: textureId = %s", model.textureId));
@@ -114,8 +112,14 @@ public final class FindUserTextureBitmapUseCase {
     }
 
     private Single<Bitmap> loadBitmap(Model model) {
-        return fileBitmapRepository.find(model.cacheFile)
-                                   .subscribeOn(Schedulers.io());
+        return Single.<Bitmap>create(subscriber -> {
+            try {
+                Bitmap bitmap = fileBitmapRepository.find(model.cacheFile);
+                subscriber.onSuccess(bitmap);
+            } catch (IOException e) {
+                subscriber.onError(e);
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     private final class Model {

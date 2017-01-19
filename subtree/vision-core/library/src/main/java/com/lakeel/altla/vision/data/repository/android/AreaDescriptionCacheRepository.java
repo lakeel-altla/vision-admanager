@@ -4,10 +4,6 @@ import com.lakeel.altla.vision.ArgumentNullException;
 
 import java.io.File;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Single;
-
 public final class AreaDescriptionCacheRepository {
 
     private static final String PATH = "areaDescriptions";
@@ -20,44 +16,30 @@ public final class AreaDescriptionCacheRepository {
         this.rootDirectory = rootDirectory;
     }
 
-    public Single<Boolean> exists(String areaDescriptionId) {
+    public boolean exists(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Single.create(subscriber -> {
-            File file = resolveCacheFile(areaDescriptionId);
-            subscriber.onSuccess(file.exists());
-        });
+        File file = resolveCacheFile(areaDescriptionId);
+        return file.exists();
     }
 
-    public Single<File> getDirectory() {
-        return Single.create(subscriber -> {
-            File file = ensureCacheDirectory();
-            subscriber.onSuccess(file);
-        });
+    public File getDirectory() {
+        return ensureCacheDirectory();
     }
 
-    public Single<File> getFile(String areaDescriptionId) {
+    public File getFile(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Single.create(subscriber -> {
-            File file = resolveCacheFile(areaDescriptionId);
-            subscriber.onSuccess(file);
-        });
+        return resolveCacheFile(areaDescriptionId);
     }
 
-    public Completable delete(String areaDescriptionId) {
+    public void delete(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                File file = resolveCacheFile(areaDescriptionId);
-                if (file.exists()) {
-                    file.delete();
-                }
-                subscriber.onCompleted();
-            }
-        });
+        File file = resolveCacheFile(areaDescriptionId);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     private File ensureCacheDirectory() {

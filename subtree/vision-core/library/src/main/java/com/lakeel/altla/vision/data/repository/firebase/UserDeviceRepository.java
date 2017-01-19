@@ -7,9 +7,6 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserDevice;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-
 public final class UserDeviceRepository extends BaseDatabaseRepository {
 
     private static final Log LOG = LogFactory.getLog(UserDeviceRepository.class);
@@ -20,24 +17,17 @@ public final class UserDeviceRepository extends BaseDatabaseRepository {
         super(database);
     }
 
-    public Completable save(UserDevice userDevice) {
+    public void save(UserDevice userDevice) {
         if (userDevice == null) throw new ArgumentNullException("userDevice");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                getRootReference().child(PATH_USER_DEVICES)
-                                  .child(userDevice.userId)
-                                  .child(userDevice.instanceId)
-                                  .setValue(userDevice, (error, reference) -> {
-                                      if (error != null) {
-                                          LOG.e(String.format("Failed to save: reference = %s", reference),
-                                                error.toException());
-                                      }
-                                  });
-
-                subscriber.onCompleted();
-            }
-        });
+        getDatabase().getReference()
+                     .child(PATH_USER_DEVICES)
+                     .child(userDevice.userId)
+                     .child(userDevice.instanceId)
+                     .setValue(userDevice, (error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                         }
+                     });
     }
 }

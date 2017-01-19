@@ -1,19 +1,19 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.domain.helper.OnFailureListener;
+import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Observable;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class UserAreaDescriptionRepository extends BaseDatabaseRepository {
 
@@ -25,74 +25,81 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
         super(database);
     }
 
-    public Completable save(UserAreaDescription userAreaDescription) {
+    public void save(UserAreaDescription userAreaDescription) {
         if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
-                                  .child(userAreaDescription.userId)
-                                  .child(userAreaDescription.areaDescriptionId)
-                                  .setValue(userAreaDescription, (error, reference) -> {
-                                      if (error != null) {
-                                          LOG.e(String.format("Failed to save: reference = %s", reference),
-                                                error.toException());
-                                      }
-                                  });
-
-                subscriber.onCompleted();
-            }
-        });
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userAreaDescription.userId)
+                     .child(userAreaDescription.areaDescriptionId)
+                     .setValue(userAreaDescription, (error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                         }
+                     });
     }
 
-    public Observable<UserAreaDescription> find(String userId, String areaDescriptionId) {
+    public void find(String userId, String areaDescriptionId, OnSuccessListener<UserAreaDescription> onSuccessListener,
+                     OnFailureListener onFailureListener) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Observable.<DatabaseReference>create(subscriber -> {
-            DatabaseReference reference = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
-                                                            .child(userId)
-                                                            .child(areaDescriptionId);
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userId)
+                     .child(areaDescriptionId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             UserAreaDescription userAreaDescription = null;
+                             if (snapshot.exists()) {
+                                 userAreaDescription = map(userId, snapshot);
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(userAreaDescription);
+                         }
 
-            subscriber.onNext(reference);
-            subscriber.onCompleted();
-        }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
-          .filter(DataSnapshot::exists)
-          .map(snapshot -> map(userId, snapshot));
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
     }
 
-    public Observable<UserAreaDescription> findAll(String userId) {
-        return Observable.<Query>create(subscriber -> {
-            Query query = getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
-                                            .child(userId)
-                                            .orderByValue();
+    public void findAll(String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+                        OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userId)
+                     .orderByValue()
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<UserAreaDescription> userAreaDescriptions =
+                                     new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 userAreaDescriptions.add(map(userId, child));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(userAreaDescriptions);
+                         }
 
-            subscriber.onNext(query);
-            subscriber.onCompleted();
-        }).flatMap(RxFirebaseQuery::asObservableForSingleValueEvent)
-          .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-          .map(snapshot -> map(userId, snapshot));
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
     }
 
-    public Completable delete(String userId, String areaDescriptionId) {
+    public void delete(String userId, String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                getRootReference().child(PATH_USER_AREA_DESCRIPTIONS)
-                                  .child(userId)
-                                  .child(areaDescriptionId)
-                                  .removeValue((error, reference) -> {
-                                      if (error != null) {
-                                          LOG.e(String.format("Failed to remove: reference = %s", reference),
-                                                error.toException());
-                                      }
-                                  });
-
-                subscriber.onCompleted();
-            }
-        });
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userId)
+                     .child(areaDescriptionId)
+                     .removeValue((error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                         }
+                     });
     }
 
     private UserAreaDescription map(String userId, DataSnapshot snapshot) {

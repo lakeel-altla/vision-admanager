@@ -12,8 +12,6 @@ import android.os.ParcelFileDescriptor;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
-import rx.Single;
-
 public final class DocumentBitmapRepository {
 
     private final ContentResolver contentResolver;
@@ -24,25 +22,21 @@ public final class DocumentBitmapRepository {
         this.contentResolver = contentResolver;
     }
 
-    public Single<Bitmap> find(Uri uri) {
-        return Single.create(subscriber -> {
-            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    public Bitmap find(Uri uri) throws IOException {
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {
-                if (descriptor == null) {
-                    throw new IllegalStateException("Failed to open the file descriptor: uri = " + uri);
-                }
-
-                FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
-                Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-                if (bitmap != null) {
-                    subscriber.onSuccess(bitmap);
-                } else {
-                    throw new IllegalStateException("Failed to decode the file descriptor: uri = " + uri);
-                }
-            } catch (IOException e) {
-                subscriber.onError(e);
+        try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {
+            if (descriptor == null) {
+                throw new IllegalStateException("Failed to open the file descriptor: uri = " + uri);
             }
-        });
+
+            FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
+            Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            if (bitmap != null) {
+                return bitmap;
+            } else {
+                throw new IllegalStateException("Failed to decode the file descriptor: uri = " + uri);
+            }
+        }
     }
 }
