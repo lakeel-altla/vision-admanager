@@ -122,9 +122,8 @@ public final class SignInPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(_subscription -> view.showProgressDialog())
                 .doOnUnsubscribe(() -> view.hideProgressDialog())
-                .subscribe(() -> {
-                    view.closeSignInFragment();
-                }, e -> LOG.e("Failed to sign in to Firebase.", e));
+                .subscribe(() -> view.closeSignInFragment(),
+                           e -> LOG.e("Failed to sign in to Firebase.", e));
         compositeSubscription.add(subscription);
     }
 }
