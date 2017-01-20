@@ -40,8 +40,10 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:10.0.1'
     compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.firebase:firebase-iid:10.0.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.0.1'
     compile 'com.lakeel.altla:android-log:0.0.2'
-    compile 'com.lakeel.altla:rx-gms-tasks:1.0.3'
+    compile 'io.reactivex:rxjava:1.1.10'
 
     debugCompile project(path: ':tango-helper', configuration: 'debug')
     releaseCompile project(path: ':tango-helper', configuration: 'release')

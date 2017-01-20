@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.domain.model.UserDevice;
@@ -45,11 +44,13 @@ public final class SignInWithGoogleUseCase {
     }
 
     private Single<FirebaseUser> signIn(GoogleSignInAccount googleSignInAccount) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-        Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
+        return Single.create(subscriber -> {
+            AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+            Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
 
-        return RxGmsTask.asSingle(task)
-                        .map(AuthResult::getUser);
+            task.addOnSuccessListener(authResult -> subscriber.onSuccess(authResult.getUser()));
+            task.addOnFailureListener(subscriber::onError);
+        });
     }
 
     private Single<FirebaseUser> ensureUserProfile(FirebaseUser firebaseUser) {
