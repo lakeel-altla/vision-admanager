@@ -18,10 +18,9 @@ import android.os.Build;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SignInWithGoogleUseCase {
 
@@ -44,52 +43,47 @@ public final class SignInWithGoogleUseCase {
     }
 
     private Single<FirebaseUser> signIn(GoogleSignInAccount googleSignInAccount) {
-        return Single.create(subscriber -> {
+        return Single.create(e -> {
             AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
             Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
 
-            task.addOnSuccessListener(authResult -> subscriber.onSuccess(authResult.getUser()));
-            task.addOnFailureListener(subscriber::onError);
+            task.addOnSuccessListener(authResult -> e.onSuccess(authResult.getUser()));
+            task.addOnFailureListener(e::onError);
         });
     }
 
     private Single<FirebaseUser> ensureUserProfile(FirebaseUser firebaseUser) {
         // Check if the user profile exists.
-        return Single.create(subscriber -> {
-            userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
-                // Create the user profile if it does not exist.
-                if (userProfile == null) {
-                    userProfile = new UserProfile();
-                    userProfile.userId = firebaseUser.getUid();
-                    userProfile.displayName = firebaseUser.getDisplayName();
-                    userProfile.email = firebaseUser.getEmail();
-                    if (firebaseUser.getPhotoUrl() != null) {
-                        userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
-                    }
-
-                    userProfileRepository.save(userProfile);
+        return Single.create(e -> userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
+            // Create the user profile if it does not exist.
+            if (userProfile == null) {
+                userProfile = new UserProfile();
+                userProfile.userId = firebaseUser.getUid();
+                userProfile.displayName = firebaseUser.getDisplayName();
+                userProfile.email = firebaseUser.getEmail();
+                if (firebaseUser.getPhotoUrl() != null) {
+                    userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
                 }
-                subscriber.onSuccess(firebaseUser);
-            }, subscriber::onError);
-        });
+
+                userProfileRepository.save(userProfile);
+            }
+            e.onSuccess(firebaseUser);
+        }, e::onError));
     }
 
     private Completable saveUserDevice(FirebaseUser firebaseUser) {
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                UserDevice userDevice = new UserDevice();
-                userDevice.userId = firebaseUser.getUid();
-                userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
-                userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
-                userDevice.osName = "android";
-                userDevice.osModel = Build.MODEL;
-                userDevice.osVersion = Build.VERSION.RELEASE;
+        return Completable.create(e -> {
+            UserDevice userDevice = new UserDevice();
+            userDevice.userId = firebaseUser.getUid();
+            userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
+            userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
+            userDevice.osName = "android";
+            userDevice.osModel = Build.MODEL;
+            userDevice.osVersion = Build.VERSION.RELEASE;
 
-                userDeviceRepository.save(userDevice);
+            userDeviceRepository.save(userDevice);
 
-                subscriber.onCompleted();
-            }
+            e.onComplete();
         });
     }
 }

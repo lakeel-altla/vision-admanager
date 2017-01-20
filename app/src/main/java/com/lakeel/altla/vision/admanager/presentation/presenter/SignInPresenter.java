@@ -19,9 +19,9 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public final class SignInPresenter {
 
@@ -35,7 +35,7 @@ public final class SignInPresenter {
     @Inject
     SignInWithGoogleUseCase signInWithGoogleUseCase;
 
-    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final FirebaseAuth.AuthStateListener authStateListener;
 
@@ -80,7 +80,7 @@ public final class SignInPresenter {
 
     public void onStop() {
         FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
-        compositeSubscription.clear();
+        compositeDisposable.clear();
     }
 
     public void onClickButtonSignIn() {
@@ -117,13 +117,13 @@ public final class SignInPresenter {
             return;
         }
 
-        Subscription subscription = signInWithGoogleUseCase
+        Disposable disposable = signInWithGoogleUseCase
                 .execute(googleSignInAccount)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(_subscription -> view.showProgressDialog())
-                .doOnUnsubscribe(() -> view.hideProgressDialog())
+                .doOnTerminate(() -> view.hideProgressDialog())
                 .subscribe(() -> view.closeSignInFragment(),
                            e -> LOG.e("Failed to sign in to Firebase.", e));
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 }

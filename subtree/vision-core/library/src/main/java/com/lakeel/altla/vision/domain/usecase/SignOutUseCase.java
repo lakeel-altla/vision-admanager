@@ -9,9 +9,8 @@ import com.lakeel.altla.vision.domain.model.UserConnection;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SignOutUseCase {
 
@@ -24,23 +23,18 @@ public final class SignOutUseCase {
 
     public Completable execute() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser == null) {
-            throw new IllegalStateException("The current user not found.");
-        }
+        if (firebaseUser == null) throw new IllegalStateException("The current user not found.");
 
-        String userId = firebaseUser.getUid();
-        String instanceId = FirebaseInstanceId.getInstance().getId();
-        UserConnection userConnection = new UserConnection(userId, instanceId);
+        return Completable.create(e -> {
 
-        return Completable
-                .create(new Completable.OnSubscribe() {
-                    @Override
-                    public void call(CompletableSubscriber subscriber) {
-                        userConnectionRepository.markAsOffline(userConnection);
-                        FirebaseAuth.getInstance().signOut();
-                        subscriber.onCompleted();
-                    }
-                })
-                .subscribeOn(Schedulers.io());
+            String userId = firebaseUser.getUid();
+            String instanceId = FirebaseInstanceId.getInstance().getId();
+            UserConnection userConnection = new UserConnection(userId, instanceId);
+
+            userConnectionRepository.markAsOffline(userConnection);
+            FirebaseAuth.getInstance().signOut();
+            e.onComplete();
+
+        }).subscribeOn(Schedulers.io());
     }
 }

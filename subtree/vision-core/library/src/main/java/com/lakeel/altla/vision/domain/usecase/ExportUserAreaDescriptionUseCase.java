@@ -13,7 +13,8 @@ import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
 import javax.inject.Inject;
 
-import rx.Single;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ExportUserAreaDescriptionUseCase {
 
@@ -34,7 +35,7 @@ public final class ExportUserAreaDescriptionUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return Single.create(subscriber -> {
+        return Single.<UserAreaDescription>create(e -> {
             // Get the metadata from Tango.
             TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.find(
                     tango, areaDescriptionId);
@@ -48,11 +49,11 @@ public final class ExportUserAreaDescriptionUseCase {
                 // Save the user area description to Firebase Database.
                 userAreaDescriptionRepository.save(userAreaDescription);
 
-                subscriber.onSuccess(userAreaDescription);
+                e.onSuccess(userAreaDescription);
             } else {
-                subscriber.onError(new IllegalStateException(
+                e.onError(new IllegalStateException(
                         "Tango metadata not be found: areaDescriptionId = " + areaDescriptionId));
             }
-        });
+        }).subscribeOn(Schedulers.io());
     }
 }

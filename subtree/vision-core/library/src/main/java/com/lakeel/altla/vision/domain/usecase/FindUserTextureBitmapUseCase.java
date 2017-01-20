@@ -16,12 +16,11 @@ import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import android.graphics.Bitmap;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindUserTextureBitmapUseCase {
 
@@ -62,48 +61,42 @@ public final class FindUserTextureBitmapUseCase {
     }
 
     private Single<Model> ensureCacheFile(Model model) {
-        return Single.create(subscriber -> {
+        return Single.create(e -> {
             File file = textureCacheRepository.find(model.textureId);
             if (file != null) {
                 LOG.d("Found the cache: file = %s", file);
                 model.cached = true;
             } else {
-                try {
-                    file = textureCacheRepository.create(model.textureId);
-                    LOG.d("Created the new cache: file = %s", file);
-                } catch (IOException e) {
-                    subscriber.onError(e);
-                }
+                file = textureCacheRepository.create(model.textureId);
+                LOG.d("Created the new cache: file = %s", file);
             }
+
             model.cacheFile = file;
 
-            subscriber.onSuccess(model);
+            e.onSuccess(model);
         });
     }
 
     private Single<Model> findRemoteUpdateTime(Model model) {
-        return Single.create(subscriber -> {
-            userTextureFileMetadataRepository.find(model.userId, model.textureId, metadata -> {
-                if (metadata != null) {
-                    LOG.d("Found the texture metadata: textureId = %s", model.textureId);
-                    model.remoteUpdateTimeMillis = metadata.updateTimeMillis;
-                    subscriber.onSuccess(model);
-                } else {
-                    subscriber.onError(new RuntimeException(String.format(
-                            "The user texture metadata not found: textureId = %s",
-                            model.textureId)));
-                }
-            }, subscriber::onError);
-        });
+        return Single.create(e -> userTextureFileMetadataRepository.find(model.userId, model.textureId, metadata -> {
+            if (metadata != null) {
+                LOG.d("Found the texture metadata: textureId = %s", model.textureId);
+                model.remoteUpdateTimeMillis = metadata.updateTimeMillis;
+                e.onSuccess(model);
+            } else {
+                throw new RuntimeException(String.format(
+                        "The user texture metadata not found: textureId = %s", model.textureId));
+            }
+        }, e::onError));
     }
 
     private Single<Model> cacheIfOutdated(Model model) {
         if (model.isCacheOutdated()) {
-            return Single.create(subscriber -> {
+            return Single.create(e -> {
                 userTextureFileRepository.download(model.userId, model.textureId, model.cacheFile, aVoid -> {
                     LOG.d("Donwloaded the texture: textureId = %s", model.textureId);
-                    subscriber.onSuccess(model);
-                }, subscriber::onError, model.onProgressListener);
+                    e.onSuccess(model);
+                }, e::onError, model.onProgressListener);
             });
         } else {
             return Single.just(model)
@@ -112,13 +105,9 @@ public final class FindUserTextureBitmapUseCase {
     }
 
     private Single<Bitmap> loadBitmap(Model model) {
-        return Single.<Bitmap>create(subscriber -> {
-            try {
-                Bitmap bitmap = fileBitmapRepository.find(model.cacheFile);
-                subscriber.onSuccess(bitmap);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
+        return Single.<Bitmap>create(e -> {
+            Bitmap bitmap = fileBitmapRepository.find(model.cacheFile);
+            e.onSuccess(bitmap);
         }).subscribeOn(Schedulers.io());
     }
 

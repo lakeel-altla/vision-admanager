@@ -9,8 +9,8 @@ import com.lakeel.altla.vision.domain.model.UserProfile;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ObserveUserProfileUseCase {
 

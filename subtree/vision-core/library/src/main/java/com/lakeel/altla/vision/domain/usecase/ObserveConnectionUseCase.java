@@ -13,8 +13,8 @@ import com.lakeel.altla.vision.domain.model.UserConnection;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ObserveConnectionUseCase {
 
@@ -47,11 +47,11 @@ public final class ObserveConnectionUseCase {
             String instanceId = FirebaseInstanceId.getInstance().getId();
             UserConnection userConnection = new UserConnection(userId, instanceId);
 
-            return Observable.create(subscriber -> {
+            return Observable.create(e -> {
                 userConnectionRepository.markAsOnline(userConnection);
                 LOG.i("Mark the user online: userId = %s, instanceId = %s", userId, instanceId);
-                subscriber.onNext(true);
-                subscriber.onCompleted();
+                e.onNext(true);
+                e.onComplete();
             });
         } else {
             return Observable.just(false);

@@ -7,8 +7,8 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class GetAreaDescriptionCacheFileUseCase {
 
@@ -22,9 +22,9 @@ public final class GetAreaDescriptionCacheFileUseCase {
     public Single<File> execute(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Single.<File>create(subscriber -> {
+        return Single.<File>create(e -> {
             File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
-            subscriber.onSuccess(file);
+            e.onSuccess(file);
         }).subscribeOn(Schedulers.io());
     }
 }

@@ -22,9 +22,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListener {
 
@@ -44,7 +44,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
 
     private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
 
-    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private TangoWrapper tangoWrapper;
 
@@ -58,7 +58,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
 
     @Override
     public void onTangoReady(Tango tango) {
-        Subscription subscription = findAllTangoAreaDescriptionsUseCase
+        Disposable disposable = findAllTangoAreaDescriptionsUseCase
                 .execute(tangoWrapper.getTango())
                 .map(TangoSpaceItemModelMapper::map)
                 .toList()
@@ -70,7 +70,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
                 }, e -> {
                     LOG.e("Loading area description meta datas failed.", e);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 
     public void onCreate(@NonNull TangoWrapper tangoWrapper) {
@@ -82,7 +82,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
     }
 
     public void onStop() {
-        compositeSubscription.clear();
+        compositeDisposable.clear();
     }
 
     public void onResume() {
@@ -108,7 +108,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
             throw new IllegalStateException("'exportingAreaDescriptionId' is null.");
         }
 
-        Subscription subscription = exportUserAreaDescriptionUseCase
+        Disposable disposable = exportUserAreaDescriptionUseCase
                 .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userAreaDescription -> {
@@ -118,7 +118,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
                                         exportingAreaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
 
         view.showSnackbar(R.string.snackbar_done);
     }
@@ -126,7 +126,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
     public void onDelete(int position) {
         String areaDescriptionId = itemModels.get(position).areaDescriptionId;
 
-        Subscription subscription = deleteTangoAreaDescriptionUseCase
+        Disposable disposable = deleteTangoAreaDescriptionUseCase
                 .execute(tangoWrapper.getTango(), areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
@@ -138,7 +138,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
                                         areaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 
     public final class TangoSpaceItemPresenter {
@@ -155,14 +155,14 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
         }
 
         public void onClickImageButtonExport(int position) {
-            Subscription subscription = getAreaDescriptionCacheDirectoryUseCase
+            Disposable disposable = getAreaDescriptionCacheDirectoryUseCase
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
                         exportingAreaDescriptionId = itemModels.get(position).areaDescriptionId;
                         view.showExportActivity(exportingAreaDescriptionId, directory);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonDelete(int position) {

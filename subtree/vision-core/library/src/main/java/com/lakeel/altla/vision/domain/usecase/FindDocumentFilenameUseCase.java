@@ -7,7 +7,8 @@ import android.net.Uri;
 
 import javax.inject.Inject;
 
-import rx.Single;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindDocumentFilenameUseCase {
 
@@ -21,9 +22,9 @@ public final class FindDocumentFilenameUseCase {
     public Single<String> execute(Uri uri) {
         if (uri == null) throw new ArgumentNullException("uri");
 
-        return Single.create(subscriber -> {
+        return Single.<String>create(e -> {
             String filename = documentFilenameRepository.find(uri);
-            subscriber.onSuccess(filename);
-        });
+            e.onSuccess(filename);
+        }).subscribeOn(Schedulers.io());
     }
 }

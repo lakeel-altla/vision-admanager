@@ -14,8 +14,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindAllTangoAreaDescriptionsUseCase {
 
@@ -32,17 +32,17 @@ public final class FindAllTangoAreaDescriptionsUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return Observable.<TangoAreaDescription>create(subscriber -> {
+        return Observable.<TangoAreaDescription>create(e -> {
             List<TangoAreaDescriptionMetaData> metaDatas = tangoAreaDescriptionMetadataRepository.findAll(tango);
             for (TangoAreaDescriptionMetaData metaData : metaDatas) {
                 TangoAreaDescription tangoAreaDescription = map(metaData);
-                subscriber.onNext(tangoAreaDescription);
+                e.onNext(tangoAreaDescription);
             }
-            subscriber.onCompleted();
+            e.onComplete();
         }).subscribeOn(Schedulers.io());
     }
 
-    private static final TangoAreaDescription map(TangoAreaDescriptionMetaData metaData) {
+    private static TangoAreaDescription map(TangoAreaDescriptionMetaData metaData) {
         String areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
         String name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
         long creationTime = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);

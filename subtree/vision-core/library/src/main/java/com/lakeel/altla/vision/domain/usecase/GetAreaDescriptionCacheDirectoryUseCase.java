@@ -6,8 +6,8 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class GetAreaDescriptionCacheDirectoryUseCase {
 
@@ -19,9 +19,9 @@ public final class GetAreaDescriptionCacheDirectoryUseCase {
     }
 
     public Single<File> execute() {
-        return Single.<File>create(subscriber -> {
+        return Single.<File>create(e -> {
             File file = areaDescriptionCacheRepository.getDirectory();
-            subscriber.onSuccess(file);
+            e.onSuccess(file);
         }).subscribeOn(Schedulers.io());
     }
 }

@@ -10,17 +10,14 @@ import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.model.UserTexture;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SaveUserTextureUseCase {
 
@@ -78,24 +75,16 @@ public final class SaveUserTextureUseCase {
     }
 
     private Single<Model> openStream(Model model) {
-        return Single.create(subscriber -> {
-            try {
-                model.stream = documentRepository.openStream(model.localUri);
-                subscriber.onSuccess(model);
-            } catch (FileNotFoundException e) {
-                subscriber.onError(e);
-            }
+        return Single.create(e -> {
+            model.stream = documentRepository.openStream(model.localUri);
+            e.onSuccess(model);
         });
     }
 
     private Single<Model> getTotalBytes(Model model) {
-        return Single.<Long>create(subscriber -> {
-            try {
-                long totalBytes = model.stream.available();
-                subscriber.onSuccess(totalBytes);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
+        return Single.<Long>create(e -> {
+            long totalBytes = model.stream.available();
+            e.onSuccess(totalBytes);
         }).map(totalBytes -> {
             model.totalBytes = totalBytes;
             return model;
@@ -103,26 +92,21 @@ public final class SaveUserTextureUseCase {
     }
 
     private Single<Model> uploadUserTextureFile(Model model) {
-        return Single.create(subscriber -> {
-            userTextureFileRepository.save(
-                    model.userTexture.userId,
-                    model.userTexture.textureId,
-                    model.stream,
-                    aVoid -> subscriber.onSuccess(model),
-                    subscriber::onError,
-                    (totalBytes, bytesTransferred) ->
-                            model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
-            );
-        });
+        return Single.create(e -> userTextureFileRepository.save(
+                model.userTexture.userId,
+                model.userTexture.textureId,
+                model.stream,
+                aVoid -> e.onSuccess(model),
+                e::onError,
+                (totalBytes, bytesTransferred) ->
+                        model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
+        ));
     }
 
     private Completable saveUserTexture(Model model) {
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                userTextureRepository.save(model.userTexture);
-                subscriber.onCompleted();
-            }
+        return Completable.create(e -> {
+            userTextureRepository.save(model.userTexture);
+            e.onComplete();
         });
     }
 

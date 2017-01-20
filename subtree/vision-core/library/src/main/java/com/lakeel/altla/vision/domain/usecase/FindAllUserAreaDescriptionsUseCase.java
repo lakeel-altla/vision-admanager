@@ -10,8 +10,8 @@ import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindAllUserAreaDescriptionsUseCase {
 
@@ -34,28 +34,28 @@ public final class FindAllUserAreaDescriptionsUseCase {
 
         String userId = user.getUid();
 
-        return Observable.<UserAreaDescription>create(subscriber -> {
+        return Observable.<UserAreaDescription>create(e -> {
             userAreaDescriptionRepository.findAll(userId, userAreaDescriptions -> {
                 for (UserAreaDescription userAreaDescription : userAreaDescriptions) {
                     userAreaDescription.fileCached = areaDescriptionCacheRepository.exists(
                             userAreaDescription.areaDescriptionId);
 
-                    subscriber.onNext(userAreaDescription);
+                    e.onNext(userAreaDescription);
                 }
 
-                subscriber.onCompleted();
-            }, subscriber::onError);
+                e.onComplete();
+            }, e::onError);
         }).flatMap(userAreaDescription -> checkFileUploaded(userId, userAreaDescription))
           .subscribeOn(Schedulers.io());
     }
 
     private Observable<UserAreaDescription> checkFileUploaded(String userId, UserAreaDescription userAreaDescription) {
-        return Observable.create(subscriber -> {
+        return Observable.create(e -> {
             userAreaDescriptionFileRepository.exists(userId, userAreaDescription.areaDescriptionId, result -> {
                 userAreaDescription.fileUploaded = result;
-                subscriber.onNext(userAreaDescription);
-                subscriber.onCompleted();
-            }, subscriber::onError);
+                e.onNext(userAreaDescription);
+                e.onComplete();
+            }, e::onError);
         });
     }
 }

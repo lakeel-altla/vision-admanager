@@ -2,15 +2,16 @@ package com.lakeel.altla.vision.domain.helper;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 
-import rx.Observable;
-import rx.functions.Func0;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
 
 public final class ObservableDataObservable {
 
     private ObservableDataObservable() {
     }
 
-    public static <TData> Observable<TData> using(Func0<ObservableData<TData>> observableDataFactory) {
+    public static <TData> Observable<TData> using(Callable<ObservableData<TData>> observableDataFactory) {
         if (observableDataFactory == null) throw new ArgumentNullException("observableDataFactory");
 
         return Observable.using(observableDataFactory,

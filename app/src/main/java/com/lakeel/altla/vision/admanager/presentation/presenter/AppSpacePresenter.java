@@ -22,9 +22,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public final class AppSpacePresenter {
 
@@ -50,7 +50,7 @@ public final class AppSpacePresenter {
 
     private final List<AppSpaceItemModel> itemModels = new ArrayList<>();
 
-    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private TangoWrapper tangoWrapper;
 
@@ -71,7 +71,7 @@ public final class AppSpacePresenter {
     }
 
     public void onStart() {
-        Subscription subscription = findAllUserAreaDescriptionsUseCase
+        Disposable disposable = findAllUserAreaDescriptionsUseCase
                 .execute()
                 .map(AppSpaceItemModelMapper::map)
                 .toList()
@@ -84,11 +84,11 @@ public final class AppSpacePresenter {
                     LOG.e("Failed to load all area description meta entries.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 
     public void onStop() {
-        compositeSubscription.clear();
+        compositeDisposable.clear();
     }
 
     public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
@@ -108,11 +108,11 @@ public final class AppSpacePresenter {
     public void onDelete(int position) {
         String areaDescriptionId = itemModels.get(position).areaDescriptionId;
 
-        Subscription subscription = deleteUserAreaDescriptionUseCase
+        Disposable disposable = deleteUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(_subscription -> view.showDeleteProgressDialog())
-                .doOnUnsubscribe(() -> view.hideDeleteProgressDialog())
+                .doOnTerminate(() -> view.hideDeleteProgressDialog())
                 .subscribe(() -> {
                     itemModels.remove(position);
 
@@ -122,7 +122,7 @@ public final class AppSpacePresenter {
                     LOG.e("Failed to delete the user area description.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 
     public final class AppSpaceItemPresenter {
@@ -141,14 +141,14 @@ public final class AppSpacePresenter {
         public void onClickImageButtonImport(int position) {
             String areaDescriptionId = itemModels.get(position).areaDescriptionId;
 
-            Subscription subscription = getAreaDescriptionCacheFileUseCase
+            Disposable disposable = getAreaDescriptionCacheFileUseCase
                     .execute(areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
                         LOG.e("Failed to import the area description into Tango.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonUpload(int position) {
@@ -156,7 +156,7 @@ public final class AppSpacePresenter {
 
             prevBytesTransferred = 0;
 
-            Subscription subscription = uploadUserAreaDescriptionFileUseCase
+            Disposable disposable = uploadUserAreaDescriptionFileUseCase
                     .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
@@ -164,7 +164,7 @@ public final class AppSpacePresenter {
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe(_subscription -> view.showUploadProgressDialog())
-                    .doOnUnsubscribe(() -> view.hideUploadProgressDialog())
+                    .doOnTerminate(() -> view.hideUploadProgressDialog())
                     .subscribe(() -> {
                         itemModel.fileUploaded = true;
 
@@ -174,7 +174,7 @@ public final class AppSpacePresenter {
                         LOG.e("Failed to upload the user area description.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonDownload(int position) {
@@ -182,7 +182,7 @@ public final class AppSpacePresenter {
 
             prevBytesTransferred = 0;
 
-            Subscription subscription = downloadUserAreaDescriptionFileUseCase
+            Disposable disposable = downloadUserAreaDescriptionFileUseCase
                     .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
@@ -190,7 +190,7 @@ public final class AppSpacePresenter {
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe(_subscription -> view.showUploadProgressDialog())
-                    .doOnUnsubscribe(() -> view.hideUploadProgressDialog())
+                    .doOnTerminate(() -> view.hideUploadProgressDialog())
                     .subscribe(() -> {
                         itemModel.fileCached = true;
 
@@ -200,13 +200,13 @@ public final class AppSpacePresenter {
                         LOG.e("Failed to download the user area description.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonSynced(int position) {
             AppSpaceItemModel itemModel = itemModels.get(position);
 
-            Subscription subscription = deleteAreaDescriptionCacheUseCase
+            Disposable disposable = deleteAreaDescriptionCacheUseCase
                     .execute(itemModel.areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
@@ -218,7 +218,7 @@ public final class AppSpacePresenter {
                         LOG.e("Failed to delete the area description cache.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonEdit(int position) {

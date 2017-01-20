@@ -7,9 +7,8 @@ import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetad
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DeleteTangoAreaDescriptionUseCase {
 
@@ -24,12 +23,9 @@ public final class DeleteTangoAreaDescriptionUseCase {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                tangoAreaDescriptionMetadataRepository.delete(tango, areaDescriptionId);
-                subscriber.onCompleted();
-            }
+        return Completable.create(e -> {
+            tangoAreaDescriptionMetadataRepository.delete(tango, areaDescriptionId);
+            e.onComplete();
         }).subscribeOn(Schedulers.io());
     }
 }

@@ -9,8 +9,8 @@ import com.lakeel.altla.vision.domain.model.UserTexture;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindUserTextureUseCase {
 
@@ -27,13 +27,11 @@ public final class FindUserTextureUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return Observable.<UserTexture>create(subscriber -> {
-            userTextureRepository.find(user.getUid(), textureId, userTexture -> {
-                if (userTexture != null) {
-                    subscriber.onNext(userTexture);
-                }
-                subscriber.onCompleted();
-            }, subscriber::onError);
-        }).subscribeOn(Schedulers.io());
+        return Observable.<UserTexture>create(e -> userTextureRepository.find(user.getUid(), textureId, userTexture -> {
+            if (userTexture != null) {
+                e.onNext(userTexture);
+            }
+            e.onComplete();
+        }, e::onError)).subscribeOn(Schedulers.io());
     }
 }

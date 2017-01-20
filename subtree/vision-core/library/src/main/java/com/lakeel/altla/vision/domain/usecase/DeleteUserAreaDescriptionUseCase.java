@@ -9,9 +9,8 @@ import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepos
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DeleteUserAreaDescriptionUseCase {
 
@@ -33,14 +32,9 @@ public final class DeleteUserAreaDescriptionUseCase {
 
         String userId = user.getUid();
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                userAreaDescriptionFileRepository.delete(userId, areaDescriptionId, aVoid -> {
-                    userAreaDescriptionRepository.delete(userId, areaDescriptionId);
-                    subscriber.onCompleted();
-                }, subscriber::onError);
-            }
-        }).subscribeOn(Schedulers.io());
+        return Completable.create(e -> userAreaDescriptionFileRepository.delete(userId, areaDescriptionId, aVoid -> {
+            userAreaDescriptionRepository.delete(userId, areaDescriptionId);
+            e.onComplete();
+        }, e::onError)).subscribeOn(Schedulers.io());
     }
 }

@@ -12,9 +12,8 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DownloadUserAreaDescriptionFileUseCase {
 
@@ -34,16 +33,13 @@ public final class DownloadUserAreaDescriptionFileUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return Completable.create(new Completable.OnSubscribe() {
-            @Override
-            public void call(CompletableSubscriber subscriber) {
-                File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
-                userAreaDescriptionFileRepository.download(
-                        user.getUid(), areaDescriptionId, file,
-                        aVoid -> subscriber.onCompleted(),
-                        subscriber::onError,
-                        onProgressListener);
-            }
+        return Completable.create(e -> {
+            File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
+            userAreaDescriptionFileRepository.download(
+                    user.getUid(), areaDescriptionId, file,
+                    aVoid -> e.onComplete(),
+                    e::onError,
+                    onProgressListener);
         }).subscribeOn(Schedulers.io());
     }
 }

@@ -18,9 +18,9 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public final class EditUserAreaDescriptionPresenter {
 
@@ -35,7 +35,7 @@ public final class EditUserAreaDescriptionPresenter {
     @Inject
     GoogleApiClient googleApiClient;
 
-    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private EditUserAreaDescriptionView view;
 
@@ -57,7 +57,7 @@ public final class EditUserAreaDescriptionPresenter {
 
     public void onResume() {
         if (!modelLoaded) {
-            Subscription subscription = findUserAreaDescriptionUseCase
+            Disposable disposable = findUserAreaDescriptionUseCase
                     .execute(model.areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(userAreaDescription -> {
@@ -95,12 +95,12 @@ public final class EditUserAreaDescriptionPresenter {
                         LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
                                             model.areaDescriptionId), e);
                     });
-            compositeSubscription.add(subscription);
+            compositeDisposable.add(disposable);
         }
     }
 
     public void onPause() {
-        compositeSubscription.clear();
+        compositeDisposable.clear();
         modelLoaded = false;
     }
 
@@ -168,7 +168,7 @@ public final class EditUserAreaDescriptionPresenter {
         userAreaDescription.placeId = model.placeId;
         userAreaDescription.level = model.level;
 
-        Subscription subscription = saveUserAreaDescriptionUseCase
+        Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
@@ -177,6 +177,6 @@ public final class EditUserAreaDescriptionPresenter {
                                         model.areaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
-        compositeSubscription.add(subscription);
+        compositeDisposable.add(disposable);
     }
 }
