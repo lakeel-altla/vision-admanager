@@ -11,10 +11,10 @@ import dagger.Provides;
 @Module
 public final class ConfigModule {
 
-    @Named(Names.GOOGLE_SIGN_IN_WEB_CLIENT_ID)
+    @Named(Names.GOOGLE_API_WEB_CLIENT_ID)
     @Singleton
     @Provides
-    public int provideGoogleSignInWebClientId() {
+    public int provideGoogleApiWebClientId() {
         return R.string.default_web_client_id;
     }
 }
