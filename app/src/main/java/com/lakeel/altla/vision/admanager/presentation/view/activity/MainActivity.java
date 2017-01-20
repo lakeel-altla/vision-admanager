@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view.activity;
 
-import com.google.atap.tangoservice.TangoConfig;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.tango.TangoWrapper;
@@ -25,6 +24,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -32,13 +33,16 @@ public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
-                   TangoSpaceFragment.InteractionListener,
                    AppSpaceFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FRAGMENT_TAG_TANGO_SPACE = TangoSpaceFragment.class.getName();
 
     private static final String FRAGMENT_TAG_APP_SPACE = AppSpaceFragment.class.getName();
+
+    @Inject
+    TangoWrapper tangoWrapper;
+
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -50,8 +54,6 @@ public final class MainActivity extends AppCompatActivity
     NavigationView navigationView;
 
     private final FragmentController fragmentController = new FragmentController();
-
-    private TangoWrapper tangoWrapper;
 
     private ActivityComponent activityComponent;
 
@@ -65,8 +67,8 @@ public final class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        tangoWrapper = new TangoWrapper(this);
-        tangoWrapper.setTangoConfigFactory(tango -> tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT));
+//        tangoWrapper = new TangoWrapper(this);
+//        tangoWrapper.setTangoConfigFactory(tango -> tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT));
 
         setSupportActionBar(toolbar);
 
@@ -146,11 +148,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
-    }
-
-    @Override
-    public TangoWrapper getTangoWrapper() {
-        return tangoWrapper;
     }
 
     @Override

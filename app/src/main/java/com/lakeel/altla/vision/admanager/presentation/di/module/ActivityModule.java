@@ -1,5 +1,8 @@
 package com.lakeel.altla.vision.admanager.presentation.di.module;
 
+import com.google.atap.tangoservice.TangoConfig;
+
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.Context;
@@ -31,5 +34,13 @@ public final class ActivityModule {
     @Provides
     public Context provideContext() {
         return activity;
+    }
+
+    @ActivityScope
+    @Provides
+    public TangoWrapper provideTangoWrapper(@Named(Names.ACTIVITY_CONTEXT) Context context) {
+        TangoWrapper tangoWrapper = new TangoWrapper(context);
+        tangoWrapper.setTangoConfigFactory(tango -> tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT));
+        return tangoWrapper;
     }
 }

@@ -2,7 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
@@ -52,18 +51,12 @@ public final class AppSpacePresenter {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private TangoWrapper tangoWrapper;
-
     private AppSpaceView view;
 
     private long prevBytesTransferred;
 
     @Inject
     public AppSpacePresenter() {
-    }
-
-    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
-        this.tangoWrapper = tangoWrapper;
     }
 
     public void onCreateView(@NonNull AppSpaceView view) {

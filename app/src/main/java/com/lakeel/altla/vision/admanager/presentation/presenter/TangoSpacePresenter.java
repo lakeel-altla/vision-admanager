@@ -42,11 +42,12 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
     @Inject
     DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
 
+    @Inject
+    TangoWrapper tangoWrapper;
+
     private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private TangoWrapper tangoWrapper;
 
     private TangoSpaceView view;
 
@@ -71,10 +72,6 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
                     LOG.e("Loading area description meta datas failed.", e);
                 });
         compositeDisposable.add(disposable);
-    }
-
-    public void onCreate(@NonNull TangoWrapper tangoWrapper) {
-        this.tangoWrapper = tangoWrapper;
     }
 
     public void onCreateView(@NonNull TangoSpaceView view) {
