@@ -11,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public final class ExternalStorageModule {
+public final class AndroidModule {
 
     @Named(Names.EXTERNAL_STORAGE_ROOT)
     @Singleton
