@@ -4,21 +4,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.Single;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public final class UploadUserAreaDescriptionFileUseCase {
 
@@ -28,7 +28,7 @@ public final class UploadUserAreaDescriptionFileUseCase {
     @Inject
     AreaDescriptionCacheRepository areaDescriptionCacheRepository;
 
-    private final Action1<? super InputStream> closeStream = stream -> {
+    private final Consumer<? super InputStream> closeStream = stream -> {
         try {
             stream.close();
         } catch (IOException e) {
@@ -50,8 +50,6 @@ public final class UploadUserAreaDescriptionFileUseCase {
         return Single.just(new Model(user.getUid(), areaDescriptionId, onProgressListener))
                      // Open the stream of the area description file as cache.
                      .flatMap(this::createCacheStream)
-                     // Get the total bytes of it.
-                     .flatMap(this::getTotalBytes)
                      // Upload it to Firebase Storage.
                      .flatMap(this::uploadUserAreaDescriptionFile)
                      .toCompletable()
@@ -59,29 +57,12 @@ public final class UploadUserAreaDescriptionFileUseCase {
     }
 
     private Single<Model> createCacheStream(Model model) {
-        return areaDescriptionCacheRepository
-                .getFile(model.areaDescriptionId)
-                .map(path -> {
-                    try {
-                        model.stream = new FileInputStream(path);
-                        return model;
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
-    private Single<Model> getTotalBytes(Model model) {
-        return Single.<Long>create(subscriber -> {
-            try {
-                long totalBytes = model.stream.available();
-                subscriber.onSuccess(totalBytes);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
-        }).map(totalBytes -> {
-            model.totalBytes = totalBytes;
-            return model;
+        return Single.create(e -> {
+            File file = areaDescriptionCacheRepository.getFile(model.areaDescriptionId);
+            model.stream = new FileInputStream(file);
+            // Get the total bytes of it.
+            model.totalBytes = model.stream.available();
+            e.onSuccess(model);
         });
     }
 
@@ -89,10 +70,12 @@ public final class UploadUserAreaDescriptionFileUseCase {
             Model model) {
         return Completable
                 .using(() -> model.stream,
-                       stream -> userAreaDescriptionFileRepository.upload(
+                       stream -> Completable.create(e -> userAreaDescriptionFileRepository.upload(
                                model.userId, model.areaDescriptionId, model.stream,
+                               aVoid -> e.onComplete(),
+                               e::onError,
                                (totalBytes, bytesTransferred) ->
-                                       model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)),
+                                       model.onProgressListener.onProgress(model.totalBytes, bytesTransferred))),
                        closeStream)
                 .toSingleDefault(model);
     }

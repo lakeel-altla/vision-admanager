@@ -1,13 +1,14 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.DocumentFilenameRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentFilenameRepository;
 
 import android.net.Uri;
 
 import javax.inject.Inject;
 
-import rx.Single;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FindDocumentFilenameUseCase {
 
@@ -21,6 +22,9 @@ public final class FindDocumentFilenameUseCase {
     public Single<String> execute(Uri uri) {
         if (uri == null) throw new ArgumentNullException("uri");
 
-        return documentFilenameRepository.find(uri);
+        return Single.<String>create(e -> {
+            String filename = documentFilenameRepository.find(uri);
+            e.onSuccess(filename);
+        }).subscribeOn(Schedulers.io());
     }
 }

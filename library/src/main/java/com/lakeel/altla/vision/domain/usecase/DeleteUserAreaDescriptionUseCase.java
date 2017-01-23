@@ -4,13 +4,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DeleteUserAreaDescriptionUseCase {
 
@@ -32,9 +32,9 @@ public final class DeleteUserAreaDescriptionUseCase {
 
         String userId = user.getUid();
 
-        return userAreaDescriptionFileRepository
-                .delete(userId, areaDescriptionId)
-                .andThen(userAreaDescriptionRepository.delete(userId, areaDescriptionId))
-                .subscribeOn(Schedulers.io());
+        return Completable.create(e -> userAreaDescriptionFileRepository.delete(userId, areaDescriptionId, aVoid -> {
+            userAreaDescriptionRepository.delete(userId, areaDescriptionId);
+            e.onComplete();
+        }, e::onError)).subscribeOn(Schedulers.io());
     }
 }

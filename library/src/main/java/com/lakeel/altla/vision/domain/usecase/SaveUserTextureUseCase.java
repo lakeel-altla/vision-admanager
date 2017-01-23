@@ -4,21 +4,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.model.UserTexture;
-import com.lakeel.altla.vision.domain.repository.DocumentRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SaveUserTextureUseCase {
 
@@ -76,21 +75,16 @@ public final class SaveUserTextureUseCase {
     }
 
     private Single<Model> openStream(Model model) {
-        return documentRepository.openStream(model.localUri)
-                                 .map(stream -> {
-                                     model.stream = stream;
-                                     return model;
-                                 });
+        return Single.create(e -> {
+            model.stream = documentRepository.openStream(model.localUri);
+            e.onSuccess(model);
+        });
     }
 
     private Single<Model> getTotalBytes(Model model) {
-        return Single.<Long>create(subscriber -> {
-            try {
-                long totalBytes = model.stream.available();
-                subscriber.onSuccess(totalBytes);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
+        return Single.<Long>create(e -> {
+            long totalBytes = model.stream.available();
+            e.onSuccess(totalBytes);
         }).map(totalBytes -> {
             model.totalBytes = totalBytes;
             return model;
@@ -98,18 +92,22 @@ public final class SaveUserTextureUseCase {
     }
 
     private Single<Model> uploadUserTextureFile(Model model) {
-        // Use the value obtained from the stream, because totalBytes returned by Firebase is always -1.
-        return userTextureFileRepository
-                .save(model.userTexture.userId,
-                      model.userTexture.textureId,
-                      model.stream,
-                      (totalBytes, bytesTransferred) ->
-                              model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
-                ).toSingleDefault(model);
+        return Single.create(e -> userTextureFileRepository.save(
+                model.userTexture.userId,
+                model.userTexture.textureId,
+                model.stream,
+                aVoid -> e.onSuccess(model),
+                e::onError,
+                (totalBytes, bytesTransferred) ->
+                        model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
+        ));
     }
 
     private Completable saveUserTexture(Model model) {
-        return userTextureRepository.save(model.userTexture);
+        return Completable.create(e -> {
+            userTextureRepository.save(model.userTexture);
+            e.onComplete();
+        });
     }
 
     private final class Model {

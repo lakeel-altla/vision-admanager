@@ -9,20 +9,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import com.lakeel.altla.rx.tasks.RxGmsTask;
+import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.domain.model.UserDevice;
 import com.lakeel.altla.vision.domain.model.UserProfile;
-import com.lakeel.altla.vision.domain.repository.UserDeviceRepository;
-import com.lakeel.altla.vision.domain.repository.UserProfileRepository;
 
 import android.os.Build;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SignInWithGoogleUseCase {
 
@@ -45,47 +43,47 @@ public final class SignInWithGoogleUseCase {
     }
 
     private Single<FirebaseUser> signIn(GoogleSignInAccount googleSignInAccount) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-        Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
+        return Single.create(e -> {
+            AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+            Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
 
-        return RxGmsTask.asSingle(task)
-                        .map(AuthResult::getUser);
+            task.addOnSuccessListener(authResult -> e.onSuccess(authResult.getUser()));
+            task.addOnFailureListener(e::onError);
+        });
     }
 
     private Single<FirebaseUser> ensureUserProfile(FirebaseUser firebaseUser) {
         // Check if the user profile exists.
-        return userProfileRepository.find(firebaseUser.getUid())
-                                    .map(userProfile -> firebaseUser)
-                                    // Create the user profile if it does not exist.
-                                    .switchIfEmpty(saveUserProfile(firebaseUser))
-                                    .toSingle();
-    }
+        return Single.create(e -> userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
+            // Create the user profile if it does not exist.
+            if (userProfile == null) {
+                userProfile = new UserProfile();
+                userProfile.userId = firebaseUser.getUid();
+                userProfile.displayName = firebaseUser.getDisplayName();
+                userProfile.email = firebaseUser.getEmail();
+                if (firebaseUser.getPhotoUrl() != null) {
+                    userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
+                }
 
-    private Observable<FirebaseUser> saveUserProfile(final FirebaseUser firebaseUser) {
-        return Single.<UserProfile>create(subscriber -> {
-            UserProfile userProfile = new UserProfile();
-            userProfile.userId = firebaseUser.getUid();
-            userProfile.displayName = firebaseUser.getDisplayName();
-            userProfile.email = firebaseUser.getEmail();
-            if (firebaseUser.getPhotoUrl() != null) {
-                userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
+                userProfileRepository.save(userProfile);
             }
-
-            subscriber.onSuccess(userProfile);
-        }).flatMap(userProfile -> userProfileRepository.save(userProfile)
-                                                       .toSingleDefault(firebaseUser))
-          .toObservable();
+            e.onSuccess(firebaseUser);
+        }, e::onError));
     }
 
     private Completable saveUserDevice(FirebaseUser firebaseUser) {
-        UserDevice userDevice = new UserDevice();
-        userDevice.userId = firebaseUser.getUid();
-        userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
-        userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
-        userDevice.osName = "android";
-        userDevice.osModel = Build.MODEL;
-        userDevice.osVersion = Build.VERSION.RELEASE;
+        return Completable.create(e -> {
+            UserDevice userDevice = new UserDevice();
+            userDevice.userId = firebaseUser.getUid();
+            userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
+            userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
+            userDevice.osName = "android";
+            userDevice.osModel = Build.MODEL;
+            userDevice.osVersion = Build.VERSION.RELEASE;
 
-        return userDeviceRepository.save(userDevice);
+            userDeviceRepository.save(userDevice);
+
+            e.onComplete();
+        });
     }
 }

@@ -3,12 +3,12 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DeleteTangoAreaDescriptionUseCase {
 
@@ -23,8 +23,9 @@ public final class DeleteTangoAreaDescriptionUseCase {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return tangoAreaDescriptionMetadataRepository
-                .delete(tango, areaDescriptionId)
-                .subscribeOn(Schedulers.io());
+        return Completable.create(e -> {
+            tangoAreaDescriptionMetadataRepository.delete(tango, areaDescriptionId);
+            e.onComplete();
+        }).subscribeOn(Schedulers.io());
     }
 }

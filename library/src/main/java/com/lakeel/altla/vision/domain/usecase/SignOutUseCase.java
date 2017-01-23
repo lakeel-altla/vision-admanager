@@ -4,13 +4,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.domain.model.UserConnection;
-import com.lakeel.altla.vision.domain.repository.UserConnectionRepository;
 
 import javax.inject.Inject;
 
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SignOutUseCase {
 
@@ -21,23 +21,20 @@ public final class SignOutUseCase {
     public SignOutUseCase() {
     }
 
-    public Single<UserConnection> execute() {
+    public Completable execute() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser == null) {
-            throw new IllegalStateException("The current user not found.");
-        }
+        if (firebaseUser == null) throw new IllegalStateException("The current user not found.");
 
-        String userId = firebaseUser.getUid();
-        String instanceId = FirebaseInstanceId.getInstance().getId();
-        UserConnection userConnection = new UserConnection(userId, instanceId);
+        return Completable.create(e -> {
 
-        return userConnectionRepository.markAsOffline(userConnection)
-                                       .flatMap(this::signOut)
-                                       .subscribeOn(Schedulers.io());
-    }
+            String userId = firebaseUser.getUid();
+            String instanceId = FirebaseInstanceId.getInstance().getId();
+            UserConnection userConnection = new UserConnection(userId, instanceId);
 
-    private Single<UserConnection> signOut(UserConnection userConnection) {
-        FirebaseAuth.getInstance().signOut();
-        return Single.just(userConnection);
+            userConnectionRepository.markAsOffline(userConnection);
+            FirebaseAuth.getInstance().signOut();
+            e.onComplete();
+
+        }).subscribeOn(Schedulers.io());
     }
 }

@@ -4,13 +4,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
 
 public final class FindUserAreaDescriptionUseCase {
 
@@ -27,8 +26,13 @@ public final class FindUserAreaDescriptionUseCase {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return userAreaDescriptionRepository
-                .find(user.getUid(), areaDescriptionId)
-                .subscribeOn(Schedulers.io());
+        return Observable.create(e -> {
+            userAreaDescriptionRepository.find(user.getUid(), areaDescriptionId, userAreaDescription -> {
+                if (userAreaDescription != null) {
+                    e.onNext(userAreaDescription);
+                }
+                e.onComplete();
+            }, e::onError);
+        });
     }
 }

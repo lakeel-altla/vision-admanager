@@ -1,13 +1,13 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class SaveUserAreaDescriptionUseCase {
 
@@ -21,8 +21,9 @@ public final class SaveUserAreaDescriptionUseCase {
     public Completable execute(UserAreaDescription userAreaDescription) {
         if (userAreaDescription == null) throw new ArgumentNullException("areaDescriptionId");
 
-        return userAreaDescriptionRepository
-                .save(userAreaDescription)
-                .subscribeOn(Schedulers.io());
+        return Completable.create(e -> {
+            userAreaDescriptionRepository.save(userAreaDescription);
+            e.onComplete();
+        }).subscribeOn(Schedulers.io());
     }
 }

@@ -4,14 +4,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
-import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
+import com.lakeel.altla.vision.data.repository.android.TextureCacheRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 
 import javax.inject.Inject;
 
-import rx.Completable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DeleteUserTextureUseCase {
 
@@ -36,13 +36,15 @@ public final class DeleteUserTextureUseCase {
 
         String userId = user.getUid();
 
-        return userTextureRepository
-                // Delete the user texture in Firebase Database.
-                .delete(userId, textureId)
-                // Delete the user texture file in Firebase Storage.
-                .andThen(userTextureFileRepository.delete(userId, textureId))
+        return Completable.create(e -> {
+            // Delete the user texture in Firebase Database.
+            userTextureRepository.delete(userId, textureId);
+            // Delete the user texture file in Firebase Storage.
+            userTextureFileRepository.delete(userId, textureId, aVoid -> {
                 // Delete the local cache of the user texture.
-                .andThen(textureCacheRepository.delete(textureId))
-                .subscribeOn(Schedulers.io());
+                textureCacheRepository.delete(textureId);
+                e.onComplete();
+            }, e::onError);
+        }).subscribeOn(Schedulers.io());
     }
 }
