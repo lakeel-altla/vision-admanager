@@ -9,7 +9,7 @@ import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Maybe;
 
 public final class FindUserAreaDescriptionUseCase {
 
@@ -20,18 +20,19 @@ public final class FindUserAreaDescriptionUseCase {
     public FindUserAreaDescriptionUseCase() {
     }
 
-    public Observable<UserAreaDescription> execute(String areaDescriptionId) {
+    public Maybe<UserAreaDescription> execute(String areaDescriptionId) {
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
-        return Observable.create(e -> {
+        return Maybe.create(e -> {
             userAreaDescriptionRepository.find(user.getUid(), areaDescriptionId, userAreaDescription -> {
                 if (userAreaDescription != null) {
-                    e.onNext(userAreaDescription);
+                    e.onSuccess(userAreaDescription);
+                } else {
+                    e.onComplete();
                 }
-                e.onComplete();
             }, e::onError);
         });
     }

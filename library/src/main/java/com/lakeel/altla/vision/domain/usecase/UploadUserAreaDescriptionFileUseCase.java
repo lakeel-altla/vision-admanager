@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 
 import java.io.File;
@@ -27,6 +28,9 @@ public final class UploadUserAreaDescriptionFileUseCase {
 
     @Inject
     AreaDescriptionCacheRepository areaDescriptionCacheRepository;
+
+    @Inject
+    UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     private final Consumer<? super InputStream> closeStream = stream -> {
         try {
@@ -52,7 +56,8 @@ public final class UploadUserAreaDescriptionFileUseCase {
                      .flatMap(this::createCacheStream)
                      // Upload it to Firebase Storage.
                      .flatMap(this::uploadUserAreaDescriptionFile)
-                     .toCompletable()
+                     // Mark the user area description in Firebase database as uploaded.
+                     .flatMapCompletable(this::markAsUploaded)
                      .subscribeOn(Schedulers.io());
     }
 
@@ -78,6 +83,21 @@ public final class UploadUserAreaDescriptionFileUseCase {
                                        model.onProgressListener.onProgress(model.totalBytes, bytesTransferred))),
                        closeStream)
                 .toSingleDefault(model);
+    }
+
+    private Completable markAsUploaded(Model model) {
+        return Completable.create(e -> {
+            userAreaDescriptionRepository.find(model.userId, model.areaDescriptionId, userAreaDescription -> {
+                if (userAreaDescription == null) {
+                    throw new IllegalStateException(
+                            String.format("UserAreaDescription not found: userId = %s, areaDescriptionId = %s",
+                                          model.userId, model.areaDescriptionId));
+                }
+                userAreaDescription.fileUploaded = true;
+                userAreaDescriptionRepository.save(userAreaDescription);
+                e.onComplete();
+            }, e::onError);
+        });
     }
 
     private final class Model {

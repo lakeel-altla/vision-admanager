@@ -14,13 +14,12 @@ public final class UserAreaDescription {
 
     public long creationTime;
 
+    public boolean fileUploaded;
+
     public String placeId;
 
     public int level;
 
     @Exclude
     public boolean fileCached;
-
-    @Exclude
-    public boolean fileUploaded;
 }
