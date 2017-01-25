@@ -6,10 +6,6 @@ apply plugin: 'com.neenbedankt.android-apt'
 // retrolambda
 apply plugin: 'me.tatarka.retrolambda'
 
-// to use Google API.
-Properties googleApiProperties = new Properties()
-googleApiProperties.load(project.rootProject.file('google-api.properties').newDataInputStream())
-
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
@@ -20,12 +16,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-
-        try {
-            manifestPlaceholders = [GOOGLE_API_KEY: googleApiProperties.getProperty("GOOGLE_API_KEY")]
-        } catch (e) {
-            throw new RuntimeException("GOOGLE_API_KEY in google-api.properties is required.")
-        }
     }
     buildTypes {
         release {
