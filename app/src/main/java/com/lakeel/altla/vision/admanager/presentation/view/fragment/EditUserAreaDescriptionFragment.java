@@ -154,15 +154,15 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onResume();
+    public void onStart() {
+        super.onStart();
+        presenter.onStart();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        presenter.onPause();
+    public void onStop() {
+        super.onStop();
+        presenter.onStop();
     }
 
     @Override

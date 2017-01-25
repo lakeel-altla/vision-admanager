@@ -55,7 +55,7 @@ public final class EditUserAreaDescriptionPresenter {
         this.view = view;
     }
 
-    public void onResume() {
+    public void onStart() {
         if (!modelLoaded) {
             Disposable disposable = findUserAreaDescriptionUseCase
                     .execute(model.areaDescriptionId)
@@ -68,6 +68,8 @@ public final class EditUserAreaDescriptionPresenter {
 
                         view.showModel(this.model);
                         modelLoaded = true;
+
+                        LOG.d("Model loaded.");
 
                         // TODO: implement as use-case class.
                         // TODO: implement the progress ring to indicate loading.
@@ -101,7 +103,7 @@ public final class EditUserAreaDescriptionPresenter {
         }
     }
 
-    public void onPause() {
+    public void onStop() {
         compositeDisposable.clear();
         modelLoaded = false;
     }
@@ -129,6 +131,9 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onPlacePicked(@NonNull Place place) {
+        // NOTE:
+        // onPlacePicked will be invoked after onStart() before onResume().
+
         if (modelLoaded) {
             model.placeId = place.getId();
             model.placeName = place.getName().toString();
