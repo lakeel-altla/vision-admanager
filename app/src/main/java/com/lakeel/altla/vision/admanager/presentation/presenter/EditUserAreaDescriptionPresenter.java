@@ -1,8 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.android.log.Log;
@@ -12,12 +10,14 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAr
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -33,13 +33,13 @@ public final class EditUserAreaDescriptionPresenter {
     SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
 
     @Inject
-    GoogleApiClient googleApiClient;
+    GetPlaceUseCase getPlaceUseCase;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private EditUserAreaDescriptionView view;
 
-    private boolean modelLoaded;
+    private String areaDescriptionId;
 
     private EditUserAreaDescriptionModel model;
 
@@ -48,7 +48,7 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onCreate(@NonNull String areaDescriptionId) {
-        model = new EditUserAreaDescriptionModel(areaDescriptionId);
+        this.areaDescriptionId = areaDescriptionId;
     }
 
     public void onCreateView(@NonNull EditUserAreaDescriptionView view) {
@@ -56,60 +56,53 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onStart() {
-        if (!modelLoaded) {
-            Disposable disposable = findUserAreaDescriptionUseCase
-                    .execute(model.areaDescriptionId)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(userAreaDescription -> {
-                        model.name = userAreaDescription.name;
-                        model.creationTime = userAreaDescription.creationTime;
-                        model.placeId = userAreaDescription.placeId;
-                        model.level = userAreaDescription.level;
+        model = null;
 
-                        view.showModel(this.model);
-                        modelLoaded = true;
+        Disposable disposable = findUserAreaDescriptionUseCase
+                .execute(areaDescriptionId)
+                .map(userAreaDescription -> {
+                    EditUserAreaDescriptionModel model = new EditUserAreaDescriptionModel();
+                    model.areaDescriptionId = areaDescriptionId;
+                    model.name = userAreaDescription.name;
+                    model.creationTime = userAreaDescription.creationTime;
+                    model.placeId = userAreaDescription.placeId;
+                    model.level = userAreaDescription.level;
+                    return model;
+                })
+                .flatMapObservable(model -> {
+                    if (model.placeId != null) {
+                        return getPlaceUseCase.execute(model.placeId)
+                                              .map(place -> {
+                                                  model.placeName = place.getName().toString();
+                                                  model.placeAddress = place.getAddress().toString();
+                                                  return model;
+                                              })
+                                              .toObservable();
+                    } else {
+                        return Observable.just(model);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(model -> {
+                    this.model = model;
+                    view.showModel(model);
 
-                        LOG.d("Model loaded.");
-
-                        // TODO: implement as use-case class.
-                        // TODO: implement the progress ring to indicate loading.
-                        if (userAreaDescription.placeId != null && userAreaDescription.placeId.length() != 0) {
-                            Places.GeoDataApi
-                                    .getPlaceById(googleApiClient, userAreaDescription.placeId)
-                                    .setResultCallback(places -> {
-                                        if (places.getStatus().isSuccess()) {
-                                            Place place = places.get(0);
-
-                                            model.placeName = place.getName().toString();
-                                            model.placeAddress = place.getAddress().toString();
-
-                                            view.showModel(model);
-                                        } else if (places.getStatus().isCanceled()) {
-                                            LOG.e("Getting the place was canceled: placeId = %s",
-                                                  userAreaDescription.placeId);
-                                        } else if (places.getStatus().isInterrupted()) {
-                                            LOG.e("Getting the place was interrupted: placeId = %s",
-                                                  userAreaDescription.placeId);
-                                        }
-                                    });
-                        }
-                    }, e -> {
-                        LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
-                                            model.areaDescriptionId), e);
-                    }, () -> {
-                        LOG.e("The user area description not found: areaDescriptionId = %s", model.areaDescriptionId);
-                    });
-            compositeDisposable.add(disposable);
-        }
+                    LOG.d("Model loaded.");
+                }, e -> {
+                    LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
+                                        areaDescriptionId), e);
+                }, () -> {
+                    LOG.e("The user area description not found: areaDescriptionId = %s", areaDescriptionId);
+                });
+        compositeDisposable.add(disposable);
     }
 
     public void onStop() {
         compositeDisposable.clear();
-        modelLoaded = false;
     }
 
     public void onAfterTextChangedName(String name) {
-        if (modelLoaded) {
+        if (model != null) {
             model.name = name;
 
             // Don't save the empty name.
@@ -125,7 +118,7 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onClickImageButtonPickPlace() {
-        if (modelLoaded) {
+        if (model != null) {
             view.showPlacePicker();
         }
     }
@@ -134,7 +127,7 @@ public final class EditUserAreaDescriptionPresenter {
         // NOTE:
         // onPlacePicked will be invoked after onStart() before onResume().
 
-        if (modelLoaded) {
+        if (model != null) {
             model.placeId = place.getId();
             model.placeName = place.getName().toString();
             model.placeAddress = place.getAddress().toString();
@@ -147,7 +140,7 @@ public final class EditUserAreaDescriptionPresenter {
 
     public void onClickImageButtonRemovePlace() {
         // TODO: and if place loaded...
-        if (modelLoaded) {
+        if (model != null) {
             model.placeId = null;
             model.placeName = null;
             model.placeAddress = null;
@@ -159,7 +152,7 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
-        if (modelLoaded) {
+        if (model != null) {
             model.level = level;
 
             saveUserAreaDescription();
@@ -169,7 +162,7 @@ public final class EditUserAreaDescriptionPresenter {
     private void saveUserAreaDescription() {
         UserAreaDescription userAreaDescription = new UserAreaDescription();
         userAreaDescription.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userAreaDescription.areaDescriptionId = model.areaDescriptionId;
+        userAreaDescription.areaDescriptionId = areaDescriptionId;
         userAreaDescription.name = model.name;
         userAreaDescription.creationTime = model.creationTime;
         userAreaDescription.placeId = model.placeId;
@@ -181,7 +174,7 @@ public final class EditUserAreaDescriptionPresenter {
                 .subscribe(() -> {
                 }, e -> {
                     LOG.e(String.format("Failed to save the user area description: areaDescriptionId = %s",
-                                        model.areaDescriptionId), e);
+                                        areaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
