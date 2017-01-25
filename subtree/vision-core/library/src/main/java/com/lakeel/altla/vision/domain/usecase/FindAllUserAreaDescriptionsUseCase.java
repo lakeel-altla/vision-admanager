@@ -3,6 +3,8 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
@@ -14,6 +16,8 @@ import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
 public final class FindAllUserAreaDescriptionsUseCase {
+
+    private static final Log LOG = LogFactory.getLog(FindAllUserAreaDescriptionsUseCase.class);
 
     @Inject
     UserAreaDescriptionRepository userAreaDescriptionRepository;
@@ -39,6 +43,8 @@ public final class FindAllUserAreaDescriptionsUseCase {
                 for (UserAreaDescription userAreaDescription : userAreaDescriptions) {
                     userAreaDescription.fileCached = areaDescriptionCacheRepository.exists(
                             userAreaDescription.areaDescriptionId);
+
+                    LOG.d("name = %s", userAreaDescription.name);
 
                     e.onNext(userAreaDescription);
                 }

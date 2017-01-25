@@ -21,6 +21,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
+    private static final String FIELD_NAME = "name";
+
     public UserAreaDescriptionRepository(FirebaseDatabase database) {
         super(database);
     }
@@ -69,7 +71,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
-                     .orderByValue()
+                     .orderByChild(FIELD_NAME)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
