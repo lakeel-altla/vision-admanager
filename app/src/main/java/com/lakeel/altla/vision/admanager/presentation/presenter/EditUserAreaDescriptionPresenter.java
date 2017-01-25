@@ -94,6 +94,8 @@ public final class EditUserAreaDescriptionPresenter {
                     }, e -> {
                         LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
                                             model.areaDescriptionId), e);
+                    }, () -> {
+                        LOG.e("The user area description not found: areaDescriptionId = %s", model.areaDescriptionId);
                     });
             compositeDisposable.add(disposable);
         }
