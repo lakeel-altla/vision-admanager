@@ -43,6 +43,8 @@ public final class EditUserAreaDescriptionPresenter {
 
     private EditUserAreaDescriptionModel model;
 
+    private boolean processing;
+
     @Inject
     public EditUserAreaDescriptionPresenter() {
     }
@@ -56,7 +58,7 @@ public final class EditUserAreaDescriptionPresenter {
     }
 
     public void onStart() {
-        model = null;
+        processing = true;
 
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
@@ -83,16 +85,13 @@ public final class EditUserAreaDescriptionPresenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> processing = false)
                 .subscribe(model -> {
                     this.model = model;
                     view.showModel(model);
-
-                    LOG.d("Model loaded.");
                 }, e -> {
                     LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
                                         areaDescriptionId), e);
-                }, () -> {
-                    LOG.e("The user area description not found: areaDescriptionId = %s", areaDescriptionId);
                 });
         compositeDisposable.add(disposable);
     }
@@ -101,62 +100,62 @@ public final class EditUserAreaDescriptionPresenter {
         compositeDisposable.clear();
     }
 
-    public void onAfterTextChangedName(String name) {
-        if (model != null) {
-            model.name = name;
+    public void onEditTextNameAfterTextChanged(String name) {
+        if (processing) return;
+        processing = true;
 
-            // Don't save the empty name.
-            if (name == null || name.length() == 0) {
-                view.showNameError(R.string.input_error_name_required);
-                return;
-            }
+        model.name = name;
+        view.hideNameError();
 
-            view.hideNameError();
-
+        // Don't save the empty name.
+        if (name == null || name.length() == 0) {
+            processing = false;
+            view.showNameError(R.string.input_error_name_required);
+        } else {
             saveUserAreaDescription();
         }
     }
 
     public void onClickImageButtonPickPlace() {
-        if (model != null) {
-            view.showPlacePicker();
-        }
+        view.showPlacePicker();
     }
 
     public void onPlacePicked(@NonNull Place place) {
         // NOTE:
-        // onPlacePicked will be invoked after onStart() before onResume().
+        // onPlacePicked will be invoked before onResume().
 
-        if (model != null) {
-            model.placeId = place.getId();
-            model.placeName = place.getName().toString();
-            model.placeAddress = place.getAddress().toString();
+        if (processing) return;
+        processing = true;
 
-            view.showModel(model);
+        model.placeId = place.getId();
+        model.placeName = place.getName().toString();
+        model.placeAddress = place.getAddress().toString();
 
-            saveUserAreaDescription();
-        }
+        view.showModel(model);
+
+        saveUserAreaDescription();
     }
 
     public void onClickImageButtonRemovePlace() {
-        // TODO: and if place loaded...
-        if (model != null) {
-            model.placeId = null;
-            model.placeName = null;
-            model.placeAddress = null;
+        if (processing) return;
+        processing = true;
 
-            view.showModel(model);
+        model.placeId = null;
+        model.placeName = null;
+        model.placeAddress = null;
 
-            saveUserAreaDescription();
-        }
+        view.showModel(model);
+
+        saveUserAreaDescription();
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
-        if (model != null) {
-            model.level = level;
+        if (processing) return;
+        processing = true;
 
-            saveUserAreaDescription();
-        }
+        model.level = level;
+
+        saveUserAreaDescription();
     }
 
     private void saveUserAreaDescription() {
@@ -171,6 +170,7 @@ public final class EditUserAreaDescriptionPresenter {
         Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
                     LOG.e(String.format("Failed to save the user area description: areaDescriptionId = %s",

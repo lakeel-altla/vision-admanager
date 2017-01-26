@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -78,6 +79,9 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
 
     @BindView(R.id.text_input_layput_name)
     TextInputLayout textInputLayoutName;
+
+    @BindView(R.id.image_button_pick_place)
+    ImageButton imageButtonPickPlace;
 
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
@@ -168,6 +172,8 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PLACE_PICKER) {
+            imageButtonPickPlace.setEnabled(true);
+
             if (resultCode == Activity.RESULT_OK) {
                 Place place = PlacePicker.getPlace(getContext(), data);
                 presenter.onPlacePicked(place);
@@ -206,19 +212,21 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     @Override
     public void showPlacePicker() {
         if (googleApiClient.isConnected()) {
+            imageButtonPickPlace.setEnabled(false);
             try {
                 Intent intent = new PlacePicker.IntentBuilder().build(activity);
                 startActivityForResult(intent, REQUEST_CODE_PLACE_PICKER);
             } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                 showSnackbar(R.string.snackbar_failed);
+                imageButtonPickPlace.setEnabled(true);
             }
         }
 
     }
 
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    void OnAfterTextChangedName(Editable editable) {
-        presenter.onAfterTextChangedName(editable.toString());
+    void onEditTextNameAfterTextChanged(Editable editable) {
+        presenter.onEditTextNameAfterTextChanged(editable.toString());
     }
 
     @OnClick(R.id.image_button_pick_place)
