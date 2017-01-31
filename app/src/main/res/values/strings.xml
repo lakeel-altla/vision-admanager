@@ -59,5 +59,6 @@
     <string name="input_error_name_required">Name is required.</string>
     <string name="title_select_user_area">Select Area</string>
     <string name="label_area">Area</string>
+    <string name="title_edit_user_area_description">Edit User Area Description</string>
 
 </resources>

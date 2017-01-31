@@ -117,6 +117,8 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
             return false;
         });
 
+        getActivity().setTitle(R.string.title_edit_user_area_description);
+
         return view;
     }
 
