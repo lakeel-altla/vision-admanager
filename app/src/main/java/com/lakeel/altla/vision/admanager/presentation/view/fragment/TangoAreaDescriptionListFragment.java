@@ -56,7 +56,7 @@ public final class TangoAreaDescriptionListFragment extends Fragment implements 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tango_space, container, false);
+        View view = inflater.inflate(R.layout.fragment_tango_area_description_list, container, false);
         ButterKnife.bind(this, view);
 
         presenter.onCreateView(this);

@@ -62,7 +62,7 @@ public final class UserAreaDescriptionListFragment extends Fragment implements U
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_app_space, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_area_description_list, container, false);
         ButterKnife.bind(this, view);
 
         presenter.onCreateView(this);

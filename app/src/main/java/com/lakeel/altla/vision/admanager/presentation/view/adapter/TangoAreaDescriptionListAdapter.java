@@ -33,7 +33,7 @@ public final class TangoAreaDescriptionListAdapter
             inflater = LayoutInflater.from(parent.getContext());
         }
 
-        View itemView = inflater.inflate(R.layout.item_tango_space_model, parent, false);
+        View itemView = inflater.inflate(R.layout.item_tango_area_description, parent, false);
         return new ViewHolder(itemView);
     }
 
