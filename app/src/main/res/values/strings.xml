@@ -13,8 +13,8 @@
     <string name="action_settings">Settings</string>
 
     <string name="nav_user_area_list">Areas</string>
-    <string name="nav_tango_area_description_list">Tango area description</string>
-    <string name="nav_user_area_description_list">App area description</string>
+    <string name="nav_tango_area_description_list">Tango area descriptions</string>
+    <string name="nav_user_area_description_list">User area descriptions</string>
     <string name="nav_sign_out">Sign out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
