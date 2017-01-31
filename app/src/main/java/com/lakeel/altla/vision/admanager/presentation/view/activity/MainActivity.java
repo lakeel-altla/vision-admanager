@@ -26,13 +26,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,7 +46,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class MainActivity extends AppCompatActivity
-        implements ActivityScopeContext,
+        implements FragmentManager.OnBackStackChangedListener,
+                   ActivityScopeContext,
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
@@ -84,6 +86,8 @@ public final class MainActivity extends AppCompatActivity
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    private ActionBarDrawerToggle drawerToggle;
+
     private ActivityComponent activityComponent;
 
     private NavigationViewHeader navigationViewHeader;
@@ -103,11 +107,18 @@ public final class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+        // setDisplayHomeAsUpEnabled(true) will cause the arrow icon to appear instead of the hamburger icon
+        // by calling drawerToggle.setDrawerIndicatorEnabled(false).
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        // Use the following constructor to set the Toolbar as the ActionBar of an Activity.
+        drawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        updateActionBarHome();
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationViewHeader = new NavigationViewHeader(navigationView);
@@ -166,25 +177,18 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (0 < getSupportFragmentManager().getBackStackEntryCount()) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -209,14 +213,18 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackStackChanged() {
+        updateActionBarHome();
+    }
+
+    @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
     }
 
     @Override
     public void onShowEditUserAreaDescriptionFragment(String areaDescriptionId) {
-        EditUserAreaDescriptionFragment fragment = EditUserAreaDescriptionFragment.newInstance(areaDescriptionId);
-        replaceFragmentAndAddToBackStack(fragment);
+        showEditUserAreaDescriptionFragment(areaDescriptionId);
     }
 
     @Override
@@ -231,14 +239,19 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onCreateUserArea() {
-        EditUserAreaFragment fragment = EditUserAreaFragment.newInstance(null);
-        replaceFragmentAndAddToBackStack(fragment);
+        showEditUserAreaFragment(null);
     }
 
     @Override
     public void onEditUserArea(String areaId) {
-        EditUserAreaFragment fragment = EditUserAreaFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
+        showEditUserAreaFragment(areaId);
+    }
+
+    private void updateActionBarHome() {
+        if (getSupportActionBar() != null) {
+            boolean isHome = (getSupportFragmentManager().getBackStackEntryCount() == 0);
+            drawerToggle.setDrawerIndicatorEnabled(isHome);
+        }
     }
 
     private void onSignOut() {
@@ -250,16 +263,22 @@ public final class MainActivity extends AppCompatActivity
     }
 
     private void showSignInFragment() {
+        toolbar.setVisibility(View.INVISIBLE);
+
         SignInFragment fragment = SignInFragment.newInstance();
         replaceFragment(fragment);
     }
 
     private void showTangoPermissionFragment() {
+        toolbar.setVisibility(View.INVISIBLE);
+
         TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
         replaceFragment(fragment);
     }
 
     private void showUserAreaListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_LIST);
         if (fragment == null) {
             fragment = UserAreaListFragment.newInstance();
@@ -270,6 +289,8 @@ public final class MainActivity extends AppCompatActivity
     }
 
     private void showTangoAreaDescriptionListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST);
         if (fragment == null) {
             fragment = TangoAreaDescriptionListFragment.newInstance();
@@ -281,6 +302,8 @@ public final class MainActivity extends AppCompatActivity
     }
 
     private void showUserAreaDescriptionListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST);
         if (fragment == null) {
             fragment = UserAreaDescriptionListFragment.newInstance();
@@ -289,6 +312,20 @@ public final class MainActivity extends AppCompatActivity
                                                 FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST)
                                        .commit();
         }
+    }
+
+    private void showEditUserAreaDescriptionFragment(String areaDescriptionId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        EditUserAreaDescriptionFragment fragment = EditUserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showEditUserAreaFragment(String areaId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        EditUserAreaFragment fragment = EditUserAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     private void replaceFragmentAndAddToBackStack(Fragment fragment) {
