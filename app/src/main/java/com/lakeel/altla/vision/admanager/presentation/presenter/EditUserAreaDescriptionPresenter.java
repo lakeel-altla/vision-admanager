@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -71,6 +72,18 @@ public final class EditUserAreaDescriptionPresenter {
                     model.creationTime = userAreaDescription.creationTime;
                     model.areaId = userAreaDescription.areaId;
                     return model;
+                })
+                .flatMap(model -> {
+                    if (model.areaId != null) {
+                        return findUserAreaUseCase
+                                .execute(model.areaId)
+                                .map(userArea -> {
+                                    model.areaName = userArea.name;
+                                    return model;
+                                });
+                    } else {
+                        return Maybe.just(model);
+                    }
                 })
                 .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
