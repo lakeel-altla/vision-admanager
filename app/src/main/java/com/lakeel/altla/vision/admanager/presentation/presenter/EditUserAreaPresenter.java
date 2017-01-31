@@ -193,7 +193,7 @@ public final class EditUserAreaPresenter {
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    LOG.e(String.format("Failed to save the user area: areaId = %s", areaId), e);
+                    LOG.e(String.format("Failed: areaId = %s", areaId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);

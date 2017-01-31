@@ -75,8 +75,7 @@ public final class EditUserAreaDescriptionPresenter {
                     this.model = model;
                     view.showModel(model);
                 }, e -> {
-                    LOG.e(String.format("Failed to find the user area description: areaDescriptionId = %s",
-                                        areaDescriptionId), e);
+                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                 });
         compositeDisposable.add(disposable);
     }
@@ -119,8 +118,7 @@ public final class EditUserAreaDescriptionPresenter {
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    LOG.e(String.format("Failed to save the user area description: areaDescriptionId = %s",
-                                        areaDescriptionId), e);
+                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);

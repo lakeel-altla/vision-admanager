@@ -69,7 +69,7 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                     this.itemModels.addAll(itemModels);
                     view.updateItems();
                 }, e -> {
-                    LOG.e("Loading area description meta datas failed.", e);
+                    LOG.e("Failed.", e);
                 });
         compositeDisposable.add(disposable);
     }
@@ -101,8 +101,7 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                 .subscribe(userAreaDescription -> {
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e(String.format("Failed to export the tango area description: areaDescriptionId = %s",
-                                        exportingAreaDescriptionId), e);
+                    LOG.e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
@@ -121,8 +120,7 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                     view.updateItemRemoved(position);
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e(String.format("Failed to delete the tango area description: areaDescriptionId = %s",
-                                        areaDescriptionId), e);
+                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);

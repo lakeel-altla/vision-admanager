@@ -74,7 +74,7 @@ public final class UserAreaDescriptionListPresenter {
                     this.itemModels.addAll(itemModels);
                     view.updateItems();
                 }, e -> {
-                    LOG.e("Failed to load all area description meta entries.", e);
+                    LOG.e("Failed.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
@@ -102,7 +102,7 @@ public final class UserAreaDescriptionListPresenter {
                     view.updateItemRemoved(position);
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e("Failed to delete the user area description.", e);
+                    LOG.e("Failed.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
@@ -136,7 +136,7 @@ public final class UserAreaDescriptionListPresenter {
                     .execute(areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::showImportActivity, e -> {
-                        LOG.e("Failed to import the area description into Tango.", e);
+                        LOG.e("Failed.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeDisposable.add(disposable);
@@ -162,7 +162,7 @@ public final class UserAreaDescriptionListPresenter {
                         view.updateItem(position);
                         view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
-                        LOG.e("Failed to upload the user area description.", e);
+                        LOG.e("Failed.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeDisposable.add(disposable);
@@ -188,7 +188,7 @@ public final class UserAreaDescriptionListPresenter {
                         view.updateItem(position);
                         view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
-                        LOG.e("Failed to download the user area description.", e);
+                        LOG.e("Failed.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeDisposable.add(disposable);
@@ -206,7 +206,7 @@ public final class UserAreaDescriptionListPresenter {
                         view.updateItem(position);
                         view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
-                        LOG.e("Failed to delete the area description cache.", e);
+                        LOG.e("Failed.", e);
                         view.showSnackbar(R.string.snackbar_failed);
                     });
             compositeDisposable.add(disposable);
