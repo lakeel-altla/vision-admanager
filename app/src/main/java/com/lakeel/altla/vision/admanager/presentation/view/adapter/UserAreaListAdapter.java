@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 
@@ -16,12 +17,12 @@ import butterknife.ButterKnife;
 
 public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaListAdapter.ViewHolder> {
 
-    private final ItemProvider<UserAreaItemView> itemProvider;
+    private final UserAreaListPresenter presenter;
 
     private LayoutInflater inflater;
 
-    public UserAreaListAdapter(@NonNull ItemProvider<UserAreaItemView> itemProvider) {
-        this.itemProvider = itemProvider;
+    public UserAreaListAdapter(@NonNull UserAreaListPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -29,18 +30,18 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = inflater.inflate(R.layout.item_select_user_area, parent, false);
+        View itemView = inflater.inflate(R.layout.item_user_area, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        itemProvider.onBind(position, holder);
+        holder.itemPresenter.onBind(position);
     }
 
     @Override
     public int getItemCount() {
-        return itemProvider.getItemCount();
+        return presenter.getItemCount();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements UserAreaItemView {
@@ -60,9 +61,15 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
         @BindView(R.id.text_view_level)
         TextView textViewLevel;
 
+        private UserAreaListPresenter.ItemPresenter itemPresenter;
+
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             ButterKnife.bind(this, itemView);
+
+            itemPresenter = presenter.createItemPresenter();
+            itemPresenter.onCreateItemView(this);
         }
 
         @Override

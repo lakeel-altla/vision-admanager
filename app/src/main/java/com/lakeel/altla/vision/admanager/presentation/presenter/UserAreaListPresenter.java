@@ -7,7 +7,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaI
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.ItemProvider;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 
@@ -23,7 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class UserAreaListPresenter implements ItemProvider<UserAreaItemView> {
+public final class UserAreaListPresenter {
 
     private static final Log LOG = LogFactory.getLog(UserAreaListPresenter.class);
 
@@ -43,15 +42,8 @@ public final class UserAreaListPresenter implements ItemProvider<UserAreaItemVie
     public UserAreaListPresenter() {
     }
 
-    @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    @Override
-    public void onBind(int position, UserAreaItemView itemView) {
-        UserAreaItemModel model = items.get(position);
-        itemView.showModel(model);
     }
 
     public void onCreateView(@NonNull UserAreaListView view) {
@@ -84,5 +76,23 @@ public final class UserAreaListPresenter implements ItemProvider<UserAreaItemVie
 
     public void onStop() {
         compositeDisposable.clear();
+    }
+
+    public ItemPresenter createItemPresenter() {
+        return new ItemPresenter();
+    }
+
+    public final class ItemPresenter {
+
+        private UserAreaItemView itemView;
+
+        public void onCreateItemView(@NonNull UserAreaItemView itemView) {
+            this.itemView = itemView;
+        }
+
+        public void onBind(int position) {
+            UserAreaItemModel model = items.get(position);
+            itemView.showModel(model);
+        }
     }
 }
