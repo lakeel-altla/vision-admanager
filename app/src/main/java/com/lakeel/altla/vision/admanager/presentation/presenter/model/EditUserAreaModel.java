@@ -6,6 +6,8 @@ public final class EditUserAreaModel {
 
     public String name;
 
+    public long createdAt;
+
     public String placeId;
 
     public String placeName;

@@ -7,6 +7,10 @@ import android.support.annotation.StringRes;
 
 public interface EditUserAreaView {
 
+    void showAreaId(String areaId);
+
+    void showCreatedAt(long createdAt);
+
     void showModel(@NonNull EditUserAreaModel model);
 
     void showSnackbar(@StringRes int resId);

@@ -7,6 +7,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.EditUserAreaPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
@@ -24,6 +25,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +76,9 @@ public final class EditUserAreaFragment extends Fragment implements EditUserArea
     @BindView(R.id.text_view_id)
     TextView textViewId;
 
+    @BindView(R.id.text_view_created_at)
+    TextView textViewCreatedAt;
+
     @BindView(R.id.text_input_layput_name)
     TextInputLayout textInputLayoutName;
 
@@ -115,6 +120,7 @@ public final class EditUserAreaFragment extends Fragment implements EditUserArea
     public void onAttach(Context context) {
         super.onAttach(context);
         interactionListener = InteractionListener.class.cast(context);
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
     }
 
     @Override
@@ -186,8 +192,25 @@ public final class EditUserAreaFragment extends Fragment implements EditUserArea
     }
 
     @Override
+    public void showAreaId(String areaId) {
+        textViewId.setText(areaId);
+    }
+
+    @Override
+    public void showCreatedAt(long createdAt) {
+        String createdAtString = null;
+        if (0 < createdAt) {
+            createdAtString = DateFormat.getDateFormat(getContext()).format(createdAt) + " " +
+                              DateFormat.getTimeFormat(getContext()).format(createdAt);
+        }
+        textViewCreatedAt.setText(createdAtString);
+    }
+
+    @Override
     public void showModel(@NonNull EditUserAreaModel model) {
-        textViewId.setText(model.areaId);
+        showAreaId(model.areaId);
+        showCreatedAt(model.createdAt);
+
         textInputEditTextName.setText(model.name);
         textViewPlaceName.setText(model.placeName);
         textViewPlaceAddress.setText(model.placeAddress);

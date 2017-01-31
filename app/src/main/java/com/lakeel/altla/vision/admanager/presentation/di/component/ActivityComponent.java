@@ -5,12 +5,13 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.AndroidRepositor
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseRepositoryModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
@@ -35,4 +36,6 @@ public interface ActivityComponent {
     void inject(EditUserAreaDescriptionFragment fragment);
 
     void inject(UserAreaListFragment fragment);
+
+    void inject(EditUserAreaFragment fragment);
 }

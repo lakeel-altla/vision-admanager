@@ -47,6 +47,8 @@ public final class EditUserAreaPresenter {
 
     private EditUserAreaModel model;
 
+    private boolean creatingNew;
+
     private boolean processing;
 
     @Inject
@@ -63,6 +65,8 @@ public final class EditUserAreaPresenter {
 
     public void onStart() {
         if (areaId != null) {
+            processing = true;
+
             Disposable disposable = findUserAreaUseCase
                     .execute(areaId)
                     .map(EditUserAreaModelMapper::map)
@@ -80,6 +84,7 @@ public final class EditUserAreaPresenter {
                         }
                     })
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnTerminate(() -> processing = false)
                     .subscribe(model -> {
                         this.model = model;
                         view.showModel(model);
@@ -89,7 +94,10 @@ public final class EditUserAreaPresenter {
                     });
             compositeDisposable.add(disposable);
         } else {
-            areaId = UUID.randomUUID().toString();
+            creatingNew = true;
+            model = new EditUserAreaModel();
+
+            view.showModel(model);
         }
     }
 
@@ -98,6 +106,14 @@ public final class EditUserAreaPresenter {
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
+        if (name != null && name.length() == 0) {
+            name = null;
+        }
+
+        if (model.name == null && name == null) return;
+        if (name != null && name.equals(model.name)) return;
+        if (model.name != null && model.name.equals(name)) return;
+
         if (processing) return;
         processing = true;
 
@@ -113,6 +129,8 @@ public final class EditUserAreaPresenter {
     public void onPlacePicked(@NonNull Place place) {
         // NOTE:
         // onPlacePicked will be invoked before onResume().
+
+        if (place.getId().equals(model.placeId)) return;
 
         if (processing) return;
         processing = true;
@@ -140,6 +158,8 @@ public final class EditUserAreaPresenter {
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
+        if (model.level == level) return;
+
         if (processing) return;
         processing = true;
 
@@ -149,10 +169,21 @@ public final class EditUserAreaPresenter {
     }
 
     private void save() {
+        if (creatingNew) {
+            areaId = UUID.randomUUID().toString();
+            model.areaId = areaId;
+            model.createdAt = System.currentTimeMillis();
+            view.showAreaId(areaId);
+            view.showCreatedAt(model.createdAt);
+            creatingNew = false;
+        }
+
         UserArea userArea = new UserArea();
         userArea.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         userArea.areaId = model.areaId;
         userArea.name = model.name;
+        userArea.createdAt = model.createdAt;
+
         userArea.placeId = model.placeId;
         userArea.level = model.level;
 

@@ -15,6 +15,7 @@ public final class EditUserAreaModelMapper {
         EditUserAreaModel model = new EditUserAreaModel();
         model.areaId = userArea.areaId;
         model.name = userArea.name;
+        model.createdAt = userArea.createdAt;
         model.placeId = userArea.placeId;
         model.level = userArea.level;
         return model;
