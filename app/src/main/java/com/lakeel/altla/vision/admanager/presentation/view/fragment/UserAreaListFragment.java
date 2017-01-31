@@ -104,6 +104,11 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
     }
 
     @Override
+    public void updateItems() {
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
     public void showEditItemView(@NonNull String areaId) {
         interactionListener.onEditUserArea(areaId);
     }

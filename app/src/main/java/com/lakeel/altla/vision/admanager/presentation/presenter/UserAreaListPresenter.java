@@ -47,6 +47,9 @@ public final class UserAreaListPresenter {
     }
 
     public void onStart() {
+        items.clear();
+        view.updateItems();
+
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
                 .map(UserAreaItemModelMapper::map)

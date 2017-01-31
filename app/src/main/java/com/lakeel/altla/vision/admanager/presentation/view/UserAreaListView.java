@@ -7,6 +7,8 @@ public interface UserAreaListView {
 
     void updateItem(int position);
 
+    void updateItems();
+
     void showEditItemView(@NonNull String areaId);
 
     void showSnackbar(@StringRes int resId);
