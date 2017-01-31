@@ -84,8 +84,6 @@ public final class MainActivity extends AppCompatActivity
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private final FragmentController fragmentController = new FragmentController();
-
     private ActivityComponent activityComponent;
 
     private NavigationViewHeader navigationViewHeader;
@@ -193,13 +191,13 @@ public final class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_user_area_list:
-                fragmentController.showUserAreaListFragment();
+                showUserAreaListFragment();
                 break;
             case R.id.nav_tango_space:
-                fragmentController.showTangoAreaDescriptionListFragment();
+                showTangoAreaDescriptionListFragment();
                 break;
             case R.id.nav_app_space:
-                fragmentController.showUserAreaDescriptionListFragment();
+                showUserAreaDescriptionListFragment();
                 break;
             case R.id.nav_sign_out:
                 onSignOut();
@@ -228,7 +226,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onCloseTangoPermissionFragment() {
-        fragmentController.showTangoAreaDescriptionListFragment();
+        showTangoAreaDescriptionListFragment();
     }
 
     @Override
@@ -250,9 +248,41 @@ public final class MainActivity extends AppCompatActivity
         replaceFragment(fragment);
     }
 
-    public void showTangoPermissionFragment() {
+    private void showTangoPermissionFragment() {
         TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
         replaceFragment(fragment);
+    }
+
+    private void showUserAreaListFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_LIST);
+        if (fragment == null) {
+            fragment = UserAreaListFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                                       .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_USER_AREA_LIST)
+                                       .commit();
+        }
+    }
+
+    private void showTangoAreaDescriptionListFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST);
+        if (fragment == null) {
+            fragment = TangoAreaDescriptionListFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                                       .replace(R.id.fragment_container, fragment,
+                                                FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST)
+                                       .commit();
+        }
+    }
+
+    private void showUserAreaDescriptionListFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST);
+        if (fragment == null) {
+            fragment = UserAreaDescriptionListFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                                       .replace(R.id.fragment_container, fragment,
+                                                FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST)
+                                       .commit();
+        }
     }
 
     private void replaceFragmentAndAddToBackStack(Fragment fragment) {
@@ -266,55 +296,6 @@ public final class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
                                    .commit();
-    }
-
-    private final class FragmentController {
-
-        UserAreaListFragment findUserAreaListFragment() {
-            return (UserAreaListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_LIST);
-        }
-
-        TangoAreaDescriptionListFragment findTangoAreaDescriptionListFragment() {
-            return (TangoAreaDescriptionListFragment) getSupportFragmentManager().findFragmentByTag(
-                    FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST);
-        }
-
-        UserAreaDescriptionListFragment findUserAreaDescriptionListFragment() {
-            return (UserAreaDescriptionListFragment) getSupportFragmentManager().findFragmentByTag(
-                    FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST);
-        }
-
-        void showUserAreaListFragment() {
-            UserAreaListFragment fragment = findUserAreaListFragment();
-            if (fragment == null) {
-                fragment = UserAreaListFragment.newInstance();
-                getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_USER_AREA_LIST)
-                                           .commit();
-            }
-        }
-
-        void showTangoAreaDescriptionListFragment() {
-            TangoAreaDescriptionListFragment fragment = findTangoAreaDescriptionListFragment();
-            if (fragment == null) {
-                fragment = TangoAreaDescriptionListFragment.newInstance();
-                getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.fragment_container, fragment,
-                                                    FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST)
-                                           .commit();
-            }
-        }
-
-        void showUserAreaDescriptionListFragment() {
-            UserAreaDescriptionListFragment fragment = findUserAreaDescriptionListFragment();
-            if (fragment == null) {
-                fragment = UserAreaDescriptionListFragment.newInstance();
-                getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.fragment_container, fragment,
-                                                    FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST)
-                                           .commit();
-            }
-        }
     }
 
     class NavigationViewHeader implements FirebaseAuth.AuthStateListener {
