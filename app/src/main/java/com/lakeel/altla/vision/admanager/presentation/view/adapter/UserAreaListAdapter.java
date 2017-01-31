@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaListAdapter.ViewHolder> {
 
@@ -79,6 +80,11 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
             textViewPlaceName.setText(model.placeName);
             textViewPlaceAddress.setText(model.placeAddress);
             textViewLevel.setText(model.level);
+        }
+
+        @OnClick(R.id.image_button_edit)
+        void onClickImageButtonEdit() {
+            itemPresenter.onClickImageButtonEdit(getAdapterPosition());
         }
     }
 }

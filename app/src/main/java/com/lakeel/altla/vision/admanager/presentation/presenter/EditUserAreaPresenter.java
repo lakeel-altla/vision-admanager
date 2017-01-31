@@ -106,15 +106,14 @@ public final class EditUserAreaPresenter {
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
+        if (processing) return;
         if (name != null && name.length() == 0) {
             name = null;
         }
-
         if (model.name == null && name == null) return;
         if (name != null && name.equals(model.name)) return;
         if (model.name != null && model.name.equals(name)) return;
 
-        if (processing) return;
         processing = true;
 
         model.name = name;
@@ -130,9 +129,9 @@ public final class EditUserAreaPresenter {
         // NOTE:
         // onPlacePicked will be invoked before onResume().
 
+        if (processing) return;
         if (place.getId().equals(model.placeId)) return;
 
-        if (processing) return;
         processing = true;
 
         model.placeId = place.getId();
@@ -146,6 +145,7 @@ public final class EditUserAreaPresenter {
 
     public void onClickImageButtonRemovePlace() {
         if (processing) return;
+
         processing = true;
 
         model.placeId = null;
@@ -158,9 +158,9 @@ public final class EditUserAreaPresenter {
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
+        if (processing) return;
         if (model.level == level) return;
 
-        if (processing) return;
         processing = true;
 
         model.level = level;

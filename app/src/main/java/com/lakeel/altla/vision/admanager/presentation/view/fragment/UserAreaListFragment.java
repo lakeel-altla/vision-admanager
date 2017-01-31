@@ -104,6 +104,11 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
     }
 
     @Override
+    public void showEditItemView(@NonNull String areaId) {
+        interactionListener.onEditUserArea(areaId);
+    }
+
+    @Override
     public void showSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
@@ -111,5 +116,7 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
     public interface InteractionListener {
 
         void onCreateUserArea();
+
+        void onEditUserArea(String areaId);
     }
 }

@@ -94,5 +94,10 @@ public final class UserAreaListPresenter {
             UserAreaItemModel model = items.get(position);
             itemView.showModel(model);
         }
+
+        public void onClickImageButtonEdit(int position) {
+            UserAreaItemModel model = items.get(position);
+            view.showEditItemView(model.areaId);
+        }
     }
 }

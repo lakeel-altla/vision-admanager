@@ -235,6 +235,12 @@ public final class MainActivity extends AppCompatActivity
         replaceFragmentAndAddToBackStack(fragment);
     }
 
+    @Override
+    public void onEditUserArea(String areaId) {
+        EditUserAreaFragment fragment = EditUserAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
     private void onSignOut() {
         Disposable disposable = signOutUseCase
                 .execute()
