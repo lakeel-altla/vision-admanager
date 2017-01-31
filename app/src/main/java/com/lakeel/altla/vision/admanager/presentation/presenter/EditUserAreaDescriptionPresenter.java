@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.google.android.gms.location.places.Place;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.android.log.Log;
@@ -17,7 +16,6 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -67,25 +65,12 @@ public final class EditUserAreaDescriptionPresenter {
                     model.areaDescriptionId = areaDescriptionId;
                     model.name = userAreaDescription.name;
                     model.creationTime = userAreaDescription.creationTime;
-                    model.placeId = userAreaDescription.placeId;
-                    model.level = userAreaDescription.level;
+                    model.areaId = userAreaDescription.areaId;
                     return model;
                 })
-                .flatMapObservable(model -> {
-                    if (model.placeId != null) {
-                        return getPlaceUseCase.execute(model.placeId)
-                                              .map(place -> {
-                                                  model.placeName = place.getName().toString();
-                                                  model.placeAddress = place.getAddress().toString();
-                                                  return model;
-                                              })
-                                              .toObservable();
-                    } else {
-                        return Observable.just(model);
-                    }
-                })
+                .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() -> processing = false)
+                .doOnDispose(() -> processing = false)
                 .subscribe(model -> {
                     this.model = model;
                     view.showModel(model);
@@ -116,46 +101,8 @@ public final class EditUserAreaDescriptionPresenter {
         }
     }
 
-    public void onClickImageButtonPickPlace() {
-        view.showPlacePicker();
-    }
-
-    public void onPlacePicked(@NonNull Place place) {
-        // NOTE:
-        // onPlacePicked will be invoked before onResume().
-
-        if (processing) return;
-        processing = true;
-
-        model.placeId = place.getId();
-        model.placeName = place.getName().toString();
-        model.placeAddress = place.getAddress().toString();
-
-        view.showModel(model);
-
-        saveUserAreaDescription();
-    }
-
-    public void onClickImageButtonRemovePlace() {
-        if (processing) return;
-        processing = true;
-
-        model.placeId = null;
-        model.placeName = null;
-        model.placeAddress = null;
-
-        view.showModel(model);
-
-        saveUserAreaDescription();
-    }
-
-    public void onItemSelectedSpinnerLevel(int level) {
-        if (processing) return;
-        processing = true;
-
-        model.level = level;
-
-        saveUserAreaDescription();
+    public void onClickImageButtonSelectArea() {
+        view.showSelectUserAreaView();
     }
 
     private void saveUserAreaDescription() {
@@ -164,8 +111,7 @@ public final class EditUserAreaDescriptionPresenter {
         userAreaDescription.areaDescriptionId = areaDescriptionId;
         userAreaDescription.name = model.name;
         userAreaDescription.creationTime = model.creationTime;
-        userAreaDescription.placeId = model.placeId;
-        userAreaDescription.level = model.level;
+        userAreaDescription.areaId = model.areaId;
 
         Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)

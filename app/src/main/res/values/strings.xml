@@ -51,5 +51,7 @@
     <string name="hint_edit_place">Place</string>
     <string name="label_place">Place</string>
     <string name="label_level">Level</string>
+    <string name="action_create_area">Create area...</string>
+    <string name="nav_user_area_list">Areas</string>
 
 </resources>

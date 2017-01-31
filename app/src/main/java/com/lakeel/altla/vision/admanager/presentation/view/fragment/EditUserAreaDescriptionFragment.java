@@ -1,10 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
@@ -13,9 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAr
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -29,35 +23,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
 
 public final class EditUserAreaDescriptionFragment extends Fragment implements EditUserAreaDescriptionView {
 
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
-
-    private static final int REQUEST_CODE_PLACE_PICKER = 1;
-
-    private static final int LEVEL_MIN = -100;
-
-    private static final int LEVEL_MAX = 100;
-
-    private static final List<Integer> LEVELS;
 
     @Inject
     EditUserAreaDescriptionPresenter presenter;
@@ -80,28 +58,16 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     @BindView(R.id.text_input_layput_name)
     TextInputLayout textInputLayoutName;
 
-    @BindView(R.id.image_button_pick_place)
-    ImageButton imageButtonPickPlace;
-
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
 
-    @BindView(R.id.text_view_place_name)
-    TextView textViewPlaceName;
+    @BindView(R.id.image_button_select_area)
+    ImageButton imageButtonSelectArea;
 
-    @BindView(R.id.text_view_place_address)
-    TextView textViewPlaceAddress;
+    @BindView(R.id.text_view_area_name)
+    TextView textViewAreaName;
 
-    @BindView(R.id.spinner_level)
-    Spinner spinnerLevel;
-
-    static {
-        List<Integer> levelValues = new ArrayList<>();
-        for (int i = LEVEL_MIN; i <= LEVEL_MAX; i++) {
-            levelValues.add(i);
-        }
-        LEVELS = Collections.unmodifiableList(levelValues);
-    }
+    private InteractionListener interactionListener;
 
     public static EditUserAreaDescriptionFragment newInstance(String areaDescriptionId) {
         EditUserAreaDescriptionFragment fragment = new EditUserAreaDescriptionFragment();
@@ -115,6 +81,7 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     public void onAttach(Context context) {
         super.onAttach(context);
 
+        interactionListener = InteractionListener.class.cast(context);
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
     }
 
@@ -150,10 +117,6 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
             return false;
         });
 
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
-        adapter.addAll(LEVELS);
-        spinnerLevel.setAdapter(adapter);
-
         return view;
     }
 
@@ -170,28 +133,10 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_PLACE_PICKER) {
-            imageButtonPickPlace.setEnabled(true);
-
-            if (resultCode == Activity.RESULT_OK) {
-                Place place = PlacePicker.getPlace(getContext(), data);
-                presenter.onPlacePicked(place);
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     public void showModel(EditUserAreaDescriptionModel model) {
         textViewAreaDescriptionId.setText(model.areaDescriptionId);
         textInputEditTextName.setText(model.name);
-        textViewPlaceName.setText(model.placeName);
-        textViewPlaceAddress.setText(model.placeAddress);
-
-        int position = LEVELS.indexOf(model.level);
-        spinnerLevel.setSelection(position);
+        // TODO: area name
     }
 
     @Override
@@ -210,18 +155,8 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     }
 
     @Override
-    public void showPlacePicker() {
-        if (googleApiClient.isConnected()) {
-            imageButtonPickPlace.setEnabled(false);
-            try {
-                Intent intent = new PlacePicker.IntentBuilder().build(activity);
-                startActivityForResult(intent, REQUEST_CODE_PLACE_PICKER);
-            } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                showSnackbar(R.string.snackbar_failed);
-                imageButtonPickPlace.setEnabled(true);
-            }
-        }
-
+    public void showSelectUserAreaView() {
+        interactionListener.onShowSelectUserAreaFragment();
     }
 
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -229,19 +164,13 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
         presenter.onEditTextNameAfterTextChanged(editable.toString());
     }
 
-    @OnClick(R.id.image_button_pick_place)
-    void onClickImageButtonPickPlace() {
-        presenter.onClickImageButtonPickPlace();
+    @OnClick(R.id.image_button_select_area)
+    void onClickImageButtonSelectArea() {
+        presenter.onClickImageButtonSelectArea();
     }
 
-    @OnClick(R.id.image_button_remove_place)
-    void onClickImageButtonRemovePlace() {
-        presenter.onClickImageButtonRemovePlace();
-    }
+    public interface InteractionListener {
 
-    @OnItemSelected(R.id.spinner_level)
-    void onItemSelectedSpinnerLevel(AdapterView<?> parent, View view, int position, long id) {
-        int level = (Integer) spinnerLevel.getSelectedItem();
-        presenter.onItemSelectedSpinnerLevel(level);
+        void onShowSelectUserAreaFragment();
     }
 }

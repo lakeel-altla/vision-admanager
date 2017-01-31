@@ -14,5 +14,5 @@ public interface EditUserAreaDescriptionView {
 
     void hideNameError();
 
-    void showPlacePicker();
+    void showSelectUserAreaView();
 }

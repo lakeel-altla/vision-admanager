@@ -16,9 +16,7 @@ public final class UserAreaDescription {
 
     public boolean fileUploaded;
 
-    public String placeId;
-
-    public int level;
+    public String areaId;
 
     @Exclude
     public boolean fileCached;

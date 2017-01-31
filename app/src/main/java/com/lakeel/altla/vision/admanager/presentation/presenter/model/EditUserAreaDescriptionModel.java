@@ -8,11 +8,7 @@ public final class EditUserAreaDescriptionModel {
 
     public String name;
 
-    public String placeId;
+    public String areaId;
 
-    public String placeName;
-
-    public String placeAddress;
-
-    public int level;
+    public String areaName;
 }
