@@ -11,6 +11,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityCompo
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -51,17 +52,11 @@ public final class MainActivity extends AppCompatActivity
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
+                   EditUserAreaDescriptionFragment.InteractionListener,
                    UserAreaListFragment.InteractionListener,
                    EditUserAreaFragment.InteractionListener,
+                   SelectUserAreaFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
-
-    private static final String FRAGMENT_TAG_USER_AREA_LIST = UserAreaListFragment.class.getName();
-
-    private static final String FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST =
-            TangoAreaDescriptionListFragment.class.getName();
-
-    private static final String FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST =
-            UserAreaDescriptionListFragment.class.getName();
 
     @Inject
     TangoWrapper tangoWrapper;
@@ -238,6 +233,11 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowSelectUserAreaFragment() {
+        showSelectUserAreaFragment();
+    }
+
+    @Override
     public void onCreateUserArea() {
         showEditUserAreaFragment(null);
     }
@@ -245,6 +245,17 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onEditUserArea(String areaId) {
         showEditUserAreaFragment(areaId);
+    }
+
+    @Override
+    public void onUserAreaSelected(String areaId) {
+        getSupportFragmentManager().popBackStack();
+
+        EditUserAreaDescriptionFragment fragment =
+                (EditUserAreaDescriptionFragment) findFragment(EditUserAreaDescriptionFragment.class);
+        if (fragment != null) {
+            fragment.onUserAreaSelected(areaId);
+        }
     }
 
     private void updateActionBarHome() {
@@ -279,38 +290,30 @@ public final class MainActivity extends AppCompatActivity
     private void showUserAreaListFragment() {
         toolbar.setVisibility(View.VISIBLE);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_LIST);
+        Fragment fragment = findFragment(UserAreaListFragment.class);
         if (fragment == null) {
             fragment = UserAreaListFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_USER_AREA_LIST)
-                                       .commit();
+            replaceFragment(fragment);
         }
     }
 
     private void showTangoAreaDescriptionListFragment() {
         toolbar.setVisibility(View.VISIBLE);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST);
+        Fragment fragment = findFragment(TangoAreaDescriptionListFragment.class);
         if (fragment == null) {
             fragment = TangoAreaDescriptionListFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.fragment_container, fragment,
-                                                FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST)
-                                       .commit();
+            replaceFragment(fragment);
         }
     }
 
     private void showUserAreaDescriptionListFragment() {
         toolbar.setVisibility(View.VISIBLE);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST);
+        Fragment fragment = findFragment(UserAreaDescriptionListFragment.class);
         if (fragment == null) {
             fragment = UserAreaDescriptionListFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.fragment_container, fragment,
-                                                FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST)
-                                       .commit();
+            replaceFragment(fragment);
         }
     }
 
@@ -328,16 +331,27 @@ public final class MainActivity extends AppCompatActivity
         replaceFragmentAndAddToBackStack(fragment);
     }
 
+    private void showSelectUserAreaFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
+        SelectUserAreaFragment fragment = SelectUserAreaFragment.newInstance();
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private Fragment findFragment(Class<?> clazz) {
+        return getSupportFragmentManager().findFragmentByTag(clazz.getName());
+    }
+
     private void replaceFragmentAndAddToBackStack(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                                    .addToBackStack(null)
-                                   .replace(R.id.fragment_container, fragment)
+                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
                                    .commit();
     }
 
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment)
+                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
                                    .commit();
     }
 

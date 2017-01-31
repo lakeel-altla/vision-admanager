@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -38,4 +39,6 @@ public interface ActivityComponent {
     void inject(UserAreaListFragment fragment);
 
     void inject(EditUserAreaFragment fragment);
+
+    void inject(SelectUserAreaFragment fragment);
 }

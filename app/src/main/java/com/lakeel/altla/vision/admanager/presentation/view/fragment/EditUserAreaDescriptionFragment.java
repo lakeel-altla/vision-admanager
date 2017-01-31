@@ -133,10 +133,15 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     }
 
     @Override
+    public void updateAreaName(String areaName) {
+        textViewAreaName.setText(areaName);
+    }
+
+    @Override
     public void showModel(EditUserAreaDescriptionModel model) {
         textViewAreaDescriptionId.setText(model.areaDescriptionId);
         textInputEditTextName.setText(model.name);
-        // TODO: area name
+        textViewAreaName.setText(model.areaName);
     }
 
     @Override
@@ -157,6 +162,10 @@ public final class EditUserAreaDescriptionFragment extends Fragment implements E
     @Override
     public void showSelectUserAreaView() {
         interactionListener.onShowSelectUserAreaFragment();
+    }
+
+    public void onUserAreaSelected(String areaId) {
+        presenter.onUserAreaSelected(areaId);
     }
 
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

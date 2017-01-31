@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAr
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
@@ -32,6 +33,9 @@ public final class EditUserAreaDescriptionPresenter {
 
     @Inject
     GetPlaceUseCase getPlaceUseCase;
+
+    @Inject
+    FindUserAreaUseCase findUserAreaUseCase;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -102,6 +106,23 @@ public final class EditUserAreaDescriptionPresenter {
 
     public void onClickImageButtonSelectArea() {
         view.showSelectUserAreaView();
+    }
+
+    public void onUserAreaSelected(String areaId) {
+        model.areaId = areaId;
+
+        saveUserAreaDescription();
+
+        Disposable disposable = findUserAreaUseCase
+                .execute(areaId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userArea -> {
+                    model.areaName = userArea.name;
+                    view.updateAreaName(model.areaName);
+                }, e -> {
+                    LOG.e(String.format("Failed: areaId = %s", areaId), e);
+                });
+        compositeDisposable.add(disposable);
     }
 
     private void saveUserAreaDescription() {

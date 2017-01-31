@@ -6,6 +6,8 @@ import android.support.annotation.StringRes;
 
 public interface EditUserAreaDescriptionView {
 
+    void updateAreaName(String areaName);
+
     void showModel(EditUserAreaDescriptionModel model);
 
     void showSnackbar(@StringRes int resId);
