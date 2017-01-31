@@ -42,10 +42,6 @@ public final class UserAreaListPresenter {
     public UserAreaListPresenter() {
     }
 
-    public int getItemCount() {
-        return items.size();
-    }
-
     public void onCreateView(@NonNull UserAreaListView view) {
         this.view = view;
     }
@@ -76,6 +72,10 @@ public final class UserAreaListPresenter {
 
     public void onStop() {
         compositeDisposable.clear();
+    }
+
+    public int getItemCount() {
+        return items.size();
     }
 
     public ItemPresenter createItemPresenter() {

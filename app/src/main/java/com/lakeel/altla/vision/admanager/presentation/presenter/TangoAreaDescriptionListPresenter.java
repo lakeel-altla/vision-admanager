@@ -90,16 +90,6 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
         tangoWrapper.removeOnTangoReadyListener(this);
     }
 
-    public void onCreateItemView(@NonNull TangoAreaDescriptionItemView itemView) {
-        TangoSpaceItemPresenter itemPresenter = new TangoSpaceItemPresenter();
-        itemPresenter.onCreateItemView(itemView);
-        itemView.setItemPresenter(itemPresenter);
-    }
-
-    public int getItemCount() {
-        return itemModels.size();
-    }
-
     public void onExported() {
         if (exportingAreaDescriptionId == null) {
             throw new IllegalStateException("'exportingAreaDescriptionId' is null.");
@@ -138,7 +128,15 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
         compositeDisposable.add(disposable);
     }
 
-    public final class TangoSpaceItemPresenter {
+    public int getItemCount() {
+        return itemModels.size();
+    }
+
+    public ItemPresenter createItemPresenter() {
+        return new ItemPresenter();
+    }
+
+    public final class ItemPresenter {
 
         private TangoAreaDescriptionItemView itemView;
 

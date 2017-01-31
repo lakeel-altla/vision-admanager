@@ -16,7 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class TangoAreaDescriptionListAdapter extends RecyclerView.Adapter<TangoAreaDescriptionListAdapter.ViewHolder> {
+public final class TangoAreaDescriptionListAdapter
+        extends RecyclerView.Adapter<TangoAreaDescriptionListAdapter.ViewHolder> {
 
     private final TangoAreaDescriptionListPresenter presenter;
 
@@ -33,14 +34,12 @@ public final class TangoAreaDescriptionListAdapter extends RecyclerView.Adapter<
         }
 
         View itemView = inflater.inflate(R.layout.item_tango_space_model, parent, false);
-        ViewHolder holder = new ViewHolder(itemView);
-        presenter.onCreateItemView(holder);
-        return holder;
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.onBind(position);
+        holder.itemPresenter.onBind(position);
     }
 
     @Override
@@ -56,26 +55,21 @@ public final class TangoAreaDescriptionListAdapter extends RecyclerView.Adapter<
         @BindView(R.id.text_view_id)
         TextView textViewUuid;
 
-        private TangoAreaDescriptionListPresenter.TangoSpaceItemPresenter itemPresenter;
+        private TangoAreaDescriptionListPresenter.ItemPresenter itemPresenter;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
 
-        @Override
-        public void setItemPresenter(@NonNull TangoAreaDescriptionListPresenter.TangoSpaceItemPresenter itemPresenter) {
-            this.itemPresenter = itemPresenter;
+            ButterKnife.bind(this, itemView);
+
+            itemPresenter = presenter.createItemPresenter();
+            itemPresenter.onCreateItemView(this);
         }
 
         @Override
         public void showModel(@NonNull TangoAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewUuid.setText(model.areaDescriptionId);
-        }
-
-        public void onBind(int position) {
-            itemPresenter.onBind(position);
         }
 
         @OnClick(R.id.image_button_export)

@@ -84,16 +84,6 @@ public final class UserAreaDescriptionListPresenter {
         compositeDisposable.clear();
     }
 
-    public void onCreateItemView(@NonNull UserAreaDescriptionItemView itemView) {
-        AppSpaceItemPresenter itemPresenter = new AppSpaceItemPresenter();
-        itemPresenter.onCreateItemView(itemView);
-        itemView.setItemPresenter(itemPresenter);
-    }
-
-    public int getItemCount() {
-        return itemModels.size();
-    }
-
     public void onImported() {
         view.showSnackbar(R.string.snackbar_done);
     }
@@ -118,7 +108,15 @@ public final class UserAreaDescriptionListPresenter {
         compositeDisposable.add(disposable);
     }
 
-    public final class AppSpaceItemPresenter {
+    public int getItemCount() {
+        return itemModels.size();
+    }
+
+    public ItemPresenter createItemPresenter() {
+        return new ItemPresenter();
+    }
+
+    public final class ItemPresenter {
 
         private UserAreaDescriptionItemView itemView;
 

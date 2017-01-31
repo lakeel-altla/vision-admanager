@@ -34,14 +34,12 @@ public final class UserAreaDescriptionListAdapter
             inflater = LayoutInflater.from(parent.getContext());
         }
         View itemView = inflater.inflate(R.layout.item_app_space_model, parent, false);
-        ViewHolder holder = new ViewHolder(itemView);
-        presenter.onCreateItemView(holder);
-        return holder;
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.onBind(position);
+        holder.itemPresenter.onBind(position);
     }
 
     @Override
@@ -49,7 +47,7 @@ public final class UserAreaDescriptionListAdapter
         return presenter.getItemCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements UserAreaDescriptionItemView {
+    class ViewHolder extends RecyclerView.ViewHolder implements UserAreaDescriptionItemView {
 
         @BindView(R.id.text_view_name)
         TextView textViewName;
@@ -66,15 +64,15 @@ public final class UserAreaDescriptionListAdapter
         @BindView(R.id.image_button_synced)
         ImageButton imageButtonSynced;
 
-        private UserAreaDescriptionListPresenter.AppSpaceItemPresenter itemPresenter;
+        private UserAreaDescriptionListPresenter.ItemPresenter itemPresenter;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
 
-        public void setItemPresenter(@NonNull UserAreaDescriptionListPresenter.AppSpaceItemPresenter itemPresenter) {
-            this.itemPresenter = itemPresenter;
+            ButterKnife.bind(this, itemView);
+
+            itemPresenter = presenter.createItemPresenter();
+            itemPresenter.onCreateItemView(this);
         }
 
         @Override
@@ -93,10 +91,6 @@ public final class UserAreaDescriptionListAdapter
             } else if (model.fileCached) {
                 imageButtonUpload.setVisibility(View.VISIBLE);
             }
-        }
-
-        public void onBind(int position) {
-            itemPresenter.onBind(position);
         }
 
         @OnClick(R.id.image_button_import)
