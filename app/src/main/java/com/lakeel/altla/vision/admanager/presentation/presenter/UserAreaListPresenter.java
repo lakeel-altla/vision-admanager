@@ -64,7 +64,7 @@ public final class UserAreaListPresenter {
                     items.add(model);
                     view.updateItem(items.size() - 1);
                 }, e -> {
-                    LOG.e("Failed to load all area description meta entries.", e);
+                    LOG.e("Failed.", e);
                     view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
