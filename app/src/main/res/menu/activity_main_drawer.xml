@@ -9,11 +9,11 @@
 
         <item android:id="@+id/nav_tango_space"
               android:icon="@drawable/ic_folder_shared_black_24dp"
-              android:title="@string/nav_tango_space"/>
+              android:title="@string/nav_tango_area_description_list"/>
 
         <item android:id="@+id/nav_app_space"
               android:icon="@drawable/ic_folder_black_24dp"
-              android:title="@string/nav_app_space"/>
+              android:title="@string/nav_user_area_description_list"/>
 
     </group>
 

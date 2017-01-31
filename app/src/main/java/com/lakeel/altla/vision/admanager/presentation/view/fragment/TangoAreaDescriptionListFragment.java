@@ -64,7 +64,7 @@ public final class TangoAreaDescriptionListFragment extends Fragment implements 
         recyclerView.setAdapter(new TangoAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        getActivity().setTitle(R.string.title_tango_space);
+        getActivity().setTitle(R.string.title_tango_area_description_list);
 
         return view;
     }

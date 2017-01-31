@@ -70,7 +70,7 @@ public final class UserAreaDescriptionListFragment extends Fragment implements U
         recyclerView.setAdapter(new UserAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        getActivity().setTitle(R.string.title_app_space);
+        getActivity().setTitle(R.string.title_user_area_description_list);
 
         return view;
     }

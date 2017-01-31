@@ -67,6 +67,8 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
 
         setHasOptionsMenu(true);
 
+        getActivity().setTitle(R.string.title_user_area_list);
+
         return view;
     }
 
