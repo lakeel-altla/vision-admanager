@@ -1,9 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
+import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +16,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdapter.ViewHolder> {
+public final class TangoAreaDescriptionListAdapter extends RecyclerView.Adapter<TangoAreaDescriptionListAdapter.ViewHolder> {
 
-    private final TangoSpacePresenter presenter;
+    private final TangoAreaDescriptionListPresenter presenter;
 
     private LayoutInflater inflater;
 
-    public TangoSpaceAdapter(@NonNull TangoSpacePresenter presenter) {
+    public TangoAreaDescriptionListAdapter(@NonNull TangoAreaDescriptionListPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -48,7 +48,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         return presenter.getItemCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements TangoSpaceItemView {
+    public class ViewHolder extends RecyclerView.ViewHolder implements TangoAreaDescriptionItemView {
 
         @BindView(R.id.text_view_name)
         TextView textViewName;
@@ -56,7 +56,7 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         @BindView(R.id.text_view_id)
         TextView textViewUuid;
 
-        private TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter;
+        private TangoAreaDescriptionListPresenter.TangoSpaceItemPresenter itemPresenter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,12 +64,12 @@ public final class TangoSpaceAdapter extends RecyclerView.Adapter<TangoSpaceAdap
         }
 
         @Override
-        public void setItemPresenter(@NonNull TangoSpacePresenter.TangoSpaceItemPresenter itemPresenter) {
+        public void setItemPresenter(@NonNull TangoAreaDescriptionListPresenter.TangoSpaceItemPresenter itemPresenter) {
             this.itemPresenter = itemPresenter;
         }
 
         @Override
-        public void showModel(@NonNull TangoSpaceItemModel model) {
+        public void showModel(@NonNull TangoAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewUuid.setText(model.areaDescriptionId);
         }

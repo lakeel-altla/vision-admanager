@@ -3,10 +3,10 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.AppSpaceItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
-import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionItemModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionItemModel;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
@@ -25,7 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class AppSpacePresenter {
+public final class UserAreaDescriptionListPresenter {
 
     @Inject
     FindAllUserAreaDescriptionsUseCase findAllUserAreaDescriptionsUseCase;
@@ -45,28 +45,28 @@ public final class AppSpacePresenter {
     @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
-    private static final Log LOG = LogFactory.getLog(AppSpacePresenter.class);
+    private static final Log LOG = LogFactory.getLog(UserAreaDescriptionListPresenter.class);
 
-    private final List<AppSpaceItemModel> itemModels = new ArrayList<>();
+    private final List<UserAreaDescriptionItemModel> itemModels = new ArrayList<>();
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private AppSpaceView view;
+    private UserAreaDescriptionListView view;
 
     private long prevBytesTransferred;
 
     @Inject
-    public AppSpacePresenter() {
+    public UserAreaDescriptionListPresenter() {
     }
 
-    public void onCreateView(@NonNull AppSpaceView view) {
+    public void onCreateView(@NonNull UserAreaDescriptionListView view) {
         this.view = view;
     }
 
     public void onStart() {
         Disposable disposable = findAllUserAreaDescriptionsUseCase
                 .execute()
-                .map(AppSpaceItemModelMapper::map)
+                .map(UserAreaDescriptionItemModelMapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
@@ -84,7 +84,7 @@ public final class AppSpacePresenter {
         compositeDisposable.clear();
     }
 
-    public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
+    public void onCreateItemView(@NonNull UserAreaDescriptionItemView itemView) {
         AppSpaceItemPresenter itemPresenter = new AppSpaceItemPresenter();
         itemPresenter.onCreateItemView(itemView);
         itemView.setItemPresenter(itemPresenter);
@@ -120,14 +120,14 @@ public final class AppSpacePresenter {
 
     public final class AppSpaceItemPresenter {
 
-        private AppSpaceItemView itemView;
+        private UserAreaDescriptionItemView itemView;
 
-        public void onCreateItemView(@NonNull AppSpaceItemView itemView) {
+        public void onCreateItemView(@NonNull UserAreaDescriptionItemView itemView) {
             this.itemView = itemView;
         }
 
         public void onBind(int position) {
-            AppSpaceItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
             itemView.showModel(itemModel);
         }
 
@@ -145,7 +145,7 @@ public final class AppSpacePresenter {
         }
 
         public void onClickImageButtonUpload(int position) {
-            AppSpaceItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
 
             prevBytesTransferred = 0;
 
@@ -171,7 +171,7 @@ public final class AppSpacePresenter {
         }
 
         public void onClickImageButtonDownload(int position) {
-            AppSpaceItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
 
             prevBytesTransferred = 0;
 
@@ -197,7 +197,7 @@ public final class AppSpacePresenter {
         }
 
         public void onClickImageButtonSynced(int position) {
-            AppSpaceItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
 
             Disposable disposable = deleteAreaDescriptionCacheUseCase
                     .execute(itemModel.areaDescriptionId)

@@ -6,9 +6,9 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.AppSpaceAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionListAdapter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -32,12 +32,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class AppSpaceFragment extends Fragment implements AppSpaceView {
+public final class UserAreaDescriptionListFragment extends Fragment implements UserAreaDescriptionListView {
 
-    private static final Log LOG = LogFactory.getLog(AppSpaceFragment.class);
+    private static final Log LOG = LogFactory.getLog(UserAreaDescriptionListFragment.class);
 
     @Inject
-    AppSpacePresenter presenter;
+    UserAreaDescriptionListPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -48,8 +48,8 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
 
     private MaterialDialog materialDialog;
 
-    public static AppSpaceFragment newInstance() {
-        return new AppSpaceFragment();
+    public static UserAreaDescriptionListFragment newInstance() {
+        return new UserAreaDescriptionListFragment();
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class AppSpaceFragment extends Fragment implements AppSpaceView {
 
         presenter.onCreateView(this);
 
-        recyclerView.setAdapter(new AppSpaceAdapter(presenter));
+        recyclerView.setAdapter(new UserAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         getActivity().setTitle(R.string.title_app_space);

@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.SelectUserAreaItemModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
@@ -61,11 +61,11 @@ public final class UserAreaListPresenter implements ItemProvider<UserAreaItemVie
     public void onStart() {
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
-                .map(SelectUserAreaItemModelMapper::map)
+                .map(UserAreaItemModelMapper::map)
                 .concatMap(model -> {
                     if (model.placeId != null) {
                         return getPlaceUseCase.execute(model.placeId)
-                                              .map(place -> SelectUserAreaItemModelMapper.map(model, place))
+                                              .map(place -> UserAreaItemModelMapper.map(model, place))
                                               .toObservable();
                     } else {
                         return Observable.just(model);

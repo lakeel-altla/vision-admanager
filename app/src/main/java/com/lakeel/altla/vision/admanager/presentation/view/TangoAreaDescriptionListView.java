@@ -5,7 +5,7 @@ import android.support.annotation.StringRes;
 
 import java.io.File;
 
-public interface TangoSpaceView {
+public interface TangoAreaDescriptionListView {
 
     void updateItems();
 

@@ -6,10 +6,10 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoSpaceItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoSpaceItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceItemView;
-import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
+import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
+import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
@@ -26,9 +26,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListener {
+public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnTangoReadyListener {
 
-    private static final Log LOG = LogFactory.getLog(TangoSpacePresenter.class);
+    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionListPresenter.class);
 
     @Inject
     FindAllTangoAreaDescriptionsUseCase findAllTangoAreaDescriptionsUseCase;
@@ -45,23 +45,23 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
     @Inject
     TangoWrapper tangoWrapper;
 
-    private final List<TangoSpaceItemModel> itemModels = new ArrayList<>();
+    private final List<TangoAreaDescriptionItemModel> itemModels = new ArrayList<>();
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private TangoSpaceView view;
+    private TangoAreaDescriptionListView view;
 
     private String exportingAreaDescriptionId;
 
     @Inject
-    public TangoSpacePresenter() {
+    public TangoAreaDescriptionListPresenter() {
     }
 
     @Override
     public void onTangoReady(Tango tango) {
         Disposable disposable = findAllTangoAreaDescriptionsUseCase
                 .execute(tangoWrapper.getTango())
-                .map(TangoSpaceItemModelMapper::map)
+                .map(TangoAreaDescriptionItemModelMapper::map)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemModels -> {
@@ -74,7 +74,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
         compositeDisposable.add(disposable);
     }
 
-    public void onCreateView(@NonNull TangoSpaceView view) {
+    public void onCreateView(@NonNull TangoAreaDescriptionListView view) {
         this.view = view;
     }
 
@@ -90,7 +90,7 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
         tangoWrapper.removeOnTangoReadyListener(this);
     }
 
-    public void onCreateItemView(@NonNull TangoSpaceItemView itemView) {
+    public void onCreateItemView(@NonNull TangoAreaDescriptionItemView itemView) {
         TangoSpaceItemPresenter itemPresenter = new TangoSpaceItemPresenter();
         itemPresenter.onCreateItemView(itemView);
         itemView.setItemPresenter(itemPresenter);
@@ -140,14 +140,14 @@ public final class TangoSpacePresenter implements TangoWrapper.OnTangoReadyListe
 
     public final class TangoSpaceItemPresenter {
 
-        private TangoSpaceItemView itemView;
+        private TangoAreaDescriptionItemView itemView;
 
-        public void onCreateItemView(@NonNull TangoSpaceItemView itemView) {
+        public void onCreateItemView(@NonNull TangoAreaDescriptionItemView itemView) {
             this.itemView = itemView;
         }
 
         public void onBind(int position) {
-            TangoSpaceItemModel itemModel = itemModels.get(position);
+            TangoAreaDescriptionItemModel itemModel = itemModels.get(position);
             itemView.showModel(itemModel);
         }
 

@@ -5,7 +5,7 @@ import android.support.annotation.StringRes;
 
 import java.io.File;
 
-public interface AppSpaceView {
+public interface UserAreaDescriptionListView {
 
     void updateItems();
 

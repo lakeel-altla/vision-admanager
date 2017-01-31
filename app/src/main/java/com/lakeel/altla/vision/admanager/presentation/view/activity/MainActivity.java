@@ -9,12 +9,12 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.AppSpaceFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoSpaceFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
@@ -48,16 +48,18 @@ public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
-                   AppSpaceFragment.InteractionListener,
+                   UserAreaDescriptionListFragment.InteractionListener,
                    UserAreaListFragment.InteractionListener,
                    EditUserAreaFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FRAGMENT_TAG_USER_AREA_LIST = UserAreaListFragment.class.getName();
 
-    private static final String FRAGMENT_TAG_TANGO_SPACE = TangoSpaceFragment.class.getName();
+    private static final String FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST =
+            TangoAreaDescriptionListFragment.class.getName();
 
-    private static final String FRAGMENT_TAG_APP_SPACE = AppSpaceFragment.class.getName();
+    private static final String FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST =
+            UserAreaDescriptionListFragment.class.getName();
 
     @Inject
     TangoWrapper tangoWrapper;
@@ -194,10 +196,10 @@ public final class MainActivity extends AppCompatActivity
                 fragmentController.showUserAreaListFragment();
                 break;
             case R.id.nav_tango_space:
-                fragmentController.showTangoSpaceFragment();
+                fragmentController.showTangoAreaDescriptionListFragment();
                 break;
             case R.id.nav_app_space:
-                fragmentController.showAppSpaceFragment();
+                fragmentController.showUserAreaDescriptionListFragment();
                 break;
             case R.id.nav_sign_out:
                 onSignOut();
@@ -226,7 +228,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onCloseTangoPermissionFragment() {
-        fragmentController.showTangoSpaceFragment();
+        fragmentController.showTangoAreaDescriptionListFragment();
     }
 
     @Override
@@ -272,12 +274,14 @@ public final class MainActivity extends AppCompatActivity
             return (UserAreaListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_USER_AREA_LIST);
         }
 
-        TangoSpaceFragment findTangoSpaceFragment() {
-            return (TangoSpaceFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_TANGO_SPACE);
+        TangoAreaDescriptionListFragment findTangoAreaDescriptionListFragment() {
+            return (TangoAreaDescriptionListFragment) getSupportFragmentManager().findFragmentByTag(
+                    FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST);
         }
 
-        AppSpaceFragment findAppSpaceFragment() {
-            return (AppSpaceFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_APP_SPACE);
+        UserAreaDescriptionListFragment findUserAreaDescriptionListFragment() {
+            return (UserAreaDescriptionListFragment) getSupportFragmentManager().findFragmentByTag(
+                    FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST);
         }
 
         void showUserAreaListFragment() {
@@ -290,22 +294,24 @@ public final class MainActivity extends AppCompatActivity
             }
         }
 
-        void showTangoSpaceFragment() {
-            TangoSpaceFragment fragment = findTangoSpaceFragment();
+        void showTangoAreaDescriptionListFragment() {
+            TangoAreaDescriptionListFragment fragment = findTangoAreaDescriptionListFragment();
             if (fragment == null) {
-                fragment = TangoSpaceFragment.newInstance();
+                fragment = TangoAreaDescriptionListFragment.newInstance();
                 getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_TANGO_SPACE)
+                                           .replace(R.id.fragment_container, fragment,
+                                                    FRAGMENT_TAG_TANGO_AREA_DESCRIPTION_LIST)
                                            .commit();
             }
         }
 
-        void showAppSpaceFragment() {
-            AppSpaceFragment fragment = findAppSpaceFragment();
+        void showUserAreaDescriptionListFragment() {
+            UserAreaDescriptionListFragment fragment = findUserAreaDescriptionListFragment();
             if (fragment == null) {
-                fragment = AppSpaceFragment.newInstance();
+                fragment = UserAreaDescriptionListFragment.newInstance();
                 getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.fragment_container, fragment, FRAGMENT_TAG_APP_SPACE)
+                                           .replace(R.id.fragment_container, fragment,
+                                                    FRAGMENT_TAG_USER_AREA_DESCRIPTION_LIST)
                                            .commit();
             }
         }

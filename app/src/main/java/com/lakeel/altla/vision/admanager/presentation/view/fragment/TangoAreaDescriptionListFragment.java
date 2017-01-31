@@ -6,9 +6,9 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.TangoSpacePresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.TangoSpaceView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoSpaceAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoAreaDescriptionListAdapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,20 +31,20 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class TangoSpaceFragment extends Fragment implements TangoSpaceView {
+public final class TangoAreaDescriptionListFragment extends Fragment implements TangoAreaDescriptionListView {
 
-    private static final Log LOG = LogFactory.getLog(TangoSpaceFragment.class);
+    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionListFragment.class);
 
     @Inject
-    TangoSpacePresenter presenter;
+    TangoAreaDescriptionListPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
     private MaterialDialog materialDialog;
 
-    public static TangoSpaceFragment newInstance() {
-        return new TangoSpaceFragment();
+    public static TangoAreaDescriptionListFragment newInstance() {
+        return new TangoAreaDescriptionListFragment();
     }
 
     @Override
@@ -61,7 +61,7 @@ public final class TangoSpaceFragment extends Fragment implements TangoSpaceView
 
         presenter.onCreateView(this);
 
-        recyclerView.setAdapter(new TangoSpaceAdapter(presenter));
+        recyclerView.setAdapter(new TangoAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         getActivity().setTitle(R.string.title_tango_space);

@@ -7,9 +7,9 @@ import com.lakeel.altla.vision.domain.model.UserArea;
 
 import android.support.annotation.NonNull;
 
-public final class SelectUserAreaItemModelMapper {
+public final class UserAreaItemModelMapper {
 
-    private SelectUserAreaItemModelMapper() {
+    private UserAreaItemModelMapper() {
     }
 
     @NonNull

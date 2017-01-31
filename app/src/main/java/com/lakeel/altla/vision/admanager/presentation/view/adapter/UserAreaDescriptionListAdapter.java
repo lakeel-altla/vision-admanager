@@ -1,9 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.AppSpacePresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.AppSpaceItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.AppSpaceItemView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionItemModel;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -17,13 +17,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.ViewHolder> {
+public final class UserAreaDescriptionListAdapter
+        extends RecyclerView.Adapter<UserAreaDescriptionListAdapter.ViewHolder> {
 
-    private final AppSpacePresenter presenter;
+    private final UserAreaDescriptionListPresenter presenter;
 
     private LayoutInflater inflater;
 
-    public AppSpaceAdapter(@NonNull AppSpacePresenter presenter) {
+    public UserAreaDescriptionListAdapter(@NonNull UserAreaDescriptionListPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -48,7 +49,7 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         return presenter.getItemCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements AppSpaceItemView {
+    public class ViewHolder extends RecyclerView.ViewHolder implements UserAreaDescriptionItemView {
 
         @BindView(R.id.text_view_name)
         TextView textViewName;
@@ -65,19 +66,19 @@ public final class AppSpaceAdapter extends RecyclerView.Adapter<AppSpaceAdapter.
         @BindView(R.id.image_button_synced)
         ImageButton imageButtonSynced;
 
-        private AppSpacePresenter.AppSpaceItemPresenter itemPresenter;
+        private UserAreaDescriptionListPresenter.AppSpaceItemPresenter itemPresenter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void setItemPresenter(@NonNull AppSpacePresenter.AppSpaceItemPresenter itemPresenter) {
+        public void setItemPresenter(@NonNull UserAreaDescriptionListPresenter.AppSpaceItemPresenter itemPresenter) {
             this.itemPresenter = itemPresenter;
         }
 
         @Override
-        public void showModel(@NonNull AppSpaceItemModel model) {
+        public void showModel(@NonNull UserAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewUuid.setText(model.areaDescriptionId);
 
