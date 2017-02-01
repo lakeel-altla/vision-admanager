@@ -6,15 +6,15 @@ import android.support.annotation.StringRes;
 
 public interface EditUserAreaDescriptionView {
 
-    void updateAreaName(String areaName);
+    void onAreaNameUpdated(String areaName);
 
-    void showModel(EditUserAreaDescriptionModel model);
+    void onModelUpdated(EditUserAreaDescriptionModel model);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 
-    void showNameError(@StringRes int resId);
+    void onShowNameError(@StringRes int resId);
 
-    void hideNameError();
+    void onHideNameError();
 
-    void showSelectUserAreaView();
+    void onShowSelectUserAreaView();
 }

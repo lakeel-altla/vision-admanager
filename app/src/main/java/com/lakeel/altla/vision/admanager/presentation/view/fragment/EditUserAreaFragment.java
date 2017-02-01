@@ -193,12 +193,12 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     }
 
     @Override
-    public void showAreaId(String areaId) {
+    public void onAreaIdUpdated(String areaId) {
         textViewId.setText(areaId);
     }
 
     @Override
-    public void showCreatedAt(long createdAt) {
+    public void onCreatedAtUpdated(long createdAt) {
         String createdAtString = null;
         if (0 < createdAt) {
             createdAtString = DateFormat.getDateFormat(getContext()).format(createdAt) + " " +
@@ -208,9 +208,9 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     }
 
     @Override
-    public void showModel(@NonNull EditUserAreaModel model) {
-        showAreaId(model.areaId);
-        showCreatedAt(model.createdAt);
+    public void onModelUpdated(@NonNull EditUserAreaModel model) {
+        onAreaIdUpdated(model.areaId);
+        onCreatedAtUpdated(model.createdAt);
 
         textInputEditTextName.setText(model.name);
         textViewPlaceName.setText(model.placeName);
@@ -221,19 +221,19 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showPlacePicker() {
+    public void onShowPlacePicker() {
         if (googleApiClient.isConnected()) {
             imageButtonPickPlace.setEnabled(false);
             try {
                 Intent intent = new PlacePicker.IntentBuilder().build(activity);
                 startActivityForResult(intent, REQUEST_CODE_PLACE_PICKER);
             } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                showSnackbar(R.string.snackbar_failed);
+                onSnackbar(R.string.snackbar_failed);
                 imageButtonPickPlace.setEnabled(true);
             }
         }

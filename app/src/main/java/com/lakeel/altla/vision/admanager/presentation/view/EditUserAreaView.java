@@ -7,13 +7,13 @@ import android.support.annotation.StringRes;
 
 public interface EditUserAreaView {
 
-    void showAreaId(String areaId);
+    void onAreaIdUpdated(String areaId);
 
-    void showCreatedAt(long createdAt);
+    void onCreatedAtUpdated(long createdAt);
 
-    void showModel(@NonNull EditUserAreaModel model);
+    void onModelUpdated(@NonNull EditUserAreaModel model);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 
-    void showPlacePicker();
+    void onShowPlacePicker();
 }

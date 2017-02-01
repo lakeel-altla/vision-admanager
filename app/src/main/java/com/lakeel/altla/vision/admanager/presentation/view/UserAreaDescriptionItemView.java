@@ -6,5 +6,5 @@ import android.support.annotation.NonNull;
 
 public interface UserAreaDescriptionItemView {
 
-    void showModel(@NonNull UserAreaDescriptionItemModel model);
+    void onModelUpdated(@NonNull UserAreaDescriptionItemModel model);
 }

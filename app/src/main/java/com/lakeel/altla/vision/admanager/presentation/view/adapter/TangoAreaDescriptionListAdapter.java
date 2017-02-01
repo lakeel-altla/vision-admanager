@@ -67,7 +67,7 @@ public final class TangoAreaDescriptionListAdapter
         }
 
         @Override
-        public void showModel(@NonNull TangoAreaDescriptionItemModel model) {
+        public void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewUuid.setText(model.areaDescriptionId);
         }

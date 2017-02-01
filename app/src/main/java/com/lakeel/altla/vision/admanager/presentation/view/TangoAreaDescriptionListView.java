@@ -7,15 +7,15 @@ import java.io.File;
 
 public interface TangoAreaDescriptionListView {
 
-    void updateItems();
+    void onItemsUpdated();
 
-    void updateItem(int position);
+    void onItemInserted(int position);
 
-    void updateItemRemoved(int position);
+    void onItemRemoved(int position);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 
-    void showExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);
+    void onExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);
 
-    void showDeleteConfirmationDialog(int position);
+    void onShowDeleteConfirmationDialog(int position);
 }

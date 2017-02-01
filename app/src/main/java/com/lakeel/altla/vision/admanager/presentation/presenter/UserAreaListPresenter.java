@@ -38,7 +38,7 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         super.onStartOverride();
 
         items.clear();
-        getView().updateItems();
+        getView().onItemsUpdated();
 
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
@@ -55,10 +55,10 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    getView().updateItem(items.size() - 1);
+                    getView().onItemInserted(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -81,12 +81,12 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         public void onBind(int position) {
             UserAreaItemModel model = items.get(position);
-            itemView.showModel(model);
+            itemView.onModelUpdated(model);
         }
 
         public void onClickImageButtonEdit(int position) {
             UserAreaItemModel model = items.get(position);
-            getView().showEditItemView(model.areaId);
+            getView().onShowEditItemView(model.areaId);
         }
     }
 }

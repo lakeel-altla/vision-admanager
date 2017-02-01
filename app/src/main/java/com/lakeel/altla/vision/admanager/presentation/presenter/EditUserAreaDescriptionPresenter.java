@@ -101,7 +101,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                 .doOnDispose(() -> processing = false)
                 .subscribe(model -> {
                     this.model = model;
-                    getView().showModel(model);
+                    getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                 });
@@ -113,19 +113,19 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
         processing = true;
 
         model.name = name;
-        getView().hideNameError();
+        getView().onHideNameError();
 
         // Don't save the empty name.
         if (name == null || name.length() == 0) {
             processing = false;
-            getView().showNameError(R.string.input_error_name_required);
+            getView().onShowNameError(R.string.input_error_name_required);
         } else {
             saveUserAreaDescription();
         }
     }
 
     public void onClickImageButtonSelectArea() {
-        getView().showSelectUserAreaView();
+        getView().onShowSelectUserAreaView();
     }
 
     public void onUserAreaSelected(String areaId) {
@@ -138,7 +138,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userArea -> {
                     model.areaName = userArea.name;
-                    getView().updateAreaName(model.areaName);
+                    getView().onAreaNameUpdated(model.areaName);
                 }, e -> {
                     getLog().e(String.format("Failed: areaId = %s", areaId), e);
                 });
@@ -160,7 +160,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                 .subscribe(() -> {
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }

@@ -4,11 +4,11 @@ import android.support.annotation.StringRes;
 
 public interface SelectUserAreaView {
 
-    void updateItem(int position);
+    void onItemInserted(int position);
 
-    void updateItems();
+    void onItemsUpdated();
 
     void onItemSelected(String areaId);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 }

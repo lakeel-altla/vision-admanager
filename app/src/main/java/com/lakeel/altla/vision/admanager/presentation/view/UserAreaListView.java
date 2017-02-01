@@ -5,11 +5,11 @@ import android.support.annotation.StringRes;
 
 public interface UserAreaListView {
 
-    void updateItem(int position);
+    void onItemInserted(int position);
 
-    void updateItems();
+    void onItemsUpdated();
 
-    void showEditItemView(@NonNull String areaId);
+    void onShowEditItemView(@NonNull String areaId);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 }

@@ -91,7 +91,7 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
     }
 
     @Override
-    public void showProgressDialog() {
+    public void onShowProgressDialog() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_signin_in));
         progressDialog.setIndeterminate(true);
@@ -100,7 +100,7 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
     }
 
     @Override
-    public void hideProgressDialog() {
+    public void onHideProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
             progressDialog = null;
@@ -108,13 +108,18 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void closeSignInFragment() {
+    public void onCloseSignInView() {
         interactionListener.onCloseSignInFragment();
+    }
+
+    @Override
+    public void onStartActivityForResult(@NonNull Intent intent, int requestCode) {
+        startActivityForResult(intent, requestCode);
     }
 
     @OnClick(R.id.button_sign_in)

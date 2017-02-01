@@ -111,22 +111,22 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     }
 
     @Override
-    public void updateItem(int position) {
-        recyclerView.getAdapter().notifyItemChanged(position);
+    public void onItemInserted(int position) {
+        recyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override
-    public void updateItems() {
+    public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
-    public void showEditItemView(@NonNull String areaId) {
+    public void onShowEditItemView(@NonNull String areaId) {
         interactionListener.onEditUserArea(areaId);
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 

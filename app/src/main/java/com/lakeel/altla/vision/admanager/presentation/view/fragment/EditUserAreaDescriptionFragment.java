@@ -137,34 +137,34 @@ public final class EditUserAreaDescriptionFragment
     }
 
     @Override
-    public void updateAreaName(String areaName) {
+    public void onAreaNameUpdated(String areaName) {
         textViewAreaName.setText(areaName);
     }
 
     @Override
-    public void showModel(EditUserAreaDescriptionModel model) {
+    public void onModelUpdated(EditUserAreaDescriptionModel model) {
         textViewAreaDescriptionId.setText(model.areaDescriptionId);
         textInputEditTextName.setText(model.name);
         textViewAreaName.setText(model.areaName);
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(view, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showNameError(@StringRes int resId) {
+    public void onShowNameError(@StringRes int resId) {
         textInputLayoutName.setError(getString(resId));
     }
 
     @Override
-    public void hideNameError() {
+    public void onHideNameError() {
         textInputLayoutName.setError(null);
     }
 
     @Override
-    public void showSelectUserAreaView() {
+    public void onShowSelectUserAreaView() {
         interactionListener.onShowSelectUserAreaFragment();
     }
 

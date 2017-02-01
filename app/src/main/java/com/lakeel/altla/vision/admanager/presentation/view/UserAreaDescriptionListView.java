@@ -7,27 +7,27 @@ import java.io.File;
 
 public interface UserAreaDescriptionListView {
 
-    void updateItems();
+    void onItemsUpdated();
 
-    void updateItem(int position);
+    void onItemInserted(int position);
 
-    void updateItemRemoved(int position);
+    void onItemRemoved(int position);
 
-    void showSnackbar(@StringRes int resId);
+    void onSnackbar(@StringRes int resId);
 
-    void showImportActivity(@NonNull File destinationFile);
+    void onShowImportActivity(@NonNull File destinationFile);
 
-    void showUploadProgressDialog();
+    void onShowUploadProgressDialog();
 
-    void setUploadProgressDialogProgress(long max, long diff);
+    void onUploadProgressUpdated(long max, long diff);
 
-    void hideUploadProgressDialog();
+    void onHideUploadProgressDialog();
 
-    void showDeleteProgressDialog();
+    void onShowDeleteProgressDialog();
 
-    void hideDeleteProgressDialog();
+    void onHideDeleteProgressDialog();
 
-    void showDeleteConfirmationDialog(int position);
+    void onShowDeleteConfirmationDialog(int position);
 
-    void showEditUserAreaDescriptionFragment(String areaDescriptionId);
+    void onShowEditUserAreaDescriptionView(String areaDescriptionId);
 }

@@ -91,19 +91,19 @@ public final class TangoPermissionFragment extends AbstractFragment<TangoPermiss
     }
 
     @Override
-    public void closeTangoPermissionFragment() {
+    public void onCloseTangoPermissionView() {
         interactionListener.onCloseTangoPermissionFragment();
     }
 
     @Override
-    public void showAreaLearningPermissionRequiredSnackbar() {
+    public void onShowAreaLearningPermissionRequiredSnackbar() {
         Snackbar.make(viewTop, R.string.snackbar_area_learning_permission_required, Snackbar.LENGTH_SHORT)
                 .setAction(R.string.snackbar_action_request_permission, view -> presenter.onConfirmPermission())
                 .show();
     }
 
     @Override
-    public void startTangoPermissionActivity() {
+    public void onStartTangoPermissionActivity() {
         startActivityForResult(TangoIntents.createAdfLoadSaveRequestPermissionIntent(), 0);
     }
 

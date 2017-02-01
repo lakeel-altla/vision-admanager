@@ -55,7 +55,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         super.onStartOverride();
 
         items.clear();
-        getView().updateItems();
+        getView().onItemsUpdated();
 
         Disposable disposable = findAllUserAreaDescriptionsUseCase
                 .execute()
@@ -63,16 +63,16 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    getView().updateItem(items.size() - 1);
+                    getView().onItemInserted(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
 
     public void onImported() {
-        getView().showSnackbar(R.string.snackbar_done);
+        getView().onSnackbar(R.string.snackbar_done);
     }
 
     public void onDelete(int position) {
@@ -81,16 +81,16 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         Disposable disposable = deleteUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(_subscription -> getView().showDeleteProgressDialog())
-                .doOnTerminate(() -> getView().hideDeleteProgressDialog())
+                .doOnSubscribe(_subscription -> getView().onShowDeleteProgressDialog())
+                .doOnTerminate(() -> getView().onHideDeleteProgressDialog())
                 .subscribe(() -> {
                     items.remove(position);
 
-                    getView().updateItemRemoved(position);
-                    getView().showSnackbar(R.string.snackbar_done);
+                    getView().onItemRemoved(position);
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -113,7 +113,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
         public void onBind(int position) {
             UserAreaDescriptionItemModel itemModel = items.get(position);
-            itemView.showModel(itemModel);
+            itemView.onModelUpdated(itemModel);
         }
 
         public void onClickImageButtonImport(int position) {
@@ -122,9 +122,9 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
             Disposable disposable = getAreaDescriptionCacheFileUseCase
                     .execute(areaDescriptionId)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(getView()::showImportActivity, e -> {
+                    .subscribe(getView()::onShowImportActivity, e -> {
                         getLog().e("Failed.", e);
-                        getView().showSnackbar(R.string.snackbar_failed);
+                        getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
         }
@@ -138,19 +138,19 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
-                        getView().setUploadProgressDialogProgress(totalBytes, increment);
+                        getView().onUploadProgressUpdated(totalBytes, increment);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(_subscription -> getView().showUploadProgressDialog())
-                    .doOnTerminate(() -> getView().hideUploadProgressDialog())
+                    .doOnSubscribe(_subscription -> getView().onShowUploadProgressDialog())
+                    .doOnTerminate(() -> getView().onHideUploadProgressDialog())
                     .subscribe(() -> {
                         itemModel.fileUploaded = true;
 
-                        getView().updateItem(position);
-                        getView().showSnackbar(R.string.snackbar_done);
+                        getView().onItemInserted(position);
+                        getView().onSnackbar(R.string.snackbar_done);
                     }, e -> {
                         getLog().e("Failed.", e);
-                        getView().showSnackbar(R.string.snackbar_failed);
+                        getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
         }
@@ -164,19 +164,19 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     .execute(itemModel.areaDescriptionId, (totalBytes, bytesTransferred) -> {
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
-                        getView().setUploadProgressDialogProgress(totalBytes, increment);
+                        getView().onUploadProgressUpdated(totalBytes, increment);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(_subscription -> getView().showUploadProgressDialog())
-                    .doOnTerminate(() -> getView().hideUploadProgressDialog())
+                    .doOnSubscribe(_subscription -> getView().onShowUploadProgressDialog())
+                    .doOnTerminate(() -> getView().onHideUploadProgressDialog())
                     .subscribe(() -> {
                         itemModel.fileCached = true;
 
-                        getView().updateItem(position);
-                        getView().showSnackbar(R.string.snackbar_done);
+                        getView().onItemInserted(position);
+                        getView().onSnackbar(R.string.snackbar_done);
                     }, e -> {
                         getLog().e("Failed.", e);
-                        getView().showSnackbar(R.string.snackbar_failed);
+                        getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
         }
@@ -190,11 +190,11 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     .subscribe(() -> {
                         itemModel.fileCached = false;
 
-                        getView().updateItem(position);
-                        getView().showSnackbar(R.string.snackbar_done);
+                        getView().onItemInserted(position);
+                        getView().onSnackbar(R.string.snackbar_done);
                     }, e -> {
                         getLog().e("Failed.", e);
-                        getView().showSnackbar(R.string.snackbar_failed);
+                        getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
         }
@@ -202,11 +202,11 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         public void onClickImageButtonEdit(int position) {
             String areaDescriptionId = items.get(position).areaDescriptionId;
 
-            getView().showEditUserAreaDescriptionFragment(areaDescriptionId);
+            getView().onShowEditUserAreaDescriptionView(areaDescriptionId);
         }
 
         public void onClickImageButtonDelete(int position) {
-            getView().showDeleteConfirmationDialog(position);
+            getView().onShowDeleteConfirmationDialog(position);
         }
     }
 }

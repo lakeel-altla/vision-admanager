@@ -74,7 +74,7 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
         }
 
         @Override
-        public void showModel(@NonNull UserAreaItemModel model) {
+        public void onModelUpdated(@NonNull UserAreaItemModel model) {
             textViewName.setText(model.name);
             textViewId.setText(model.areaId);
             textViewPlaceName.setText(model.placeName);

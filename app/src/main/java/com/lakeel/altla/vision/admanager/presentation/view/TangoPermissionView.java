@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view;
 
 public interface TangoPermissionView {
 
-    void closeTangoPermissionFragment();
+    void onCloseTangoPermissionView();
 
-    void showAreaLearningPermissionRequiredSnackbar();
+    void onShowAreaLearningPermissionRequiredSnackbar();
 
-    void startTangoPermissionActivity();
+    void onStartTangoPermissionActivity();
 }

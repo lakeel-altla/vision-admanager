@@ -90,12 +90,12 @@ public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAre
     }
 
     @Override
-    public void updateItem(int position) {
-        recyclerView.getAdapter().notifyItemChanged(position);
+    public void onItemInserted(int position) {
+        recyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override
-    public void updateItems() {
+    public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -105,7 +105,7 @@ public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAre
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 

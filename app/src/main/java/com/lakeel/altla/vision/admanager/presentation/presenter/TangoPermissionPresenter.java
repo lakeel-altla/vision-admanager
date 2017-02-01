@@ -18,16 +18,16 @@ public final class TangoPermissionPresenter extends BasePresenter<TangoPermissio
     }
 
     public void onConfirmPermission() {
-        getView().startTangoPermissionActivity();
+        getView().onStartTangoPermissionActivity();
     }
 
     public void onTangoPermissionResult(boolean isCanceled) {
         if (!isCanceled) {
             getLog().d("Tango permission granted.");
-            getView().closeTangoPermissionFragment();
+            getView().onCloseTangoPermissionView();
         } else {
             getLog().d("Tango permission not granted.");
-            getView().showAreaLearningPermissionRequiredSnackbar();
+            getView().onShowAreaLearningPermissionRequiredSnackbar();
         }
     }
 }

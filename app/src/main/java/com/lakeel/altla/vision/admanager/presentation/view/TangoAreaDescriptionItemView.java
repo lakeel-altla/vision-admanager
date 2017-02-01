@@ -6,5 +6,5 @@ import android.support.annotation.NonNull;
 
 public interface TangoAreaDescriptionItemView {
 
-    void showModel(@NonNull TangoAreaDescriptionItemModel model);
+    void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model);
 }

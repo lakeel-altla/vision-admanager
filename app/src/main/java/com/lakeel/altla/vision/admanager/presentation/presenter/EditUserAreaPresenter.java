@@ -92,9 +92,9 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
                     .doOnTerminate(() -> processing = false)
                     .subscribe(model -> {
                         this.model = model;
-                        getView().showModel(model);
+                        getView().onModelUpdated(model);
                     }, e -> {
-                        getView().showSnackbar(R.string.snackbar_failed);
+                        getView().onSnackbar(R.string.snackbar_failed);
                         getLog().e(String.format("Failed to find the user area: areaId = %s", areaId), e);
                     });
             manageDisposable(disposable);
@@ -102,7 +102,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
             creatingNew = true;
             model = new EditUserAreaModel();
 
-            getView().showModel(model);
+            getView().onModelUpdated(model);
         }
     }
 
@@ -123,7 +123,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
     }
 
     public void onClickImageButtonPickPlace() {
-        getView().showPlacePicker();
+        getView().onShowPlacePicker();
     }
 
     public void onPlacePicked(@NonNull Place place) {
@@ -139,7 +139,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
         model.placeName = place.getName().toString();
         model.placeAddress = place.getAddress().toString();
 
-        getView().showModel(model);
+        getView().onModelUpdated(model);
 
         save();
     }
@@ -153,7 +153,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
         model.placeName = null;
         model.placeAddress = null;
 
-        getView().showModel(model);
+        getView().onModelUpdated(model);
 
         save();
     }
@@ -174,8 +174,8 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
             areaId = UUID.randomUUID().toString();
             model.areaId = areaId;
             model.createdAt = System.currentTimeMillis();
-            getView().showAreaId(areaId);
-            getView().showCreatedAt(model.createdAt);
+            getView().onAreaIdUpdated(areaId);
+            getView().onCreatedAtUpdated(model.createdAt);
             creatingNew = false;
         }
 
@@ -195,7 +195,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
                 .subscribe(() -> {
                 }, e -> {
                     getLog().e(String.format("Failed: areaId = %s", areaId), e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }

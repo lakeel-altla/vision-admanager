@@ -48,7 +48,7 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
                     getLog().i("Signed in to firebase: %s", user.getUid());
                     if (!signInButtonClicked) {
                         // Auto sign in.
-                        getView().closeSignInFragment();
+                        getView().onCloseSignInView();
                     }
                     signedInDetected = true;
                 } else {
@@ -79,7 +79,7 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
 
         Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
 
-        getView().startActivityForResult(intent, REQUEST_CODE_GOOGLE_SIGN_IN);
+        getView().onStartActivityForResult(intent, REQUEST_CODE_GOOGLE_SIGN_IN);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -90,30 +90,30 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
 
         if (resultCode != Activity.RESULT_OK) {
             getLog().d("Canceled to sign in to Google.");
-            getView().showSnackbar(R.string.snackbar_google_sign_in_reqiured);
+            getView().onSnackbar(R.string.snackbar_google_sign_in_reqiured);
             return;
         }
 
         GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (!googleSignInResult.isSuccess()) {
             getLog().e("Failed to sign in to Google.");
-            getView().showSnackbar(R.string.snackbar_google_sign_in_failed);
+            getView().onSnackbar(R.string.snackbar_google_sign_in_failed);
             return;
         }
 
         GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
         if (googleSignInAccount == null) {
             getLog().e("GoogleSignInAccount is null");
-            getView().showSnackbar(R.string.snackbar_google_sign_in_failed);
+            getView().onSnackbar(R.string.snackbar_google_sign_in_failed);
             return;
         }
 
         Disposable disposable = signInWithGoogleUseCase
                 .execute(googleSignInAccount)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(_subscription -> getView().showProgressDialog())
-                .doOnTerminate(() -> getView().hideProgressDialog())
-                .subscribe(() -> getView().closeSignInFragment(),
+                .doOnSubscribe(_subscription -> getView().onShowProgressDialog())
+                .doOnTerminate(() -> getView().onHideProgressDialog())
+                .subscribe(() -> getView().onCloseSignInView(),
                            e -> getLog().e("Failed to sign in to Firebase.", e));
         manageDisposable(disposable);
     }

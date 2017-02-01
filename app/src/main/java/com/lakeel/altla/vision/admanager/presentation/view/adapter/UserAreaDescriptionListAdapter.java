@@ -76,7 +76,7 @@ public final class UserAreaDescriptionListAdapter
         }
 
         @Override
-        public void showModel(@NonNull UserAreaDescriptionItemModel model) {
+        public void onModelUpdated(@NonNull UserAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewUuid.setText(model.areaDescriptionId);
 

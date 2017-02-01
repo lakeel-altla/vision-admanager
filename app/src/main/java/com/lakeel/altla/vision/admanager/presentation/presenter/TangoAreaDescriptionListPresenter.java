@@ -57,7 +57,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    getView().updateItem(items.size() - 1);
+                    getView().onItemInserted(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
                 });
@@ -69,7 +69,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         super.onResumeOverride();
 
         items.clear();
-        getView().updateItems();
+        getView().onItemsUpdated();
 
         tangoWrapper.addOnTangoReadyListener(this);
     }
@@ -90,14 +90,14 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                 .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userAreaDescription -> {
-                    getView().showSnackbar(R.string.snackbar_done);
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
 
-        getView().showSnackbar(R.string.snackbar_done);
+        getView().onSnackbar(R.string.snackbar_done);
     }
 
     public void onDelete(int position) {
@@ -108,11 +108,11 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     items.remove(position);
-                    getView().updateItemRemoved(position);
-                    getView().showSnackbar(R.string.snackbar_done);
+                    getView().onItemRemoved(position);
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -135,7 +135,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
 
         public void onBind(int position) {
             TangoAreaDescriptionItemModel itemModel = items.get(position);
-            itemView.showModel(itemModel);
+            itemView.onModelUpdated(itemModel);
         }
 
         public void onClickImageButtonExport(int position) {
@@ -144,13 +144,13 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
                         exportingAreaDescriptionId = items.get(position).areaDescriptionId;
-                        getView().showExportActivity(exportingAreaDescriptionId, directory);
+                        getView().onExportActivity(exportingAreaDescriptionId, directory);
                     });
             manageDisposable(disposable);
         }
 
         public void onClickImageButtonDelete(int position) {
-            getView().showDeleteConfirmationDialog(position);
+            getView().onShowDeleteConfirmationDialog(position);
         }
     }
 }

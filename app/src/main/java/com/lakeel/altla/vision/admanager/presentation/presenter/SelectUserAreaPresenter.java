@@ -38,7 +38,7 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
         super.onStartOverride();
 
         items.clear();
-        getView().updateItems();
+        getView().onItemsUpdated();
 
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
@@ -55,10 +55,10 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    getView().updateItem(items.size() - 1);
+                    getView().onItemInserted(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().showSnackbar(R.string.snackbar_failed);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -86,7 +86,7 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
 
         public void onBind(int position) {
             UserAreaItemModel model = items.get(position);
-            itemView.showModel(model);
+            itemView.onModelUpdated(model);
         }
     }
 }

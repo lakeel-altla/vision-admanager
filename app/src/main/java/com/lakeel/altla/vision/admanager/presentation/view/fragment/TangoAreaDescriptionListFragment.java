@@ -90,28 +90,33 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
-    public void updateItems() {
+    public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
-    public void updateItemRemoved(int position) {
+    public void onItemInserted(int position) {
+        recyclerView.getAdapter().notifyItemInserted(position);
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
         recyclerView.getAdapter().notifyItemRemoved(position);
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
+    public void onExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
         Intent intent = TangoIntents.createAdfExportIntent(uuid, destinationDirectory.getPath());
         startActivityForResult(intent, 0);
     }
 
     @Override
-    public void showDeleteConfirmationDialog(int position) {
+    public void onShowDeleteConfirmationDialog(int position) {
         if (materialDialog != null && materialDialog.isShowing()) {
             // Skip to protect against double taps.
             return;

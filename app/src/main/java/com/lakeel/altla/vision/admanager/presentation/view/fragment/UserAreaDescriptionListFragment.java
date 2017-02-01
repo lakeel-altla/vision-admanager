@@ -110,33 +110,33 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void updateItems() {
+    public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
-    public void updateItem(int position) {
-        recyclerView.getAdapter().notifyItemChanged(position);
+    public void onItemInserted(int position) {
+        recyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override
-    public void updateItemRemoved(int position) {
+    public void onItemRemoved(int position) {
         recyclerView.getAdapter().notifyItemRemoved(position);
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
+    public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showImportActivity(@NonNull File destinationFile) {
+    public void onShowImportActivity(@NonNull File destinationFile) {
         Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
         startActivityForResult(intent, 0);
     }
 
     @Override
-    public void showUploadProgressDialog() {
+    public void onShowUploadProgressDialog() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_upload));
         progressDialog.setIndeterminate(false);
@@ -147,7 +147,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void setUploadProgressDialogProgress(long max, long diff) {
+    public void onUploadProgressUpdated(long max, long diff) {
         if (progressDialog != null) {
             progressDialog.setMax((int) max);
             progressDialog.incrementProgressBy((int) diff);
@@ -155,7 +155,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void hideUploadProgressDialog() {
+    public void onHideUploadProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
             progressDialog = null;
@@ -163,7 +163,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void showDeleteProgressDialog() {
+    public void onShowDeleteProgressDialog() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_delete));
         progressDialog.setIndeterminate(true);
@@ -172,7 +172,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void hideDeleteProgressDialog() {
+    public void onHideDeleteProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
             progressDialog = null;
@@ -180,7 +180,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void showDeleteConfirmationDialog(int position) {
+    public void onShowDeleteConfirmationDialog(int position) {
         if (materialDialog != null && materialDialog.isShowing()) {
             // Skip to protect against double taps.
             return;
@@ -197,7 +197,7 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void showEditUserAreaDescriptionFragment(String areaDescriptionId) {
+    public void onShowEditUserAreaDescriptionView(String areaDescriptionId) {
         interactionListener.onShowEditUserAreaDescriptionFragment(areaDescriptionId);
     }
 
