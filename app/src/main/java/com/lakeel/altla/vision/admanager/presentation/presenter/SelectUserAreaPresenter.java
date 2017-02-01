@@ -17,14 +17,11 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaView> {
 
     private final List<UserAreaItemModel> items = new ArrayList<>();
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Inject
     FindAllUserAreasUseCase findAllUserAreasUseCase;
@@ -37,8 +34,8 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onStartOverride() {
+        super.onStartOverride();
 
         items.clear();
         getView().updateItems();
@@ -63,14 +60,7 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
                     getLog().e("Failed.", e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        compositeDisposable.clear();
+        manageDisposable(disposable);
     }
 
     public int getItemCount() {

@@ -19,7 +19,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUserAreaDescriptionView> {
@@ -37,8 +36,6 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaDescriptionId;
 
@@ -72,8 +69,8 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onStartOverride() {
+        super.onStartOverride();
 
         processing = true;
 
@@ -108,14 +105,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                 });
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        compositeDisposable.clear();
+        manageDisposable(disposable);
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
@@ -152,7 +142,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                 }, e -> {
                     getLog().e(String.format("Failed: areaId = %s", areaId), e);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 
     private void saveUserAreaDescription() {
@@ -172,6 +162,6 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 }

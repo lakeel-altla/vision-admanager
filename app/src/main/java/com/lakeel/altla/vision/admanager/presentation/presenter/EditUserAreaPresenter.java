@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView> {
@@ -37,8 +36,6 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
 
     @Inject
     SaveUserAreaUseCase saveUserAreaUseCase;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaId;
 
@@ -69,8 +66,8 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onStartOverride() {
+        super.onStartOverride();
 
         if (areaId != null) {
             processing = true;
@@ -100,20 +97,13 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
                         getView().showSnackbar(R.string.snackbar_failed);
                         getLog().e(String.format("Failed to find the user area: areaId = %s", areaId), e);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         } else {
             creatingNew = true;
             model = new EditUserAreaModel();
 
             getView().showModel(model);
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        compositeDisposable.clear();
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
@@ -207,6 +197,6 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
                     getLog().e(String.format("Failed: areaId = %s", areaId), e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 }

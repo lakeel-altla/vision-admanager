@@ -20,7 +20,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAreaDescriptionListView> {
@@ -45,8 +44,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
     private final List<UserAreaDescriptionItemModel> itemModels = new ArrayList<>();
 
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private long prevBytesTransferred;
 
     @Inject
@@ -54,8 +51,8 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onStartOverride() {
+        super.onStartOverride();
 
         Disposable disposable = findAllUserAreaDescriptionsUseCase
                 .execute()
@@ -70,14 +67,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     getLog().e("Failed.", e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        compositeDisposable.clear();
+        manageDisposable(disposable);
     }
 
     public void onImported() {
@@ -101,7 +91,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     getLog().e("Failed.", e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 
     public int getItemCount() {
@@ -135,7 +125,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                         getLog().e("Failed.", e);
                         getView().showSnackbar(R.string.snackbar_failed);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         }
 
         public void onClickImageButtonUpload(int position) {
@@ -161,7 +151,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                         getLog().e("Failed.", e);
                         getView().showSnackbar(R.string.snackbar_failed);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         }
 
         public void onClickImageButtonDownload(int position) {
@@ -187,7 +177,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                         getLog().e("Failed.", e);
                         getView().showSnackbar(R.string.snackbar_failed);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         }
 
         public void onClickImageButtonSynced(int position) {
@@ -205,7 +195,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                         getLog().e("Failed.", e);
                         getView().showSnackbar(R.string.snackbar_failed);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         }
 
         public void onClickImageButtonEdit(int position) {

@@ -21,7 +21,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class TangoAreaDescriptionListPresenter extends BasePresenter<TangoAreaDescriptionListView>
@@ -44,8 +43,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
 
     private final List<TangoAreaDescriptionItemModel> itemModels = new ArrayList<>();
 
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private String exportingAreaDescriptionId;
 
     @Inject
@@ -66,26 +63,19 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                 }, e -> {
                     getLog().e("Failed.", e);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
-        compositeDisposable.clear();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
+    protected void onResumeOverride() {
+        super.onResumeOverride();
 
         tangoWrapper.addOnTangoReadyListener(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    protected void onPauseOverride() {
+        super.onPauseOverride();
 
         tangoWrapper.removeOnTangoReadyListener(this);
     }
@@ -104,7 +94,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     getLog().e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
 
         getView().showSnackbar(R.string.snackbar_done);
     }
@@ -123,7 +113,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     getView().showSnackbar(R.string.snackbar_failed);
                 });
-        compositeDisposable.add(disposable);
+        manageDisposable(disposable);
     }
 
     public int getItemCount() {
@@ -155,7 +145,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                         exportingAreaDescriptionId = itemModels.get(position).areaDescriptionId;
                         getView().showExportActivity(exportingAreaDescriptionId, directory);
                     });
-            compositeDisposable.add(disposable);
+            manageDisposable(disposable);
         }
 
         public void onClickImageButtonDelete(int position) {
