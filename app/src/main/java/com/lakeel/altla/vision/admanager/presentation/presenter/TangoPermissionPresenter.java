@@ -1,40 +1,33 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoPermissionView;
-
-import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-public final class TangoPermissionPresenter {
-
-    private static final Log LOG = LogFactory.getLog(TangoPermissionPresenter.class);
-
-    private TangoPermissionView view;
+public final class TangoPermissionPresenter extends BasePresenter<TangoPermissionView> {
 
     @Inject
     public TangoPermissionPresenter() {
     }
 
-    public void onCreateView(@NonNull TangoPermissionView view) {
-        this.view = view;
+    @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
 
         onConfirmPermission();
     }
 
     public void onConfirmPermission() {
-        view.startTangoPermissionActivity();
+        getView().startTangoPermissionActivity();
     }
 
     public void onTangoPermissionResult(boolean isCanceled) {
         if (!isCanceled) {
-            LOG.d("Tango permission granted.");
-            view.closeTangoPermissionFragment();
+            getLog().d("Tango permission granted.");
+            getView().closeTangoPermissionFragment();
         } else {
-            LOG.d("Tango permission not granted.");
-            view.showAreaLearningPermissionRequiredSnackbar();
+            getLog().d("Tango permission not granted.");
+            getView().showAreaLearningPermissionRequiredSnackbar();
         }
     }
 }

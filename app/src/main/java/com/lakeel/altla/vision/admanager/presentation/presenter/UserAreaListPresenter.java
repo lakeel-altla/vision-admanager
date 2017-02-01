@@ -1,7 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
@@ -22,9 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class UserAreaListPresenter {
-
-    private static final Log LOG = LogFactory.getLog(UserAreaListPresenter.class);
+public final class UserAreaListPresenter extends BasePresenter<UserAreaListView> {
 
     private final List<UserAreaItemModel> items = new ArrayList<>();
 
@@ -36,19 +32,16 @@ public final class UserAreaListPresenter {
     @Inject
     GetPlaceUseCase getPlaceUseCase;
 
-    private UserAreaListView view;
-
     @Inject
     public UserAreaListPresenter() {
     }
 
-    public void onCreateView(@NonNull UserAreaListView view) {
-        this.view = view;
-    }
-
+    @Override
     public void onStart() {
+        super.onStart();
+
         items.clear();
-        view.updateItems();
+        getView().updateItems();
 
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
@@ -65,15 +58,18 @@ public final class UserAreaListPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    view.updateItem(items.size() - 1);
+                    getView().updateItem(items.size() - 1);
                 }, e -> {
-                    LOG.e("Failed.", e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e("Failed.", e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
     }
 
+    @Override
     public void onStop() {
+        super.onStop();
+
         compositeDisposable.clear();
     }
 
@@ -100,7 +96,7 @@ public final class UserAreaListPresenter {
 
         public void onClickImageButtonEdit(int position) {
             UserAreaItemModel model = items.get(position);
-            view.showEditItemView(model.areaId);
+            getView().showEditItemView(model.areaId);
         }
     }
 }

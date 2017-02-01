@@ -2,8 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.google.atap.tangoservice.Tango;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
@@ -26,9 +24,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnTangoReadyListener {
-
-    private static final Log LOG = LogFactory.getLog(TangoAreaDescriptionListPresenter.class);
+public final class TangoAreaDescriptionListPresenter extends BasePresenter<TangoAreaDescriptionListView>
+        implements TangoWrapper.OnTangoReadyListener {
 
     @Inject
     FindAllTangoAreaDescriptionsUseCase findAllTangoAreaDescriptionsUseCase;
@@ -49,8 +46,6 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private TangoAreaDescriptionListView view;
-
     private String exportingAreaDescriptionId;
 
     @Inject
@@ -67,26 +62,31 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                 .subscribe(itemModels -> {
                     this.itemModels.clear();
                     this.itemModels.addAll(itemModels);
-                    view.updateItems();
+                    getView().updateItems();
                 }, e -> {
-                    LOG.e("Failed.", e);
+                    getLog().e("Failed.", e);
                 });
         compositeDisposable.add(disposable);
     }
 
-    public void onCreateView(@NonNull TangoAreaDescriptionListView view) {
-        this.view = view;
-    }
-
+    @Override
     public void onStop() {
+        super.onStop();
+
         compositeDisposable.clear();
     }
 
+    @Override
     public void onResume() {
+        super.onResume();
+
         tangoWrapper.addOnTangoReadyListener(this);
     }
 
+    @Override
     public void onPause() {
+        super.onPause();
+
         tangoWrapper.removeOnTangoReadyListener(this);
     }
 
@@ -99,14 +99,14 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                 .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userAreaDescription -> {
-                    view.showSnackbar(R.string.snackbar_done);
+                    getView().showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
 
-        view.showSnackbar(R.string.snackbar_done);
+        getView().showSnackbar(R.string.snackbar_done);
     }
 
     public void onDelete(int position) {
@@ -117,11 +117,11 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     itemModels.remove(position);
-                    view.updateItemRemoved(position);
-                    view.showSnackbar(R.string.snackbar_done);
+                    getView().updateItemRemoved(position);
+                    getView().showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
     }
@@ -153,13 +153,13 @@ public final class TangoAreaDescriptionListPresenter implements TangoWrapper.OnT
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
                         exportingAreaDescriptionId = itemModels.get(position).areaDescriptionId;
-                        view.showExportActivity(exportingAreaDescriptionId, directory);
+                        getView().showExportActivity(exportingAreaDescriptionId, directory);
                     });
             compositeDisposable.add(disposable);
         }
 
         public void onClickImageButtonDelete(int position) {
-            view.showDeleteConfirmationDialog(position);
+            getView().showDeleteConfirmationDialog(position);
         }
     }
 }

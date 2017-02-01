@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
+import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaListAdapter;
@@ -9,9 +9,9 @@ import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaListA
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,7 +26,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserAreaListFragment extends Fragment implements UserAreaListView {
+public final class UserAreaListFragment extends AbstractFragment<UserAreaListView, UserAreaListPresenter>
+        implements UserAreaListView {
 
     @Inject
     UserAreaListPresenter presenter;
@@ -42,25 +43,48 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        interactionListener = InteractionListener.class.cast(context);
-        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+    public UserAreaListPresenter getPresenter() {
+        return presenter;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    protected UserAreaListView getViewInterface() {
+        return this;
+    }
+
+    @Override
+    protected void onInject(@NonNull ActivityComponent component) {
+        super.onInject(component);
+
+        component.inject(this);
+    }
+
+    @Override
+    protected void onAttachOverride(@NonNull Context context) {
+        super.onAttachOverride(context);
+
+        interactionListener = InteractionListener.class.cast(context);
+    }
+
+    @Override
+    protected void onDetachOverride() {
+        super.onDetachOverride();
+
         interactionListener = null;
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_user_area_list, container, false);
-        ButterKnife.bind(this, view);
+    protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
+                                    @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_user_area_list, container, false);
+    }
 
-        presenter.onCreateView(this);
+    @Override
+    protected void onBindView(@NonNull View view) {
+        super.onBindView(view);
+
+        ButterKnife.bind(this, view);
 
         recyclerView.setAdapter(new UserAreaListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -68,25 +92,11 @@ public final class UserAreaListFragment extends Fragment implements UserAreaList
         setHasOptionsMenu(true);
 
         getActivity().setTitle(R.string.title_user_area_list);
-
-        return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_user_area_list, menu);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        presenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        presenter.onStop();
     }
 
     @Override

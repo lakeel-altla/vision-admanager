@@ -3,8 +3,6 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.android.gms.location.places.Place;
 import com.google.firebase.auth.FirebaseAuth;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.EditUserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaModel;
@@ -14,6 +12,7 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaUseCase;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -26,9 +25,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class EditUserAreaPresenter {
+public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView> {
 
-    private static final Log LOG = LogFactory.getLog(EditUserAreaPresenter.class);
+    private static final String ARG_AREA_ID = "areaId";
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
@@ -43,8 +42,6 @@ public final class EditUserAreaPresenter {
 
     private String areaId;
 
-    private EditUserAreaView view;
-
     private EditUserAreaModel model;
 
     private boolean creatingNew;
@@ -55,15 +52,26 @@ public final class EditUserAreaPresenter {
     public EditUserAreaPresenter() {
     }
 
-    public void onCreate(@Nullable String areaId) {
-        this.areaId = areaId;
+    @NonNull
+    public static Bundle createArguments(@Nullable String areaId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_AREA_ID, areaId);
+        return bundle;
     }
 
-    public void onCreateView(@NonNull EditUserAreaView view) {
-        this.view = view;
+    @Override
+    public void onCreate(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        super.onCreate(arguments, savedInstanceState);
+
+        if (arguments != null) {
+            areaId = arguments.getString(ARG_AREA_ID, null);
+        }
     }
 
+    @Override
     public void onStart() {
+        super.onStart();
+
         if (areaId != null) {
             processing = true;
 
@@ -87,21 +95,24 @@ public final class EditUserAreaPresenter {
                     .doOnTerminate(() -> processing = false)
                     .subscribe(model -> {
                         this.model = model;
-                        view.showModel(model);
+                        getView().showModel(model);
                     }, e -> {
-                        view.showSnackbar(R.string.snackbar_failed);
-                        LOG.e(String.format("Failed to find the user area: areaId = %s", areaId), e);
+                        getView().showSnackbar(R.string.snackbar_failed);
+                        getLog().e(String.format("Failed to find the user area: areaId = %s", areaId), e);
                     });
             compositeDisposable.add(disposable);
         } else {
             creatingNew = true;
             model = new EditUserAreaModel();
 
-            view.showModel(model);
+            getView().showModel(model);
         }
     }
 
+    @Override
     public void onStop() {
+        super.onStop();
+
         compositeDisposable.clear();
     }
 
@@ -122,7 +133,7 @@ public final class EditUserAreaPresenter {
     }
 
     public void onClickImageButtonPickPlace() {
-        view.showPlacePicker();
+        getView().showPlacePicker();
     }
 
     public void onPlacePicked(@NonNull Place place) {
@@ -138,7 +149,7 @@ public final class EditUserAreaPresenter {
         model.placeName = place.getName().toString();
         model.placeAddress = place.getAddress().toString();
 
-        view.showModel(model);
+        getView().showModel(model);
 
         save();
     }
@@ -152,7 +163,7 @@ public final class EditUserAreaPresenter {
         model.placeName = null;
         model.placeAddress = null;
 
-        view.showModel(model);
+        getView().showModel(model);
 
         save();
     }
@@ -173,8 +184,8 @@ public final class EditUserAreaPresenter {
             areaId = UUID.randomUUID().toString();
             model.areaId = areaId;
             model.createdAt = System.currentTimeMillis();
-            view.showAreaId(areaId);
-            view.showCreatedAt(model.createdAt);
+            getView().showAreaId(areaId);
+            getView().showCreatedAt(model.createdAt);
             creatingNew = false;
         }
 
@@ -193,8 +204,8 @@ public final class EditUserAreaPresenter {
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    LOG.e(String.format("Failed: areaId = %s", areaId), e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
     }

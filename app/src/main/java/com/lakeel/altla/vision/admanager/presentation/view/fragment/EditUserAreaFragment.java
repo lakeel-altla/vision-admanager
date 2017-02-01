@@ -7,7 +7,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
+import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.EditUserAreaPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
@@ -22,7 +22,6 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.format.DateFormat;
@@ -49,9 +48,8 @@ import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
 
-public final class EditUserAreaFragment extends Fragment implements EditUserAreaView {
-
-    private static final String ARG_AREA_ID = "areaId";
+public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaView, EditUserAreaPresenter>
+        implements EditUserAreaView {
 
     private static final int REQUEST_CODE_PLACE_PICKER = 1;
 
@@ -110,42 +108,59 @@ public final class EditUserAreaFragment extends Fragment implements EditUserArea
     @NonNull
     public static EditUserAreaFragment newInstance(@Nullable String areaId) {
         EditUserAreaFragment fragment = new EditUserAreaFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_AREA_ID, areaId);
+        Bundle bundle = EditUserAreaPresenter.createArguments(areaId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        interactionListener = InteractionListener.class.cast(context);
-        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+    public EditUserAreaPresenter getPresenter() {
+        return presenter;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    protected EditUserAreaView getViewInterface() {
+        return this;
+    }
+
+    @Override
+    protected void onInject(@NonNull ActivityComponent component) {
+        super.onInject(component);
+
+        component.inject(this);
+    }
+
+    @Override
+    protected void onAttachOverride(@NonNull Context context) {
+        super.onAttachOverride(context);
+
+        interactionListener = InteractionListener.class.cast(context);
+    }
+
+    @Override
+    protected void onDetachOverride() {
+        super.onDetachOverride();
+
         interactionListener = null;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateOverride(@Nullable Bundle savedInstanceState) {
+        super.onCreateOverride(savedInstanceState);
+    }
 
-        String areaId = null;
-        if (getArguments() != null) {
-            areaId = getArguments().getString(ARG_AREA_ID, null);
-        }
-
-        presenter.onCreate(areaId);
+    @Nullable
+    @Override
+    protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
+                                    @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit_user_area, container, false);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_user_area, container, false);
+    protected void onBindView(@NonNull View view) {
+        super.onBindView(view);
+
         ButterKnife.bind(this, view);
-        presenter.onCreateView(this);
 
         // Close the soft keyboard when the user taps enter key.
         textInputEditTextName.setOnKeyListener((v, keyCode, event) -> {
@@ -161,20 +176,6 @@ public final class EditUserAreaFragment extends Fragment implements EditUserArea
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         adapter.addAll(LEVELS);
         spinnerLevel.setAdapter(adapter);
-
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        presenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        presenter.onStop();
     }
 
     @Override

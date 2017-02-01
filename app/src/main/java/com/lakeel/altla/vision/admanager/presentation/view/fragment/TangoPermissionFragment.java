@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
+import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoPermissionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoPermissionView;
 
@@ -10,8 +10,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class TangoPermissionFragment extends Fragment implements TangoPermissionView {
+public final class TangoPermissionFragment extends AbstractFragment<TangoPermissionView, TangoPermissionPresenter>
+        implements TangoPermissionView {
 
     @Inject
     TangoPermissionPresenter presenter;
@@ -36,22 +38,48 @@ public final class TangoPermissionFragment extends Fragment implements TangoPerm
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        interactionListener = InteractionListener.class.cast(context);
-
-        ActivityScopeContext.class.cast(getContext()).getActivityComponent().inject(this);
+    public TangoPermissionPresenter getPresenter() {
+        return presenter;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tango_permissions, container, false);
+    protected TangoPermissionView getViewInterface() {
+        return this;
+    }
+
+    @Override
+    protected void onInject(@NonNull ActivityComponent component) {
+        super.onInject(component);
+
+        component.inject(this);
+    }
+
+    @Override
+    protected void onAttachOverride(@NonNull Context context) {
+        super.onAttachOverride(context);
+
+        interactionListener = InteractionListener.class.cast(context);
+    }
+
+    @Override
+    protected void onDetachOverride() {
+        super.onDetachOverride();
+
+        interactionListener = null;
+    }
+
+    @Nullable
+    @Override
+    protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
+                                    @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_tango_permissions, container, false);
+    }
+
+    @Override
+    protected void onBindView(@NonNull View view) {
+        super.onBindView(view);
+
         ButterKnife.bind(this, view);
-
-        presenter.onCreateView(this);
-
-        return view;
     }
 
     @Override

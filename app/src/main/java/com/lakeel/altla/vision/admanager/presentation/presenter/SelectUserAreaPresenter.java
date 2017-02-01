@@ -1,7 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
@@ -22,9 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class SelectUserAreaPresenter {
-
-    private static final Log LOG = LogFactory.getLog(SelectUserAreaPresenter.class);
+public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaView> {
 
     private final List<UserAreaItemModel> items = new ArrayList<>();
 
@@ -36,19 +32,16 @@ public final class SelectUserAreaPresenter {
     @Inject
     GetPlaceUseCase getPlaceUseCase;
 
-    private SelectUserAreaView view;
-
     @Inject
     public SelectUserAreaPresenter() {
     }
 
-    public void onCreateView(@NonNull SelectUserAreaView view) {
-        this.view = view;
-    }
-
+    @Override
     public void onStart() {
+        super.onStart();
+
         items.clear();
-        view.updateItems();
+        getView().updateItems();
 
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
@@ -65,15 +58,18 @@ public final class SelectUserAreaPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
-                    view.updateItem(items.size() - 1);
+                    getView().updateItem(items.size() - 1);
                 }, e -> {
-                    LOG.e("Failed.", e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e("Failed.", e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
     }
 
+    @Override
     public void onStop() {
+        super.onStop();
+
         compositeDisposable.clear();
     }
 
@@ -87,7 +83,7 @@ public final class SelectUserAreaPresenter {
 
     public void onClickItem(int position) {
         UserAreaItemModel model = items.get(position);
-        view.onItemSelected(model.areaId);
+        getView().onItemSelected(model.areaId);
     }
 
     public final class ItemPresenter {

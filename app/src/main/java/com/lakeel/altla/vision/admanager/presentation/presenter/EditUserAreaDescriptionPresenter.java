@@ -2,8 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
@@ -13,7 +11,9 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
@@ -22,9 +22,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class EditUserAreaDescriptionPresenter {
+public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUserAreaDescriptionView> {
 
-    private static final Log LOG = LogFactory.getLog(EditUserAreaDescriptionModel.class);
+    private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
     @Inject
     FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
@@ -40,8 +40,6 @@ public final class EditUserAreaDescriptionPresenter {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private EditUserAreaDescriptionView view;
-
     private String areaDescriptionId;
 
     private EditUserAreaDescriptionModel model;
@@ -52,15 +50,31 @@ public final class EditUserAreaDescriptionPresenter {
     public EditUserAreaDescriptionPresenter() {
     }
 
-    public void onCreate(@NonNull String areaDescriptionId) {
+    @NonNull
+    public static Bundle createArguments(String areaDescriptionId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_AREA_DESCRIPTION_ID, areaDescriptionId);
+        return bundle;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        super.onCreate(arguments, savedInstanceState);
+
+        if (arguments == null) throw new IllegalStateException("Arguments must be not null.");
+
+        String areaDescriptionId = arguments.getString(ARG_AREA_DESCRIPTION_ID);
+        if (areaDescriptionId == null) {
+            throw new IllegalStateException(String.format("Argument '%s' must be not null.", ARG_AREA_DESCRIPTION_ID));
+        }
+
         this.areaDescriptionId = areaDescriptionId;
     }
 
-    public void onCreateView(@NonNull EditUserAreaDescriptionView view) {
-        this.view = view;
-    }
-
+    @Override
     public void onStart() {
+        super.onStart();
+
         processing = true;
 
         Disposable disposable = findUserAreaDescriptionUseCase
@@ -90,14 +104,17 @@ public final class EditUserAreaDescriptionPresenter {
                 .doOnDispose(() -> processing = false)
                 .subscribe(model -> {
                     this.model = model;
-                    view.showModel(model);
+                    getView().showModel(model);
                 }, e -> {
-                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                 });
         compositeDisposable.add(disposable);
     }
 
+    @Override
     public void onStop() {
+        super.onStop();
+
         compositeDisposable.clear();
     }
 
@@ -106,19 +123,19 @@ public final class EditUserAreaDescriptionPresenter {
         processing = true;
 
         model.name = name;
-        view.hideNameError();
+        getView().hideNameError();
 
         // Don't save the empty name.
         if (name == null || name.length() == 0) {
             processing = false;
-            view.showNameError(R.string.input_error_name_required);
+            getView().showNameError(R.string.input_error_name_required);
         } else {
             saveUserAreaDescription();
         }
     }
 
     public void onClickImageButtonSelectArea() {
-        view.showSelectUserAreaView();
+        getView().showSelectUserAreaView();
     }
 
     public void onUserAreaSelected(String areaId) {
@@ -131,9 +148,9 @@ public final class EditUserAreaDescriptionPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userArea -> {
                     model.areaName = userArea.name;
-                    view.updateAreaName(model.areaName);
+                    getView().updateAreaName(model.areaName);
                 }, e -> {
-                    LOG.e(String.format("Failed: areaId = %s", areaId), e);
+                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
                 });
         compositeDisposable.add(disposable);
     }
@@ -152,8 +169,8 @@ public final class EditUserAreaDescriptionPresenter {
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    LOG.e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
-                    view.showSnackbar(R.string.snackbar_failed);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getView().showSnackbar(R.string.snackbar_failed);
                 });
         compositeDisposable.add(disposable);
     }
