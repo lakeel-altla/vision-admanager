@@ -42,7 +42,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
-    private final List<UserAreaDescriptionItemModel> itemModels = new ArrayList<>();
+    private final List<UserAreaDescriptionItemModel> items = new ArrayList<>();
 
     private long prevBytesTransferred;
 
@@ -54,15 +54,16 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     protected void onStartOverride() {
         super.onStartOverride();
 
+        items.clear();
+        getView().updateItems();
+
         Disposable disposable = findAllUserAreaDescriptionsUseCase
                 .execute()
                 .map(UserAreaDescriptionItemModelMapper::map)
-                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(itemModels -> {
-                    this.itemModels.clear();
-                    this.itemModels.addAll(itemModels);
-                    getView().updateItems();
+                .subscribe(model -> {
+                    items.add(model);
+                    getView().updateItem(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().showSnackbar(R.string.snackbar_failed);
@@ -75,7 +76,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     }
 
     public void onDelete(int position) {
-        String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+        String areaDescriptionId = items.get(position).areaDescriptionId;
 
         Disposable disposable = deleteUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
@@ -83,7 +84,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                 .doOnSubscribe(_subscription -> getView().showDeleteProgressDialog())
                 .doOnTerminate(() -> getView().hideDeleteProgressDialog())
                 .subscribe(() -> {
-                    itemModels.remove(position);
+                    items.remove(position);
 
                     getView().updateItemRemoved(position);
                     getView().showSnackbar(R.string.snackbar_done);
@@ -95,7 +96,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     }
 
     public int getItemCount() {
-        return itemModels.size();
+        return items.size();
     }
 
     public ItemPresenter createItemPresenter() {
@@ -111,12 +112,12 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onBind(int position) {
-            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = items.get(position);
             itemView.showModel(itemModel);
         }
 
         public void onClickImageButtonImport(int position) {
-            String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+            String areaDescriptionId = items.get(position).areaDescriptionId;
 
             Disposable disposable = getAreaDescriptionCacheFileUseCase
                     .execute(areaDescriptionId)
@@ -129,7 +130,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onClickImageButtonUpload(int position) {
-            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = items.get(position);
 
             prevBytesTransferred = 0;
 
@@ -155,7 +156,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onClickImageButtonDownload(int position) {
-            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = items.get(position);
 
             prevBytesTransferred = 0;
 
@@ -181,7 +182,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onClickImageButtonSynced(int position) {
-            UserAreaDescriptionItemModel itemModel = itemModels.get(position);
+            UserAreaDescriptionItemModel itemModel = items.get(position);
 
             Disposable disposable = deleteAreaDescriptionCacheUseCase
                     .execute(itemModel.areaDescriptionId)
@@ -199,7 +200,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onClickImageButtonEdit(int position) {
-            String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+            String areaDescriptionId = items.get(position).areaDescriptionId;
 
             getView().showEditUserAreaDescriptionFragment(areaDescriptionId);
         }

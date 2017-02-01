@@ -41,7 +41,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     @Inject
     TangoWrapper tangoWrapper;
 
-    private final List<TangoAreaDescriptionItemModel> itemModels = new ArrayList<>();
+    private final List<TangoAreaDescriptionItemModel> items = new ArrayList<>();
 
     private String exportingAreaDescriptionId;
 
@@ -54,12 +54,10 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         Disposable disposable = findAllTangoAreaDescriptionsUseCase
                 .execute(tangoWrapper.getTango())
                 .map(TangoAreaDescriptionItemModelMapper::map)
-                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(itemModels -> {
-                    this.itemModels.clear();
-                    this.itemModels.addAll(itemModels);
-                    getView().updateItems();
+                .subscribe(model -> {
+                    items.add(model);
+                    getView().updateItem(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
                 });
@@ -69,6 +67,9 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     @Override
     protected void onResumeOverride() {
         super.onResumeOverride();
+
+        items.clear();
+        getView().updateItems();
 
         tangoWrapper.addOnTangoReadyListener(this);
     }
@@ -100,13 +101,13 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     }
 
     public void onDelete(int position) {
-        String areaDescriptionId = itemModels.get(position).areaDescriptionId;
+        String areaDescriptionId = items.get(position).areaDescriptionId;
 
         Disposable disposable = deleteTangoAreaDescriptionUseCase
                 .execute(tangoWrapper.getTango(), areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    itemModels.remove(position);
+                    items.remove(position);
                     getView().updateItemRemoved(position);
                     getView().showSnackbar(R.string.snackbar_done);
                 }, e -> {
@@ -117,7 +118,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     }
 
     public int getItemCount() {
-        return itemModels.size();
+        return items.size();
     }
 
     public ItemPresenter createItemPresenter() {
@@ -133,7 +134,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         }
 
         public void onBind(int position) {
-            TangoAreaDescriptionItemModel itemModel = itemModels.get(position);
+            TangoAreaDescriptionItemModel itemModel = items.get(position);
             itemView.showModel(itemModel);
         }
 
@@ -142,7 +143,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     .execute()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
-                        exportingAreaDescriptionId = itemModels.get(position).areaDescriptionId;
+                        exportingAreaDescriptionId = items.get(position).areaDescriptionId;
                         getView().showExportActivity(exportingAreaDescriptionId, directory);
                     });
             manageDisposable(disposable);

@@ -9,6 +9,8 @@ public interface TangoAreaDescriptionListView {
 
     void updateItems();
 
+    void updateItem(int position);
+
     void updateItemRemoved(int position);
 
     void showSnackbar(@StringRes int resId);
