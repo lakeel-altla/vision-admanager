@@ -71,6 +71,11 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         return new ItemPresenter();
     }
 
+    public void onClickItem(int position) {
+        UserAreaItemModel model = items.get(position);
+        getView().onItemSelected(model.areaId);
+    }
+
     public final class ItemPresenter {
 
         private UserAreaItemView itemView;
@@ -82,11 +87,6 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         public void onBind(int position) {
             UserAreaItemModel model = items.get(position);
             itemView.onModelUpdated(model);
-        }
-
-        public void onClickImageButtonEdit(int position) {
-            UserAreaItemModel model = items.get(position);
-            getView().onShowEditItemView(model.areaId);
         }
     }
 }

@@ -12,6 +12,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.ShowUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -54,6 +55,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaDescriptionListFragment.InteractionListener,
                    EditUserAreaDescriptionFragment.InteractionListener,
                    UserAreaListFragment.InteractionListener,
+                   ShowUserAreaFragment.InteractionListener,
                    EditUserAreaFragment.InteractionListener,
                    SelectUserAreaFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
@@ -243,7 +245,12 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onEditUserArea(String areaId) {
+    public void onShowUserArea(@NonNull String areaId) {
+        showViewUserAreaFragment(areaId);
+    }
+
+    @Override
+    public void onEditUserArea(@NonNull String areaId) {
         showEditUserAreaFragment(areaId);
     }
 
@@ -321,6 +328,13 @@ public final class MainActivity extends AppCompatActivity
         toolbar.setVisibility(View.VISIBLE);
 
         EditUserAreaDescriptionFragment fragment = EditUserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showViewUserAreaFragment(@NonNull String areaId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        ShowUserAreaFragment fragment = ShowUserAreaFragment.newInstance(areaId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 

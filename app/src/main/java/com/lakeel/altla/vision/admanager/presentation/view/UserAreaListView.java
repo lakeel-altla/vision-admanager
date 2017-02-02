@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 public interface UserAreaListView {
@@ -9,7 +8,7 @@ public interface UserAreaListView {
 
     void onItemsUpdated();
 
-    void onShowEditItemView(@NonNull String areaId);
+    void onItemSelected(String areaId);
 
     void onSnackbar(@StringRes int resId);
 }

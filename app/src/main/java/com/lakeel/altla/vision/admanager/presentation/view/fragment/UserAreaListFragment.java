@@ -121,8 +121,8 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     }
 
     @Override
-    public void onShowEditItemView(@NonNull String areaId) {
-        interactionListener.onEditUserArea(areaId);
+    public void onItemSelected(String areaId) {
+        interactionListener.onShowUserArea(areaId);
     }
 
     @Override
@@ -134,6 +134,6 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
         void onCreateUserArea();
 
-        void onEditUserArea(String areaId);
+        void onShowUserArea(@NonNull String areaId);
     }
 }

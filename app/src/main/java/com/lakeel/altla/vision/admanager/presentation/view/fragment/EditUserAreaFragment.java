@@ -9,7 +9,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.EditUserAreaPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
 
 import android.app.Activity;
@@ -208,7 +208,7 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     }
 
     @Override
-    public void onModelUpdated(@NonNull EditUserAreaModel model) {
+    public void onModelUpdated(@NonNull UserAreaModel model) {
         onAreaIdUpdated(model.areaId);
         onCreatedAtUpdated(model.createdAt);
 

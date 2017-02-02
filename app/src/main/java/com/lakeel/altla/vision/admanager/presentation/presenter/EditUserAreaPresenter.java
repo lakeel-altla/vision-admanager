@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.EditUserAreaModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
 import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
@@ -39,7 +39,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
 
     private String areaId;
 
-    private EditUserAreaModel model;
+    private UserAreaModel model;
 
     private boolean creatingNew;
 
@@ -100,7 +100,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
             manageDisposable(disposable);
         } else {
             creatingNew = true;
-            model = new EditUserAreaModel();
+            model = new UserAreaModel();
 
             getView().onModelUpdated(model);
         }

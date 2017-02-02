@@ -14,11 +14,12 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaListAdapter.ViewHolder> {
 
     private final UserAreaListPresenter presenter;
+
+    private RecyclerView recyclerView;
 
     private LayoutInflater inflater;
 
@@ -27,11 +28,29 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
     }
 
     @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        this.recyclerView = null;
+    }
+
+    @Override
     public final ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
         View itemView = inflater.inflate(R.layout.item_user_area, parent, false);
+        itemView.setOnClickListener(v -> {
+            if (recyclerView != null) {
+                int position = recyclerView.getChildAdapterPosition(v);
+                presenter.onClickItem(position);
+            }
+        });
         return new ViewHolder(itemView);
     }
 
@@ -80,11 +99,6 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
             textViewPlaceName.setText(model.placeName);
             textViewPlaceAddress.setText(model.placeAddress);
             textViewLevel.setText(model.level);
-        }
-
-        @OnClick(R.id.image_button_edit)
-        void onClickImageButtonEdit() {
-            itemPresenter.onClickImageButtonEdit(getAdapterPosition());
         }
     }
 }

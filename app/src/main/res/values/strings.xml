@@ -51,7 +51,7 @@
     <string name="label_level">Level</string>
     <string name="label_created_at">Created At</string>
 
-    <string name="hint_edit_name">Name</string>
+    <string name="hint_edit_name">Type the name</string>
     <string name="hint_edit_place">Place</string>
 
     <string name="label_id">ID</string>
@@ -60,5 +60,9 @@
     <string name="title_select_user_area">Select Area</string>
     <string name="label_area">Area</string>
     <string name="title_edit_user_area_description">Edit User Area Description</string>
+    <string name="label_name">Name</string>
+    <string name="action_edit_area">Edit area...</string>
+
+    <string name="dummy_abc">ABCDEFG</string>
 
 </resources>

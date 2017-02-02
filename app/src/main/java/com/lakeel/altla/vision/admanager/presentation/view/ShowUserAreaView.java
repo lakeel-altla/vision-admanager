@@ -5,15 +5,11 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaMo
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-public interface EditUserAreaView {
-
-    void onAreaIdUpdated(String areaId);
-
-    void onCreatedAtUpdated(long createdAt);
+public interface ShowUserAreaView {
 
     void onModelUpdated(@NonNull UserAreaModel model);
 
-    void onSnackbar(@StringRes int resId);
+    void onEdit(@NonNull String areaId);
 
-    void onShowPlacePicker();
+    void onSnackbar(@StringRes int resId);
 }
