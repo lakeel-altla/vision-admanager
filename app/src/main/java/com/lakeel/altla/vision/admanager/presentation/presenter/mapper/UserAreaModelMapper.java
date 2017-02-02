@@ -5,9 +5,9 @@ import com.lakeel.altla.vision.domain.model.UserArea;
 
 import android.support.annotation.NonNull;
 
-public final class EditUserAreaModelMapper {
+public final class UserAreaModelMapper {
 
-    private EditUserAreaModelMapper() {
+    private UserAreaModelMapper() {
     }
 
     @NonNull

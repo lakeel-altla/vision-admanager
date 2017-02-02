@@ -4,7 +4,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.EditUserAreaModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
 import com.lakeel.altla.vision.domain.model.UserArea;
@@ -74,7 +74,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
 
             Disposable disposable = findUserAreaUseCase
                     .execute(areaId)
-                    .map(EditUserAreaModelMapper::map)
+                    .map(UserAreaModelMapper::map)
                     .flatMapObservable(model -> {
                         if (model.placeId != null) {
                             return getPlaceUseCase.execute(model.placeId)

@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.EditUserAreaModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.ShowUserAreaView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -60,7 +60,7 @@ public final class ShowUserAreaPresenter extends BasePresenter<ShowUserAreaView>
 
         Disposable disposable = findUserAreaUseCase
                 .execute(areaId)
-                .map(EditUserAreaModelMapper::map)
+                .map(UserAreaModelMapper::map)
                 .flatMapObservable(model -> {
                     if (model.placeId != null) {
                         return getPlaceUseCase.execute(model.placeId)
