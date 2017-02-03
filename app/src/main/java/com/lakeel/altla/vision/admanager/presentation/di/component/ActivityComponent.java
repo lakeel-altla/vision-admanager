@@ -8,12 +8,13 @@ import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.ShowUserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListInAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.ShowUserAreaFragment;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
@@ -44,4 +45,6 @@ public interface ActivityComponent {
     void inject(EditUserAreaFragment fragment);
 
     void inject(SelectUserAreaFragment fragment);
+
+    void inject(UserAreaDescriptionListInAreaFragment fragment);
 }

@@ -11,5 +11,7 @@ public interface ShowUserAreaView {
 
     void onEdit(@NonNull String areaId);
 
+    void onShowUserAreaDescriptionsInArea(@NonNull String areaId);
+
     void onSnackbar(@StringRes int resId);
 }

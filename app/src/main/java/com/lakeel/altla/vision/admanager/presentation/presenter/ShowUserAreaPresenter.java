@@ -87,4 +87,8 @@ public final class ShowUserAreaPresenter extends BasePresenter<ShowUserAreaView>
     public void onEdit() {
         getView().onEdit(areaId);
     }
+
+    public void onClickButtonUserAreaDescriptionsInArea() {
+        getView().onShowUserAreaDescriptionsInArea(areaId);
+    }
 }

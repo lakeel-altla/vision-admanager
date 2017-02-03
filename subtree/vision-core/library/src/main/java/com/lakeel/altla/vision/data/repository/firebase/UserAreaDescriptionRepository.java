@@ -23,6 +23,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     private static final String FIELD_NAME = "name";
 
+    private static final String FIELD_AREA_ID = "areaId";
+
     public UserAreaDescriptionRepository(FirebaseDatabase database) {
         super(database);
     }
@@ -43,6 +45,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     public void find(String userId, String areaDescriptionId, OnSuccessListener<UserAreaDescription> onSuccessListener,
                      OnFailureListener onFailureListener) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         getDatabase().getReference()
@@ -68,6 +71,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     public void findAll(String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
                         OnFailureListener onFailureListener) {
+        if (userId == null) throw new ArgumentNullException("userId");
+
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
@@ -75,12 +80,39 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserAreaDescription> userAreaDescriptions =
-                                     new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 userAreaDescriptions.add(map(userId, child));
+                                 list.add(map(userId, child));
                              }
-                             if (onSuccessListener != null) onSuccessListener.onSuccess(userAreaDescriptions);
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
+
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
+    public void findByAreaId(String userId, String areaId,
+                             OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+                             OnFailureListener onFailureListener) {
+        if (userId == null) throw new ArgumentNullException("userId");
+        if (areaId == null) throw new ArgumentNullException("areaId");
+
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userId)
+                     .orderByChild(FIELD_AREA_ID)
+                     .equalTo(areaId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(map(userId, child));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
 
                          @Override
@@ -91,6 +123,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
     }
 
     public void delete(String userId, String areaDescriptionId) {
+        if (userId == null) throw new ArgumentNullException("userId");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
         getDatabase().getReference()

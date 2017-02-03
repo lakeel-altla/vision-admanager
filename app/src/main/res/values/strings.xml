@@ -64,5 +64,7 @@
     <string name="action_edit_area">Edit area...</string>
 
     <string name="dummy_abc">ABCDEFG</string>
+    <string name="title_format_user_area_description_list_in_area">User area descriptions - %s</string>
+    <string name="button_user_area_description_in_area">Show user area descriptions in this area</string>
 
 </resources>

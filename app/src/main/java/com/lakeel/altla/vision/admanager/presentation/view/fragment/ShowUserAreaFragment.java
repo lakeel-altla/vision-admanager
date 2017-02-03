@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaView, ShowUserAreaPresenter>
         implements ShowUserAreaView {
@@ -152,12 +153,24 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
     }
 
     @Override
+    public void onShowUserAreaDescriptionsInArea(@NonNull String areaId) {
+        interactionListener.onShowUserAreaDescriptionsInArea(areaId);
+    }
+
+    @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.button_user_area_descriptions_in_area)
+    void onClickButtonUserAreaDescriptionsInArea() {
+        presenter.onClickButtonUserAreaDescriptionsInArea();
     }
 
     public interface InteractionListener {
 
         void onEditUserArea(@NonNull String areaId);
+
+        void onShowUserAreaDescriptionsInArea(@NonNull String areaId);
     }
 }
