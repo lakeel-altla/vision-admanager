@@ -108,6 +108,9 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
         ButterKnife.bind(this, view);
 
         setHasOptionsMenu(true);
+
+        // Reset the title of the previous view.
+        getActivity().setTitle(null);
     }
 
     @Override
@@ -139,6 +142,8 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
         textViewPlaceName.setText(model.placeName);
         textViewPlaceAddress.setText(model.placeAddress);
         textViewLevel.setText(String.valueOf(model.level));
+
+        getActivity().setTitle(model.name);
     }
 
     @Override
