@@ -6,6 +6,7 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
@@ -123,6 +124,11 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
 
     public ItemPresenter createItemPresenter() {
         return new ItemPresenter();
+    }
+
+    public void onClickItem(int position) {
+        TangoAreaDescriptionItemModel model = items.get(position);
+        getView().onItemSelected(model.areaDescriptionId);
     }
 
     public final class ItemPresenter {

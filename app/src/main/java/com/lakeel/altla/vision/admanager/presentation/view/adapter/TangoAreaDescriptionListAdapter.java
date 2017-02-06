@@ -21,10 +21,24 @@ public final class TangoAreaDescriptionListAdapter
 
     private final TangoAreaDescriptionListPresenter presenter;
 
+    private RecyclerView recyclerView;
+
     private LayoutInflater inflater;
 
     public TangoAreaDescriptionListAdapter(@NonNull TangoAreaDescriptionListPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        this.recyclerView = null;
     }
 
     @Override
@@ -34,6 +48,12 @@ public final class TangoAreaDescriptionListAdapter
         }
 
         View itemView = inflater.inflate(R.layout.item_tango_area_description, parent, false);
+        itemView.setOnClickListener(v -> {
+            if (recyclerView != null) {
+                int position = recyclerView.getChildAdapterPosition(itemView);
+                presenter.onClickItem(position);
+            }
+        });
         return new ViewHolder(itemView);
     }
 

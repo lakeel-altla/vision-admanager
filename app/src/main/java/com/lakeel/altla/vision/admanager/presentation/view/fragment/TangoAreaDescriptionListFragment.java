@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionL
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoAreaDescriptionListAdapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,6 +39,8 @@ public final class TangoAreaDescriptionListFragment
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private InteractionListener interactionListener;
+
     private MaterialDialog materialDialog;
 
     public static TangoAreaDescriptionListFragment newInstance() {
@@ -52,6 +55,20 @@ public final class TangoAreaDescriptionListFragment
     @Override
     protected TangoAreaDescriptionListView getViewInterface() {
         return this;
+    }
+
+    @Override
+    protected void onAttachOverride(@NonNull Context context) {
+        super.onAttachOverride(context);
+
+        interactionListener = InteractionListener.class.cast(context);
+    }
+
+    @Override
+    protected void onDetachOverride() {
+        super.onDetachOverride();
+
+        interactionListener = null;
     }
 
     @Override
@@ -105,6 +122,11 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
+    public void onItemSelected(@NonNull String areaDescriptionId) {
+        interactionListener.onShowTangoAreaDescriptionView(areaDescriptionId);
+    }
+
+    @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
@@ -130,5 +152,10 @@ public final class TangoAreaDescriptionListFragment
                 .build();
 
         materialDialog.show();
+    }
+
+    public interface InteractionListener {
+
+        void onShowTangoAreaDescriptionView(@NonNull String areaDescriptionId);
     }
 }

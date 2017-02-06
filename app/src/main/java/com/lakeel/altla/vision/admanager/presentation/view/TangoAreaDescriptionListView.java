@@ -13,6 +13,8 @@ public interface TangoAreaDescriptionListView {
 
     void onItemRemoved(int position);
 
+    void onItemSelected(@NonNull String areaDescriptionId);
+
     void onSnackbar(@StringRes int resId);
 
     void onShowTangoAreaDescriptionExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);

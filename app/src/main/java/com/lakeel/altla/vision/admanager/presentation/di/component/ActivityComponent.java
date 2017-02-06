@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseReposito
 import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
@@ -34,6 +35,8 @@ public interface ActivityComponent {
     void inject(TangoPermissionFragment fragment);
 
     void inject(TangoAreaDescriptionListFragment fragment);
+
+    void inject(TangoAreaDescriptionFragment fragment);
 
     void inject(UserAreaDescriptionListFragment fragment);
 

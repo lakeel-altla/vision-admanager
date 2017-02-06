@@ -10,6 +10,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
@@ -54,6 +55,8 @@ public final class MainActivity extends AppCompatActivity
                    ActivityScopeContext,
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
+                   TangoAreaDescriptionListFragment.InteractionListener,
+                   TangoAreaDescriptionFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
                    UserAreaDescriptionFragment.InteractionListener,
                    UserAreaDescriptionEditFragment.InteractionListener,
@@ -234,6 +237,21 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
+        showTangoAreaDescriptionView(areaDescriptionId);
+    }
+
+    @Override
+    public void onShowTangoAreaDescriptionEditView(@NonNull String areaDescriptionId) {
+        showTangoAreaDescriptionEditFragment(areaDescriptionId);
+    }
+
+    @Override
+    public void onCloseTangoAreaDescriptionView() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
     public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
         showUserAreaDescriptionFragment(areaDescriptionId);
     }
@@ -341,6 +359,19 @@ public final class MainActivity extends AppCompatActivity
             fragment = UserAreaDescriptionListFragment.newInstance();
             replaceFragment(fragment);
         }
+    }
+
+    private void showTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        TangoAreaDescriptionFragment fragment = TangoAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showTangoAreaDescriptionEditFragment(@NonNull String areaDescriptionId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        // TODO
     }
 
     private void showUserAreaDescriptionFragment(@NonNull String areaDescriptionId) {
