@@ -93,7 +93,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     UserAreaDescriptionEditModel model = new UserAreaDescriptionEditModel();
                     model.areaDescriptionId = areaDescriptionId;
                     model.name = userAreaDescription.name;
-                    model.creationTime = userAreaDescription.creationTime;
+                    model.creationTime = userAreaDescription.createdAt;
                     model.areaId = userAreaDescription.areaId;
                     return model;
                 })
@@ -163,7 +163,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         userAreaDescription.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         userAreaDescription.areaDescriptionId = areaDescriptionId;
         userAreaDescription.name = model.name;
-        userAreaDescription.creationTime = model.creationTime;
+        userAreaDescription.createdAt = model.creationTime;
         userAreaDescription.areaId = model.areaId;
 
         Disposable disposable = saveUserAreaDescriptionUseCase

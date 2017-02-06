@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
@@ -22,9 +21,6 @@ public final class FindAllUserAreaDescriptionsUseCase {
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
-    AreaDescriptionCacheRepository areaDescriptionCacheRepository;
-
-    @Inject
     public FindAllUserAreaDescriptionsUseCase() {
     }
 
@@ -37,9 +33,6 @@ public final class FindAllUserAreaDescriptionsUseCase {
         return Observable.<UserAreaDescription>create(e -> {
             userAreaDescriptionRepository.findAll(userId, userAreaDescriptions -> {
                 for (UserAreaDescription userAreaDescription : userAreaDescriptions) {
-                    userAreaDescription.fileCached = areaDescriptionCacheRepository.exists(
-                            userAreaDescription.areaDescriptionId);
-
                     e.onNext(userAreaDescription);
                 }
 

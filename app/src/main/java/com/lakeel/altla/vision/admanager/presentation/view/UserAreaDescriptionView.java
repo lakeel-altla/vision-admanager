@@ -13,6 +13,18 @@ public interface UserAreaDescriptionView {
 
     void onShowImportActivity(File file);
 
+    void onShowProgressDialog(@StringRes int messageResId);
+
+    void onProgressUpdated(long totalBytes, long increment);
+
+    void onHideProgressDialog();
+
+    void onUpdateUploadMenu(boolean enabled);
+
+    void onUpdateDownloadMenu(boolean enabled);
+
+    void onUpdateDeleteCacheMenu(boolean enabled);
+
     void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
 
     void onShowDeleteConfirmationDialog();

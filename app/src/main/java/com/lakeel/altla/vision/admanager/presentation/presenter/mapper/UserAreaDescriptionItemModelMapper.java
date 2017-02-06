@@ -15,8 +15,6 @@ public final class UserAreaDescriptionItemModelMapper {
         UserAreaDescriptionItemModel model = new UserAreaDescriptionItemModel();
         model.areaDescriptionId = userAreaDescription.areaDescriptionId;
         model.name = userAreaDescription.name;
-        model.fileCached = userAreaDescription.fileCached;
-        model.fileUploaded = userAreaDescription.fileUploaded;
         return model;
     }
 }

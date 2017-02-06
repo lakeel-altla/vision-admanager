@@ -262,6 +262,11 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onInvalidateOptionsMenu() {
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void onShowUserAreaSelectView() {
         showUserAreaSelectFragment();
     }

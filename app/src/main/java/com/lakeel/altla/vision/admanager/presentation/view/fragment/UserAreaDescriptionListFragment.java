@@ -6,7 +6,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescript
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionListAdapter;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,8 +34,6 @@ public final class UserAreaDescriptionListFragment
     RecyclerView recyclerView;
 
     private InteractionListener interactionListener;
-
-    private ProgressDialog progressDialog;
 
     public static UserAreaDescriptionListFragment newInstance() {
         return new UserAreaDescriptionListFragment();
@@ -110,33 +107,6 @@ public final class UserAreaDescriptionListFragment
     @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onShowUploadProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setMax(0);
-        progressDialog.show();
-    }
-
-    @Override
-    public void onUploadProgressUpdated(long max, long diff) {
-        if (progressDialog != null) {
-            progressDialog.setMax((int) max);
-            progressDialog.incrementProgressBy((int) diff);
-        }
-    }
-
-    @Override
-    public void onHideUploadProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.hide();
-            progressDialog = null;
-        }
     }
 
     public interface InteractionListener {

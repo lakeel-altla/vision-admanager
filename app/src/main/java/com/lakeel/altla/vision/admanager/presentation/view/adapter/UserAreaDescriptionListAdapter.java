@@ -10,12 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public final class UserAreaDescriptionListAdapter
         extends RecyclerView.Adapter<UserAreaDescriptionListAdapter.ViewHolder> {
@@ -75,15 +73,6 @@ public final class UserAreaDescriptionListAdapter
         @BindView(R.id.text_view_id)
         TextView textViewId;
 
-        @BindView(R.id.image_button_upload)
-        ImageButton imageButtonUpload;
-
-        @BindView(R.id.image_button_download)
-        ImageButton imageButtonDownload;
-
-        @BindView(R.id.image_button_synced)
-        ImageButton imageButtonSynced;
-
         private UserAreaDescriptionListPresenter.ItemPresenter itemPresenter;
 
         ViewHolder(@NonNull View itemView) {
@@ -99,33 +88,6 @@ public final class UserAreaDescriptionListAdapter
         public void onModelUpdated(@NonNull UserAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewId.setText(model.areaDescriptionId);
-
-            imageButtonUpload.setVisibility(View.GONE);
-            imageButtonDownload.setVisibility(View.GONE);
-            imageButtonSynced.setVisibility(View.GONE);
-
-            if (model.fileUploaded && model.fileCached) {
-                imageButtonSynced.setVisibility(View.VISIBLE);
-            } else if (model.fileUploaded) {
-                imageButtonDownload.setVisibility(View.VISIBLE);
-            } else if (model.fileCached) {
-                imageButtonUpload.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @OnClick(R.id.image_button_upload)
-        void onClickImageButtonUpload() {
-            itemPresenter.onClickImageButtonUpload(getAdapterPosition());
-        }
-
-        @OnClick(R.id.image_button_download)
-        void onClickImageButtonDownload() {
-            itemPresenter.onClickImageButtonDownload(getAdapterPosition());
-        }
-
-        @OnClick(R.id.image_button_synced)
-        void onClickImageButtonSynced() {
-            itemPresenter.onClickImageButtonSynced(getAdapterPosition());
         }
     }
 }

@@ -12,12 +12,9 @@ public final class UserAreaDescription {
 
     public String name;
 
-    public long creationTime;
+    public long createdAt;
 
     public boolean fileUploaded;
 
     public String areaId;
-
-    @Exclude
-    public boolean fileCached;
 }

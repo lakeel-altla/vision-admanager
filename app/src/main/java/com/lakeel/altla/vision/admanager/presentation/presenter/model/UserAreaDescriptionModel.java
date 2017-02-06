@@ -4,11 +4,15 @@ public final class UserAreaDescriptionModel {
 
     public String areaDescriptionId;
 
-    public long creationTime;
+    public long createdAt;
+
+    public boolean fileUploaded;
 
     public String name;
 
     public String areaId;
 
     public String areaName;
+
+    public boolean fileCached;
 }

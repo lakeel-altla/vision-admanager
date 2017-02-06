@@ -35,6 +35,7 @@
     <string name="progress_dialog_signin_in">Signing in...</string>
     <string name="progress_dialog_delete">Deleting...</string>
     <string name="progress_dialog_upload">Uploading...</string>
+    <string name="progress_dialog_download">Downloading...</string>
 
     <string name="snackbar_done">Done.</string>
     <string name="snackbar_failed">Failed.</string>
@@ -68,5 +69,8 @@
 
     <string name="dummy_abc">ABCDEFG</string>
     <string name="action_import">Import</string>
+    <string name="action_upload">Upload</string>
+    <string name="action_download">Download</string>
+    <string name="action_delete_cache">Delete cache</string>
 
 </resources>

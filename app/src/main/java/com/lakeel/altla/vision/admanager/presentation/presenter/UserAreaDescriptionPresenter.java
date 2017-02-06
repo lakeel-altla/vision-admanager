@@ -3,11 +3,14 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
+import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
+import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,9 +39,22 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
 
     @Inject
+    UploadUserAreaDescriptionFileUseCase uploadUserAreaDescriptionFileUseCase;
+
+    @Inject
+    DownloadUserAreaDescriptionFileUseCase downloadUserAreaDescriptionFileUseCase;
+
+    @Inject
+    DeleteAreaDescriptionCacheUseCase deleteAreaDescriptionCacheUseCase;
+
+    @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
     private String areaDescriptionId;
+
+    private UserAreaDescriptionModel model;
+
+    private long prevBytesTransferred;
 
     @Inject
     public UserAreaDescriptionPresenter() {
@@ -75,11 +91,13 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     UserAreaDescriptionModel model = new UserAreaDescriptionModel();
                     model.areaDescriptionId = areaDescriptionId;
                     model.name = userAreaDescription.name;
-                    model.creationTime = userAreaDescription.creationTime;
+                    model.createdAt = userAreaDescription.createdAt;
+                    model.fileUploaded = userAreaDescription.fileUploaded;
                     model.areaId = userAreaDescription.areaId;
                     return model;
                 })
                 .flatMap(model -> {
+                    // Resolve the area name
                     if (model.areaId != null) {
                         return findUserAreaUseCase
                                 .execute(model.areaId)
@@ -91,9 +109,19 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                         return Maybe.just(model);
                     }
                 })
-                .toSingle()
+                .flatMapSingle(model -> {
+                    // Check if the cache file exists.
+                    return getAreaDescriptionCacheFileUseCase
+                            .execute(model.areaDescriptionId)
+                            .map(file -> {
+                                model.fileCached = file.exists();
+                                return model;
+                            });
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
+                    this.model = model;
+                    updateMenus();
                     getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -106,7 +134,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getView()::onShowImportActivity, e -> {
-                    getLog().e("Failed.", e);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -114,6 +142,67 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     public void onActionEdit() {
         getView().onShowUserAreaDescriptionEditView(areaDescriptionId);
+    }
+
+    public void onActionUpload() {
+        prevBytesTransferred = 0;
+
+        Disposable disposable = uploadUserAreaDescriptionFileUseCase
+                .execute(areaDescriptionId, (totalBytes, bytesTransferred) -> {
+                    long increment = bytesTransferred - prevBytesTransferred;
+                    prevBytesTransferred = bytesTransferred;
+                    getView().onProgressUpdated(totalBytes, increment);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_upload))
+                .doOnTerminate(() -> getView().onHideProgressDialog())
+                .subscribe(() -> {
+                    model.fileUploaded = true;
+                    updateMenus();
+                    getView().onSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
+    }
+
+    public void onActionDownload() {
+        prevBytesTransferred = 0;
+
+        Disposable disposable = downloadUserAreaDescriptionFileUseCase
+                .execute(areaDescriptionId, (totalBytes, bytesTransferred) -> {
+                    long increment = bytesTransferred - prevBytesTransferred;
+                    prevBytesTransferred = bytesTransferred;
+                    getView().onProgressUpdated(totalBytes, increment);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_download))
+                .doOnTerminate(() -> getView().onHideProgressDialog())
+                .subscribe(() -> {
+                    model.fileCached = true;
+                    updateMenus();
+                    getView().onSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
+    }
+
+    public void onActionDeleteCache() {
+        Disposable disposable = deleteAreaDescriptionCacheUseCase
+                .execute(areaDescriptionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    model.fileCached = false;
+                    updateMenus();
+                    getView().onSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
     }
 
     public void onActionDelete() {
@@ -131,9 +220,15 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe(() -> {
                     getView().onDeleted();
                 }, e -> {
-                    getLog().e("Failed.", e);
+                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
+    }
+
+    private void updateMenus() {
+        getView().onUpdateUploadMenu(!model.fileUploaded && model.fileCached);
+        getView().onUpdateDownloadMenu(model.fileUploaded && !model.fileCached);
+        getView().onUpdateDeleteCacheMenu(model.fileUploaded && model.fileCached);
     }
 }

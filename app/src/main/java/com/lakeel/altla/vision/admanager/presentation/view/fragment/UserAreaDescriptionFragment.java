@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDe
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,6 +53,14 @@ public final class UserAreaDescriptionFragment
     TextView textViewAreaName;
 
     private InteractionListener interactionListener;
+
+    private boolean uploadMenuEnabled;
+
+    private boolean downloadMenuEnabled;
+
+    private boolean deleteCacheEnabled;
+
+    private ProgressDialog progressDialog;
 
     private MaterialDialog materialDialog;
 
@@ -119,10 +128,28 @@ public final class UserAreaDescriptionFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_upload).setVisible(uploadMenuEnabled);
+        menu.findItem(R.id.action_download).setVisible(downloadMenuEnabled);
+        menu.findItem(R.id.action_delete_cache).setVisible(deleteCacheEnabled);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_import:
                 presenter.onActionImport();
+                return true;
+            case R.id.action_upload:
+                presenter.onActionUpload();
+                return true;
+            case R.id.action_download:
+                presenter.onActionDownload();
+                return true;
+            case R.id.action_delete_cache:
+                presenter.onActionDeleteCache();
                 return true;
             case R.id.action_edit:
                 presenter.onActionEdit();
@@ -157,6 +184,51 @@ public final class UserAreaDescriptionFragment
     public void onShowImportActivity(@NonNull File destinationFile) {
         Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onShowProgressDialog(@StringRes int messageResId) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(messageResId));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
+    }
+
+    @Override
+    public void onProgressUpdated(long totalBytes, long increment) {
+        if (progressDialog != null) {
+            progressDialog.setMax((int) totalBytes);
+            progressDialog.incrementProgressBy((int) increment);
+        }
+    }
+
+    @Override
+    public void onHideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
+    }
+
+    @Override
+    public void onUpdateUploadMenu(boolean enabled) {
+        uploadMenuEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onUpdateDownloadMenu(boolean enabled) {
+        downloadMenuEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onUpdateDeleteCacheMenu(boolean enabled) {
+        deleteCacheEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
@@ -196,5 +268,7 @@ public final class UserAreaDescriptionFragment
         void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
 
         void onCloseUserAreaDescriptionView();
+
+        void onInvalidateOptionsMenu();
     }
 }

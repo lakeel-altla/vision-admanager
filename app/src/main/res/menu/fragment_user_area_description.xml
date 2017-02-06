@@ -7,6 +7,21 @@
           android:title="@string/action_import"
           app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/action_upload"
+          android:icon="@drawable/ic_cloud_upload_white_24dp"
+          android:title="@string/action_upload"
+          app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_download"
+          android:icon="@drawable/ic_cloud_download_white_24dp"
+          android:title="@string/action_download"
+          app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_delete_cache"
+          android:icon="@drawable/ic_cloud_off_white_24dp"
+          android:title="@string/action_delete_cache"
+          app:showAsAction="ifRoom"/>
+
     <item android:id="@+id/action_edit"
           android:icon="@drawable/ic_mode_edit_white_24dp"
           android:title="@string/action_edit"

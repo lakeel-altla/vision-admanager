@@ -12,10 +12,4 @@ public interface UserAreaDescriptionListView {
     void onItemSelected(@NonNull String areaDescriptionId);
 
     void onSnackbar(@StringRes int resId);
-
-    void onShowUploadProgressDialog();
-
-    void onUploadProgressUpdated(long max, long diff);
-
-    void onHideUploadProgressDialog();
 }
