@@ -2,9 +2,12 @@ package com.lakeel.altla.vision.admanager.presentation.view;
 
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 public interface UserAreaDescriptionEditView {
+
+    void onUpdateTitle(@NonNull String title);
 
     void onAreaNameUpdated(String areaName);
 

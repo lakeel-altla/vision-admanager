@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
@@ -43,8 +42,6 @@ public final class UserAreaDescriptionListFragment
     private InteractionListener interactionListener;
 
     private ProgressDialog progressDialog;
-
-    private MaterialDialog materialDialog;
 
     public static UserAreaDescriptionListFragment newInstance() {
         return new UserAreaDescriptionListFragment();
@@ -120,11 +117,6 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void onItemRemoved(int position) {
-        recyclerView.getAdapter().notifyItemRemoved(position);
-    }
-
-    @Override
     public void onItemSelected(@NonNull String areaDescriptionId) {
         interactionListener.onShowUserAreaDescriptionView(areaDescriptionId);
     }
@@ -165,45 +157,6 @@ public final class UserAreaDescriptionListFragment
             progressDialog.hide();
             progressDialog = null;
         }
-    }
-
-    @Override
-    public void onShowDeleteProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getString(R.string.progress_dialog_delete));
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }
-
-    @Override
-    public void onHideDeleteProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.hide();
-            progressDialog = null;
-        }
-    }
-
-    @Override
-    public void onShowDeleteConfirmationDialog(int position) {
-        if (materialDialog != null && materialDialog.isShowing()) {
-            // Skip to protect against double taps.
-            return;
-        }
-
-        materialDialog = new MaterialDialog.Builder(getContext())
-                .content(R.string.dialog_content_confirm_delete)
-                .positiveText(R.string.dialog_ok)
-                .negativeText(R.string.dialog_cancel)
-                .onPositive((dialog, which) -> presenter.onDelete(position))
-                .build();
-
-        materialDialog.show();
-    }
-
-    @Override
-    public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
-        interactionListener.onShowUserAreaDescriptionView(areaDescriptionId);
     }
 
     public interface InteractionListener {

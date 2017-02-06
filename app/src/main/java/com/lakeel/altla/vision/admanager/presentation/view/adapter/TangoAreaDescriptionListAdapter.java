@@ -53,7 +53,7 @@ public final class TangoAreaDescriptionListAdapter
         TextView textViewName;
 
         @BindView(R.id.text_view_id)
-        TextView textViewUuid;
+        TextView textViewId;
 
         private TangoAreaDescriptionListPresenter.ItemPresenter itemPresenter;
 
@@ -69,7 +69,7 @@ public final class TangoAreaDescriptionListAdapter
         @Override
         public void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
-            textViewUuid.setText(model.areaDescriptionId);
+            textViewId.setText(model.areaDescriptionId);
         }
 
         @OnClick(R.id.image_button_export)

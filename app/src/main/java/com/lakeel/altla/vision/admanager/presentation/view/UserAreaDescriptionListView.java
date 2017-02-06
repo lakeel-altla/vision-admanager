@@ -11,8 +11,6 @@ public interface UserAreaDescriptionListView {
 
     void onItemInserted(int position);
 
-    void onItemRemoved(int position);
-
     void onItemSelected(@NonNull String areaDescriptionId);
 
     void onSnackbar(@StringRes int resId);
@@ -24,12 +22,4 @@ public interface UserAreaDescriptionListView {
     void onUploadProgressUpdated(long max, long diff);
 
     void onHideUploadProgressDialog();
-
-    void onShowDeleteProgressDialog();
-
-    void onHideDeleteProgressDialog();
-
-    void onShowDeleteConfirmationDialog(int position);
-
-    void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId);
 }

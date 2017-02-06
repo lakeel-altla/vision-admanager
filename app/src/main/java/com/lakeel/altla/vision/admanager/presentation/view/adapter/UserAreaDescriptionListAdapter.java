@@ -132,15 +132,5 @@ public final class UserAreaDescriptionListAdapter
         void onClickImageButtonSynced() {
             itemPresenter.onClickImageButtonSynced(getAdapterPosition());
         }
-
-        @OnClick(R.id.image_button_edit)
-        void onClickImageButtonEdit() {
-            itemPresenter.onClickImageButtonEdit(getAdapterPosition());
-        }
-
-        @OnClick(R.id.image_button_delete)
-        void onClickImageButtonDelete() {
-            itemPresenter.onClickImageButtonDelete(getAdapterPosition());
-        }
     }
 }

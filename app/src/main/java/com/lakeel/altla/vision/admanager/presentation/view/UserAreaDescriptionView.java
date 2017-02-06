@@ -9,5 +9,11 @@ public interface UserAreaDescriptionView {
 
     void onModelUpdated(@NonNull UserAreaDescriptionModel model);
 
+    void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
+
+    void onShowDeleteConfirmationDialog();
+
+    void onDeleted();
+
     void onSnackbar(@StringRes int resId);
 }

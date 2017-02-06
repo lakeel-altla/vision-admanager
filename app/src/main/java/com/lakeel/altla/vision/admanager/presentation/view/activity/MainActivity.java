@@ -239,6 +239,16 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId) {
+        showUserAreaDescriptionEditFragment(areaDescriptionId);
+    }
+
+    @Override
+    public void onCloseUserAreaDescriptionView() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
     public void onShowUserAreaSelectView() {
         showUserAreaSelectFragment();
     }

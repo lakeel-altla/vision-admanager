@@ -1,7 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
+import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -28,6 +30,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
+
+    @Inject
+    DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
     private String areaDescriptionId;
 
@@ -88,6 +93,27 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                });
+        manageDisposable(disposable);
+    }
+
+    public void onActionEdit() {
+        getView().onShowUserAreaDescriptionEditView(areaDescriptionId);
+    }
+
+    public void onActionDelete() {
+        getView().onShowDeleteConfirmationDialog();
+    }
+
+    public void onDelete() {
+        Disposable disposable = deleteUserAreaDescriptionUseCase
+                .execute(areaDescriptionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    getView().onDeleted();
+                }, e -> {
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }

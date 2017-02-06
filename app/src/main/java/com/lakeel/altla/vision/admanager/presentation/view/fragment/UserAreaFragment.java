@@ -122,7 +122,7 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_edit_area:
+            case R.id.action_edit:
                 presenter.onEdit();
                 return true;
             default:

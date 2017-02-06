@@ -6,7 +6,6 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDe
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
-import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
@@ -39,9 +38,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     @Inject
     DeleteAreaDescriptionCacheUseCase deleteAreaDescriptionCacheUseCase;
 
-    @Inject
-    DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
-
     private final List<UserAreaDescriptionItemModel> items = new ArrayList<>();
 
     private long prevBytesTransferred;
@@ -73,26 +69,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
     public void onImported() {
         getView().onSnackbar(R.string.snackbar_done);
-    }
-
-    public void onDelete(int position) {
-        String areaDescriptionId = items.get(position).areaDescriptionId;
-
-        Disposable disposable = deleteUserAreaDescriptionUseCase
-                .execute(areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(_subscription -> getView().onShowDeleteProgressDialog())
-                .doOnTerminate(() -> getView().onHideDeleteProgressDialog())
-                .subscribe(() -> {
-                    items.remove(position);
-
-                    getView().onItemRemoved(position);
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
     }
 
     public int getItemCount() {
@@ -202,16 +178,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                         getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
-        }
-
-        public void onClickImageButtonEdit(int position) {
-            String areaDescriptionId = items.get(position).areaDescriptionId;
-
-            getView().onShowUserAreaDescriptionView(areaDescriptionId);
-        }
-
-        public void onClickImageButtonDelete(int position) {
-            getView().onShowDeleteConfirmationDialog(position);
         }
     }
 }

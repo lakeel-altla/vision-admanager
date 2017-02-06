@@ -133,7 +133,12 @@ public final class UserAreaDescriptionEditFragment
             return false;
         });
 
-        getActivity().setTitle(R.string.title_edit_user_area_description);
+        getActivity().setTitle(null);
+    }
+
+    @Override
+    public void onUpdateTitle(@NonNull String title) {
+        getActivity().setTitle(title);
     }
 
     @Override

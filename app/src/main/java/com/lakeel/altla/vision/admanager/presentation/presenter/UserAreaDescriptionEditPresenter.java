@@ -11,6 +11,7 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,6 +37,9 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
+
+    @Inject
+    Resources resources;
 
     private String areaDescriptionId;
 
@@ -66,6 +70,15 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         }
 
         this.areaDescriptionId = areaDescriptionId;
+    }
+
+    @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        String format = resources.getString(R.string.title_format_user_area_description_edit);
+        String title = String.format(format, areaDescriptionId);
+        getView().onUpdateTitle(title);
     }
 
     @Override
