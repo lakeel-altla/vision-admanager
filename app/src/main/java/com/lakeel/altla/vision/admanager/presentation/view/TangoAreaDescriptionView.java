@@ -5,9 +5,13 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaD
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import java.io.File;
+
 public interface TangoAreaDescriptionView {
 
     void onModelUpdated(@NonNull TangoAreaDescriptionModel model);
+
+    void onShowTangoAreaDescriptionExportActivity(String areaDescriptionId, File directory);
 
     void onShowDeleteConfirmationDialog();
 

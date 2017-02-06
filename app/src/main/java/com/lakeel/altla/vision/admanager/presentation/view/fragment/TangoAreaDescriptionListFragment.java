@@ -1,15 +1,12 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoAreaDescriptionListAdapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,8 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -95,15 +90,6 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (resultCode == Activity.RESULT_OK) {
-            presenter.onExported();
-        } else {
-            super.onActivityResult(requestCode, resultCode, intent);
-        }
-    }
-
-    @Override
     public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -114,11 +100,6 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
-    public void onItemRemoved(int position) {
-        recyclerView.getAdapter().notifyItemRemoved(position);
-    }
-
-    @Override
     public void onItemSelected(@NonNull String areaDescriptionId) {
         interactionListener.onShowTangoAreaDescriptionView(areaDescriptionId);
     }
@@ -126,12 +107,6 @@ public final class TangoAreaDescriptionListFragment
     @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onShowTangoAreaDescriptionExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
-        Intent intent = TangoIntents.createAdfExportIntent(uuid, destinationDirectory.getPath());
-        startActivityForResult(intent, 0);
     }
 
     public interface InteractionListener {

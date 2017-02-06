@@ -3,14 +3,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
-import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
-import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -29,17 +26,9 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     FindAllTangoAreaDescriptionsUseCase findAllTangoAreaDescriptionsUseCase;
 
     @Inject
-    GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
-
-    @Inject
-    ExportUserAreaDescriptionUseCase exportUserAreaDescriptionUseCase;
-
-    @Inject
     TangoWrapper tangoWrapper;
 
     private final List<TangoAreaDescriptionItemModel> items = new ArrayList<>();
-
-    private String exportingAreaDescriptionId;
 
     @Inject
     public TangoAreaDescriptionListPresenter() {
@@ -77,25 +66,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         tangoWrapper.removeOnTangoReadyListener(this);
     }
 
-    public void onExported() {
-        if (exportingAreaDescriptionId == null) {
-            throw new IllegalStateException("'exportingAreaDescriptionId' is null.");
-        }
-
-        Disposable disposable = exportUserAreaDescriptionUseCase
-                .execute(tangoWrapper.getTango(), exportingAreaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userAreaDescription -> {
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", exportingAreaDescriptionId), e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
-
-        getView().onSnackbar(R.string.snackbar_done);
-    }
-
     public int getItemCount() {
         return items.size();
     }
@@ -120,17 +90,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         public void onBind(int position) {
             TangoAreaDescriptionItemModel itemModel = items.get(position);
             itemView.onModelUpdated(itemModel);
-        }
-
-        public void onClickImageButtonExport(int position) {
-            Disposable disposable = getAreaDescriptionCacheDirectoryUseCase
-                    .execute()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(directory -> {
-                        exportingAreaDescriptionId = items.get(position).areaDescriptionId;
-                        getView().onShowTangoAreaDescriptionExportActivity(exportingAreaDescriptionId, directory);
-                    });
-            manageDisposable(disposable);
         }
     }
 }

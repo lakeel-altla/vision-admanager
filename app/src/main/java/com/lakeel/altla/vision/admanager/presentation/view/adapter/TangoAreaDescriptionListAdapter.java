@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public final class TangoAreaDescriptionListAdapter
         extends RecyclerView.Adapter<TangoAreaDescriptionListAdapter.ViewHolder> {
@@ -90,11 +89,6 @@ public final class TangoAreaDescriptionListAdapter
         public void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
             textViewId.setText(model.areaDescriptionId);
-        }
-
-        @OnClick(R.id.image_button_export)
-        void onClickImageButtonExport() {
-            itemPresenter.onClickImageButtonExport(getAdapterPosition());
         }
     }
 }
