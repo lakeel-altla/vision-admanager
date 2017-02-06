@@ -2,43 +2,39 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.domain.mapper.TangoAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Maybe;
 import io.reactivex.schedulers.Schedulers;
 
-public final class FindAllTangoAreaDescriptionsUseCase {
+public final class FindTangoAreaDescriptionUseCase {
 
     @Inject
     TangoAreaDescriptionMetadataRepository tangoAreaDescriptionMetadataRepository;
 
     @Inject
-    public FindAllTangoAreaDescriptionsUseCase() {
+    public FindTangoAreaDescriptionUseCase() {
     }
 
-    public Observable<TangoAreaDescription> execute(Tango tango) {
+    public Maybe<TangoAreaDescription> execute(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
+        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
-
-        return Observable.<TangoAreaDescription>create(e -> {
-            List<TangoAreaDescriptionMetaData> metaDatas = tangoAreaDescriptionMetadataRepository.findAll(tango);
-            for (TangoAreaDescriptionMetaData metaData : metaDatas) {
+        return Maybe.<TangoAreaDescription>create(e -> {
+            TangoAreaDescriptionMetaData metaData =
+                    tangoAreaDescriptionMetadataRepository.find(tango, areaDescriptionId);
+            if (metaData != null) {
                 TangoAreaDescription tangoAreaDescription = TangoAreaDescriptionMapper.map(metaData);
-                e.onNext(tangoAreaDescription);
+                e.onSuccess(tangoAreaDescription);
+            } else {
+                e.onComplete();
             }
-            e.onComplete();
         }).subscribeOn(Schedulers.io());
     }
 }
