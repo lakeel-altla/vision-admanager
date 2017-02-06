@@ -22,10 +22,24 @@ public final class UserAreaDescriptionListAdapter
 
     private final UserAreaDescriptionListPresenter presenter;
 
+    private RecyclerView recyclerView;
+
     private LayoutInflater inflater;
 
     public UserAreaDescriptionListAdapter(@NonNull UserAreaDescriptionListPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        this.recyclerView = null;
     }
 
     @Override
@@ -34,6 +48,12 @@ public final class UserAreaDescriptionListAdapter
             inflater = LayoutInflater.from(parent.getContext());
         }
         View itemView = inflater.inflate(R.layout.item_user_area_description, parent, false);
+        itemView.setOnClickListener(v -> {
+            if (recyclerView != null) {
+                int position = recyclerView.getChildAdapterPosition(itemView);
+                presenter.onClickItem(position);
+            }
+        });
         return new ViewHolder(itemView);
     }
 
@@ -53,7 +73,7 @@ public final class UserAreaDescriptionListAdapter
         TextView textViewName;
 
         @BindView(R.id.text_view_id)
-        TextView textViewUuid;
+        TextView textViewId;
 
         @BindView(R.id.image_button_upload)
         ImageButton imageButtonUpload;
@@ -78,7 +98,7 @@ public final class UserAreaDescriptionListAdapter
         @Override
         public void onModelUpdated(@NonNull UserAreaDescriptionItemModel model) {
             textViewName.setText(model.name);
-            textViewUuid.setText(model.areaDescriptionId);
+            textViewId.setText(model.areaDescriptionId);
 
             imageButtonUpload.setVisibility(View.GONE);
             imageButtonDownload.setVisibility(View.GONE);

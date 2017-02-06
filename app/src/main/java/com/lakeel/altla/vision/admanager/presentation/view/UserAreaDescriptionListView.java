@@ -13,6 +13,8 @@ public interface UserAreaDescriptionListView {
 
     void onItemRemoved(int position);
 
+    void onItemSelected(@NonNull String areaDescriptionId);
+
     void onSnackbar(@StringRes int resId);
 
     void onShowImportActivity(@NonNull File destinationFile);
@@ -29,5 +31,5 @@ public interface UserAreaDescriptionListView {
 
     void onShowDeleteConfirmationDialog(int position);
 
-    void onShowUserAreaDescriptionEditView(String areaDescriptionId);
+    void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId);
 }

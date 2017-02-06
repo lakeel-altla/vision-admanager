@@ -9,16 +9,17 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListInAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
@@ -54,6 +55,7 @@ public final class MainActivity extends AppCompatActivity
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
+                   UserAreaDescriptionFragment.InteractionListener,
                    UserAreaDescriptionFragmentEdit.InteractionListener,
                    UserAreaListFragment.InteractionListener,
                    UserAreaFragment.InteractionListener,
@@ -222,11 +224,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowUserAreaDescriptionEditView(String areaDescriptionId) {
-        showUserAreaDescriptionFragmentEdit(areaDescriptionId);
-    }
-
-    @Override
     public void onCloseSignInView() {
         showTangoPermissionFragment();
     }
@@ -237,12 +234,17 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
+        showUserAreaDescriptionFragment(areaDescriptionId);
+    }
+
+    @Override
     public void onShowUserAreaSelectView() {
         showUserAreaSelectFragment();
     }
 
     @Override
-    public void onUserAreaCreateView() {
+    public void onShowUserAreaCreateView() {
         showUserAreaEditFragment(null);
     }
 
@@ -329,6 +331,13 @@ public final class MainActivity extends AppCompatActivity
             fragment = UserAreaDescriptionListFragment.newInstance();
             replaceFragment(fragment);
         }
+    }
+
+    private void showUserAreaDescriptionFragment(@NonNull String areaDescriptionId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        UserAreaDescriptionFragment fragment = UserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     private void showUserAreaDescriptionFragmentEdit(String areaDescriptionId) {

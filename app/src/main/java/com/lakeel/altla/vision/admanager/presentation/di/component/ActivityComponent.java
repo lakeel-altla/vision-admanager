@@ -5,16 +5,17 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.AndroidRepositor
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseRepositoryModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListInAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
@@ -35,6 +36,8 @@ public interface ActivityComponent {
     void inject(TangoAreaDescriptionListFragment fragment);
 
     void inject(UserAreaDescriptionListFragment fragment);
+
+    void inject(UserAreaDescriptionFragment fragment);
 
     void inject(UserAreaDescriptionFragmentEdit fragment);
 

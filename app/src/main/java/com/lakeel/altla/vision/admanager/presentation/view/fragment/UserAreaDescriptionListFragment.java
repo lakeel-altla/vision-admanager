@@ -125,6 +125,11 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
+    public void onItemSelected(@NonNull String areaDescriptionId) {
+        interactionListener.onShowUserAreaDescriptionView(areaDescriptionId);
+    }
+
+    @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
     }
@@ -197,12 +202,12 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void onShowUserAreaDescriptionEditView(String areaDescriptionId) {
-        interactionListener.onShowUserAreaDescriptionEditView(areaDescriptionId);
+    public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
+        interactionListener.onShowUserAreaDescriptionView(areaDescriptionId);
     }
 
     public interface InteractionListener {
 
-        void onShowUserAreaDescriptionEditView(String areaDescriptionId);
+        void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId);
     }
 }

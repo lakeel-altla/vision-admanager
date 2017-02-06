@@ -103,6 +103,11 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         return new ItemPresenter();
     }
 
+    public void onClickItem(int position) {
+        UserAreaDescriptionItemModel model = items.get(position);
+        getView().onItemSelected(model.areaDescriptionId);
+    }
+
     public final class ItemPresenter {
 
         private UserAreaDescriptionItemView itemView;
@@ -202,7 +207,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         public void onClickImageButtonEdit(int position) {
             String areaDescriptionId = items.get(position).areaDescriptionId;
 
-            getView().onShowUserAreaDescriptionEditView(areaDescriptionId);
+            getView().onShowUserAreaDescriptionView(areaDescriptionId);
         }
 
         public void onClickImageButtonDelete(int position) {
