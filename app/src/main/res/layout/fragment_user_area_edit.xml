@@ -10,8 +10,7 @@
               android:layout_height="match_parent"
               tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment">
 
-    <TextView android:id="@+id/text_view_label_id"
-              android:text="@string/label_id"
+    <TextView android:text="@string/label_id"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"/>
@@ -21,8 +20,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"/>
 
-    <TextView android:id="@+id/text_view_label_create_at"
-              android:text="@string/label_created_at"
+    <TextView android:text="@string/label_created_at"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"
@@ -33,8 +31,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"/>
 
-    <TextView android:id="@+id/text_view_label_name"
-              android:text="@string/label_name"
+    <TextView android:text="@string/label_name"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"
@@ -55,8 +52,7 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <TextView android:id="@+id/text_view_label_place"
-              android:text="@string/label_place"
+    <TextView android:text="@string/label_place"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"
@@ -101,8 +97,7 @@
 
     </LinearLayout>
 
-    <TextView android:id="@+id/text_view_label_level"
-              android:text="@string/label_level"
+    <TextView android:text="@string/label_level"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"
