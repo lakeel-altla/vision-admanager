@@ -10,19 +10,7 @@
               android:layout_height="match_parent"
               tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment">
 
-    <TextView android:id="@+id/text_view_label_id"
-              android:text="@string/label_id"
-              android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
-
-    <TextView android:id="@+id/text_view_id"
-              android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
-
-    <TextView android:id="@+id/text_view_label_name"
-              android:text="@string/label_name"
+    <TextView android:text="@string/label_name"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"
@@ -44,8 +32,7 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <TextView android:id="@+id/text_view_label_area"
-              android:text="@string/label_area"
+    <TextView android:text="@string/label_area"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"
               android:layout_width="match_parent"

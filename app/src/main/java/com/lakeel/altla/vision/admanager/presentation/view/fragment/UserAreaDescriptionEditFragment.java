@@ -53,9 +53,6 @@ public final class UserAreaDescriptionEditFragment
     @BindView(R.id.view_top)
     View view;
 
-    @BindView(R.id.text_view_id)
-    TextView textViewAreaDescriptionId;
-
     @BindView(R.id.text_input_layput_name)
     TextInputLayout textInputLayoutName;
 
@@ -148,7 +145,6 @@ public final class UserAreaDescriptionEditFragment
 
     @Override
     public void onModelUpdated(UserAreaDescriptionEditModel model) {
-        textViewAreaDescriptionId.setText(model.areaDescriptionId);
         textInputEditTextName.setText(model.name);
         textViewAreaName.setText(model.areaName);
     }
