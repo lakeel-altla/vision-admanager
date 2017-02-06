@@ -242,11 +242,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowTangoAreaDescriptionEditView(@NonNull String areaDescriptionId) {
-        showTangoAreaDescriptionEditFragment(areaDescriptionId);
-    }
-
-    @Override
     public void onCloseTangoAreaDescriptionView() {
         getSupportFragmentManager().popBackStack();
     }
@@ -366,12 +361,6 @@ public final class MainActivity extends AppCompatActivity
 
         TangoAreaDescriptionFragment fragment = TangoAreaDescriptionFragment.newInstance(areaDescriptionId);
         replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showTangoAreaDescriptionEditFragment(@NonNull String areaDescriptionId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        // TODO
     }
 
     private void showUserAreaDescriptionFragment(@NonNull String areaDescriptionId) {

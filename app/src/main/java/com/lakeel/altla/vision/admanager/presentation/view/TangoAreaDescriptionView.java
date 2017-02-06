@@ -9,8 +9,6 @@ public interface TangoAreaDescriptionView {
 
     void onModelUpdated(@NonNull TangoAreaDescriptionModel model);
 
-    void onShowTangoAreaDescriptionEditView(@NonNull String areaDescriptionId);
-
     void onShowDeleteConfirmationDialog();
 
     void onDeleted();

@@ -74,10 +74,6 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
         manageDisposable(disposable);
     }
 
-    public void onActionEdit() {
-        getView().onShowTangoAreaDescriptionEditView(areaDescriptionId);
-    }
-
     public void onActionDelete() {
         getView().onShowDeleteConfirmationDialog();
     }

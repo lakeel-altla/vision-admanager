@@ -116,9 +116,6 @@ public final class TangoAreaDescriptionFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_edit:
-                presenter.onActionEdit();
-                return true;
             case R.id.action_delete:
                 presenter.onActionDelete();
                 return true;
@@ -139,11 +136,6 @@ public final class TangoAreaDescriptionFragment
         textViewName.setText(model.name);
 
         getActivity().setTitle(model.name);
-    }
-
-    @Override
-    public void onShowTangoAreaDescriptionEditView(@NonNull String areaDescriptionId) {
-        interactionListener.onShowTangoAreaDescriptionEditView(areaDescriptionId);
     }
 
     @Override
@@ -174,8 +166,6 @@ public final class TangoAreaDescriptionFragment
     }
 
     public interface InteractionListener {
-
-        void onShowTangoAreaDescriptionEditView(@NonNull String areaDescriptionId);
 
         void onCloseTangoAreaDescriptionView();
     }
