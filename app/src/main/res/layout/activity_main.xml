@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <include layout="@layout/app_bar_manager"
+    <include layout="@layout/app_bar_main"
              android:id="@+id/app_bar_manager"
              android:layout_width="match_parent"
              android:layout_height="match_parent"/>
