@@ -116,7 +116,7 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_view_user_area, menu);
+        inflater.inflate(R.menu.fragment_user_area, menu);
     }
 
     @Override

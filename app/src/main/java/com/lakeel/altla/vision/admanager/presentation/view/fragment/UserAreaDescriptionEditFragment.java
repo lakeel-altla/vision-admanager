@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public final class UserAreaDescriptionFragmentEdit
+public final class UserAreaDescriptionEditFragment
         extends AbstractFragment<UserAreaDescriptionEditView, UserAreaDescriptionEditPresenter>
         implements UserAreaDescriptionEditView {
 
@@ -71,8 +71,8 @@ public final class UserAreaDescriptionFragmentEdit
     private InteractionListener interactionListener;
 
     @NonNull
-    public static UserAreaDescriptionFragmentEdit newInstance(String areaDescriptionId) {
-        UserAreaDescriptionFragmentEdit fragment = new UserAreaDescriptionFragmentEdit();
+    public static UserAreaDescriptionEditFragment newInstance(String areaDescriptionId) {
+        UserAreaDescriptionEditFragment fragment = new UserAreaDescriptionEditFragment();
         Bundle bundle = UserAreaDescriptionEditPresenter.createArguments(areaDescriptionId);
         fragment.setArguments(bundle);
         return fragment;
