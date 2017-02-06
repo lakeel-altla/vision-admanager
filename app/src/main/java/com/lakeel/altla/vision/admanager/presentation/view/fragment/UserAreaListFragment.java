@@ -103,7 +103,7 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create_area:
-                interactionListener.onCreateUserArea();
+                interactionListener.onUserAreaCreateView();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -122,7 +122,7 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
     @Override
     public void onItemSelected(String areaId) {
-        interactionListener.onShowUserArea(areaId);
+        interactionListener.onShowUserAreaView(areaId);
     }
 
     @Override
@@ -132,8 +132,8 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
     public interface InteractionListener {
 
-        void onCreateUserArea();
+        void onUserAreaCreateView();
 
-        void onShowUserArea(@NonNull String areaId);
+        void onShowUserAreaView(@NonNull String areaId);
     }
 }

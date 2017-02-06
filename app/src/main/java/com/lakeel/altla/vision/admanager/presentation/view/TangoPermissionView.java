@@ -6,5 +6,5 @@ public interface TangoPermissionView {
 
     void onShowAreaLearningPermissionRequiredSnackbar();
 
-    void onStartTangoPermissionActivity();
+    void onShowTangoPermissionActivity();
 }

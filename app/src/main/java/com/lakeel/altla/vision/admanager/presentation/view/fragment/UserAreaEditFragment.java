@@ -8,9 +8,9 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
-import com.lakeel.altla.vision.admanager.presentation.presenter.EditUserAreaPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaEditPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
-import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -48,8 +48,8 @@ import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
 
-public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaView, EditUserAreaPresenter>
-        implements EditUserAreaView {
+public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditView, UserAreaEditPresenter>
+        implements UserAreaEditView {
 
     private static final int REQUEST_CODE_PLACE_PICKER = 1;
 
@@ -60,7 +60,7 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     private static final List<Integer> LEVELS;
 
     @Inject
-    EditUserAreaPresenter presenter;
+    UserAreaEditPresenter presenter;
 
     @Inject
     AppCompatActivity activity;
@@ -106,20 +106,20 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     }
 
     @NonNull
-    public static EditUserAreaFragment newInstance(@Nullable String areaId) {
-        EditUserAreaFragment fragment = new EditUserAreaFragment();
-        Bundle bundle = EditUserAreaPresenter.createArguments(areaId);
+    public static UserAreaEditFragment newInstance(@Nullable String areaId) {
+        UserAreaEditFragment fragment = new UserAreaEditFragment();
+        Bundle bundle = UserAreaEditPresenter.createArguments(areaId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public EditUserAreaPresenter getPresenter() {
+    public UserAreaEditPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected EditUserAreaView getViewInterface() {
+    protected UserAreaEditView getViewInterface() {
         return this;
     }
 
@@ -153,7 +153,7 @@ public final class EditUserAreaFragment extends AbstractFragment<EditUserAreaVie
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_user_area, container, false);
+        return inflater.inflate(R.layout.fragment_user_area_edit, container, false);
     }
 
     @Override

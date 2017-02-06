@@ -197,12 +197,12 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void onShowEditUserAreaDescriptionView(String areaDescriptionId) {
-        interactionListener.onShowEditUserAreaDescriptionFragment(areaDescriptionId);
+    public void onShowUserAreaDescriptionEditView(String areaDescriptionId) {
+        interactionListener.onShowUserAreaDescriptionEditView(areaDescriptionId);
     }
 
     public interface InteractionListener {
 
-        void onShowEditUserAreaDescriptionFragment(String areaDescriptionId);
+        void onShowUserAreaDescriptionEditView(String areaDescriptionId);
     }
 }

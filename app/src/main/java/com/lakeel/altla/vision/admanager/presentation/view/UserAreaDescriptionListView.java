@@ -29,5 +29,5 @@ public interface UserAreaDescriptionListView {
 
     void onShowDeleteConfirmationDialog(int position);
 
-    void onShowEditUserAreaDescriptionView(String areaDescriptionId);
+    void onShowUserAreaDescriptionEditView(String areaDescriptionId);
 }

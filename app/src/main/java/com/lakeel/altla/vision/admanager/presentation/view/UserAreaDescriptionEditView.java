@@ -1,14 +1,14 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaDescriptionModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 
 import android.support.annotation.StringRes;
 
-public interface EditUserAreaDescriptionView {
+public interface UserAreaDescriptionEditView {
 
     void onAreaNameUpdated(String areaName);
 
-    void onModelUpdated(EditUserAreaDescriptionModel model);
+    void onModelUpdated(UserAreaDescriptionEditModel model);
 
     void onSnackbar(@StringRes int resId);
 
@@ -16,5 +16,5 @@ public interface EditUserAreaDescriptionView {
 
     void onHideNameError();
 
-    void onShowSelectUserAreaView();
+    void onShowUserAreaSelectView();
 }

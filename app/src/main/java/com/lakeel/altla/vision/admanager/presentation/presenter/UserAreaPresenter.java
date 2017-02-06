@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.view.ShowUserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 
@@ -17,7 +17,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class ShowUserAreaPresenter extends BasePresenter<ShowUserAreaView> {
+public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
     private static final String ARG_AREA_ID = "areaId";
 
@@ -30,7 +30,7 @@ public final class ShowUserAreaPresenter extends BasePresenter<ShowUserAreaView>
     private String areaId;
 
     @Inject
-    public ShowUserAreaPresenter() {
+    public UserAreaPresenter() {
     }
 
     @NonNull
@@ -85,10 +85,10 @@ public final class ShowUserAreaPresenter extends BasePresenter<ShowUserAreaView>
     }
 
     public void onEdit() {
-        getView().onEdit(areaId);
+        getView().onShowUserAreaEditView(areaId);
     }
 
     public void onClickButtonUserAreaDescriptionsInArea() {
-        getView().onShowUserAreaDescriptionsInArea(areaId);
+        getView().onShowUserAreaDescriptionsInAreaView(areaId);
     }
 }

@@ -92,7 +92,7 @@ public final class TangoPermissionFragment extends AbstractFragment<TangoPermiss
 
     @Override
     public void onCloseTangoPermissionView() {
-        interactionListener.onCloseTangoPermissionFragment();
+        interactionListener.onCloseTangoPermissionView();
     }
 
     @Override
@@ -103,12 +103,12 @@ public final class TangoPermissionFragment extends AbstractFragment<TangoPermiss
     }
 
     @Override
-    public void onStartTangoPermissionActivity() {
+    public void onShowTangoPermissionActivity() {
         startActivityForResult(TangoIntents.createAdfLoadSaveRequestPermissionIntent(), 0);
     }
 
     public interface InteractionListener {
 
-        void onCloseTangoPermissionFragment();
+        void onCloseTangoPermissionView();
     }
 }

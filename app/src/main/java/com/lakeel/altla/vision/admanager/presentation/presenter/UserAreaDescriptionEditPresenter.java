@@ -3,8 +3,8 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaDescriptionModel;
-import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
@@ -21,7 +21,7 @@ import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUserAreaDescriptionView> {
+public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAreaDescriptionEditView> {
 
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
@@ -39,12 +39,12 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
 
     private String areaDescriptionId;
 
-    private EditUserAreaDescriptionModel model;
+    private UserAreaDescriptionEditModel model;
 
     private boolean processing;
 
     @Inject
-    public EditUserAreaDescriptionPresenter() {
+    public UserAreaDescriptionEditPresenter() {
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
                 .map(userAreaDescription -> {
-                    EditUserAreaDescriptionModel model = new EditUserAreaDescriptionModel();
+                    UserAreaDescriptionEditModel model = new UserAreaDescriptionEditModel();
                     model.areaDescriptionId = areaDescriptionId;
                     model.name = userAreaDescription.name;
                     model.creationTime = userAreaDescription.creationTime;
@@ -125,7 +125,7 @@ public final class EditUserAreaDescriptionPresenter extends BasePresenter<EditUs
     }
 
     public void onClickImageButtonSelectArea() {
-        getView().onShowSelectUserAreaView();
+        getView().onShowUserAreaSelectView();
     }
 
     public void onUserAreaSelected(String areaId) {

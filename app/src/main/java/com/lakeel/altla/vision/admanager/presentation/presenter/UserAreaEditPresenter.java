@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
-import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -24,7 +24,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView> {
+public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView> {
 
     private static final String ARG_AREA_ID = "areaId";
 
@@ -46,7 +46,7 @@ public final class EditUserAreaPresenter extends BasePresenter<EditUserAreaView>
     private boolean processing;
 
     @Inject
-    public EditUserAreaPresenter() {
+    public UserAreaEditPresenter() {
     }
 
     @NonNull

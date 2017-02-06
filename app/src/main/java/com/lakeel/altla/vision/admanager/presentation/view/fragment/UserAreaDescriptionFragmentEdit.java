@@ -4,9 +4,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
-import com.lakeel.altla.vision.admanager.presentation.presenter.EditUserAreaDescriptionPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.EditUserAreaDescriptionModel;
-import com.lakeel.altla.vision.admanager.presentation.view.EditUserAreaDescriptionView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionEditPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
 import android.content.Context;
@@ -34,12 +34,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public final class EditUserAreaDescriptionFragment
-        extends AbstractFragment<EditUserAreaDescriptionView, EditUserAreaDescriptionPresenter>
-        implements EditUserAreaDescriptionView {
+public final class UserAreaDescriptionFragmentEdit
+        extends AbstractFragment<UserAreaDescriptionEditView, UserAreaDescriptionEditPresenter>
+        implements UserAreaDescriptionEditView {
 
     @Inject
-    EditUserAreaDescriptionPresenter presenter;
+    UserAreaDescriptionEditPresenter presenter;
 
     @Inject
     SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
@@ -71,20 +71,20 @@ public final class EditUserAreaDescriptionFragment
     private InteractionListener interactionListener;
 
     @NonNull
-    public static EditUserAreaDescriptionFragment newInstance(String areaDescriptionId) {
-        EditUserAreaDescriptionFragment fragment = new EditUserAreaDescriptionFragment();
-        Bundle bundle = EditUserAreaDescriptionPresenter.createArguments(areaDescriptionId);
+    public static UserAreaDescriptionFragmentEdit newInstance(String areaDescriptionId) {
+        UserAreaDescriptionFragmentEdit fragment = new UserAreaDescriptionFragmentEdit();
+        Bundle bundle = UserAreaDescriptionEditPresenter.createArguments(areaDescriptionId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public EditUserAreaDescriptionPresenter getPresenter() {
+    public UserAreaDescriptionEditPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected EditUserAreaDescriptionView getViewInterface() {
+    protected UserAreaDescriptionEditView getViewInterface() {
         return this;
     }
 
@@ -113,7 +113,7 @@ public final class EditUserAreaDescriptionFragment
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_user_area_description, container, false);
+        return inflater.inflate(R.layout.fragment_user_area_description_edit, container, false);
     }
 
     @Override
@@ -142,7 +142,7 @@ public final class EditUserAreaDescriptionFragment
     }
 
     @Override
-    public void onModelUpdated(EditUserAreaDescriptionModel model) {
+    public void onModelUpdated(UserAreaDescriptionEditModel model) {
         textViewAreaDescriptionId.setText(model.areaDescriptionId);
         textInputEditTextName.setText(model.name);
         textViewAreaName.setText(model.areaName);
@@ -164,8 +164,8 @@ public final class EditUserAreaDescriptionFragment
     }
 
     @Override
-    public void onShowSelectUserAreaView() {
-        interactionListener.onShowSelectUserAreaFragment();
+    public void onShowUserAreaSelectView() {
+        interactionListener.onShowUserAreaSelectView();
     }
 
     public void onUserAreaSelected(String areaId) {
@@ -184,6 +184,6 @@ public final class EditUserAreaDescriptionFragment
 
     public interface InteractionListener {
 
-        void onShowSelectUserAreaFragment();
+        void onShowUserAreaSelectView();
     }
 }

@@ -15,7 +15,7 @@ public interface TangoAreaDescriptionListView {
 
     void onSnackbar(@StringRes int resId);
 
-    void onExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);
+    void onShowTangoAreaDescriptionExportActivity(@NonNull String uuid, @NonNull File destinationDirectory);
 
     void onShowDeleteConfirmationDialog(int position);
 }

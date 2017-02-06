@@ -5,10 +5,10 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.AndroidRepositor
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseRepositoryModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.ShowUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -36,15 +36,15 @@ public interface ActivityComponent {
 
     void inject(UserAreaDescriptionListFragment fragment);
 
-    void inject(EditUserAreaDescriptionFragment fragment);
+    void inject(UserAreaDescriptionFragmentEdit fragment);
 
     void inject(UserAreaListFragment fragment);
 
-    void inject(ShowUserAreaFragment fragment);
+    void inject(UserAreaFragment fragment);
 
-    void inject(EditUserAreaFragment fragment);
+    void inject(UserAreaEditFragment fragment);
 
-    void inject(SelectUserAreaFragment fragment);
+    void inject(UserAreaSelectFragment fragment);
 
     void inject(UserAreaDescriptionListInAreaFragment fragment);
 }

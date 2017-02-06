@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
-import com.lakeel.altla.vision.admanager.presentation.presenter.SelectUserAreaPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.SelectUserAreaView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.SelectUserAreaAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaSelectPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaSelectAdapter;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -23,11 +23,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAreaView, SelectUserAreaPresenter>
-        implements SelectUserAreaView {
+public final class UserAreaSelectFragment extends AbstractFragment<UserAreaSelectView, UserAreaSelectPresenter>
+        implements UserAreaSelectView {
 
     @Inject
-    SelectUserAreaPresenter presenter;
+    UserAreaSelectPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -35,17 +35,17 @@ public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAre
     private InteractionListener interactionListener;
 
     @NonNull
-    public static SelectUserAreaFragment newInstance() {
-        return new SelectUserAreaFragment();
+    public static UserAreaSelectFragment newInstance() {
+        return new UserAreaSelectFragment();
     }
 
     @Override
-    public SelectUserAreaPresenter getPresenter() {
+    public UserAreaSelectPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected SelectUserAreaView getViewInterface() {
+    protected UserAreaSelectView getViewInterface() {
         return this;
     }
 
@@ -74,7 +74,7 @@ public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAre
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_select_user_area, container, false);
+        return inflater.inflate(R.layout.fragment_user_area_select, container, false);
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class SelectUserAreaFragment extends AbstractFragment<SelectUserAre
 
         ButterKnife.bind(this, view);
 
-        recyclerView.setAdapter(new SelectUserAreaAdapter(presenter));
+        recyclerView.setAdapter(new UserAreaSelectAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         getActivity().setTitle(R.string.title_select_user_area);

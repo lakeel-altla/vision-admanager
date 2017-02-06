@@ -9,10 +9,10 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaDescriptionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.SelectUserAreaFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.ShowUserAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragmentEdit;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
@@ -54,11 +54,11 @@ public final class MainActivity extends AppCompatActivity
                    SignInFragment.InteractionListener,
                    TangoPermissionFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
-                   EditUserAreaDescriptionFragment.InteractionListener,
+                   UserAreaDescriptionFragmentEdit.InteractionListener,
                    UserAreaListFragment.InteractionListener,
-                   ShowUserAreaFragment.InteractionListener,
-                   EditUserAreaFragment.InteractionListener,
-                   SelectUserAreaFragment.InteractionListener,
+                   UserAreaFragment.InteractionListener,
+                   UserAreaEditFragment.InteractionListener,
+                   UserAreaSelectFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
@@ -222,42 +222,42 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowEditUserAreaDescriptionFragment(String areaDescriptionId) {
-        showEditUserAreaDescriptionFragment(areaDescriptionId);
+    public void onShowUserAreaDescriptionEditView(String areaDescriptionId) {
+        showUserAreaDescriptionFragmentEdit(areaDescriptionId);
     }
 
     @Override
-    public void onCloseSignInFragment() {
+    public void onCloseSignInView() {
         showTangoPermissionFragment();
     }
 
     @Override
-    public void onCloseTangoPermissionFragment() {
+    public void onCloseTangoPermissionView() {
         showTangoAreaDescriptionListFragment();
     }
 
     @Override
-    public void onShowSelectUserAreaFragment() {
-        showSelectUserAreaFragment();
+    public void onShowUserAreaSelectView() {
+        showUserAreaSelectFragment();
     }
 
     @Override
-    public void onCreateUserArea() {
-        showEditUserAreaFragment(null);
+    public void onUserAreaCreateView() {
+        showUserAreaEditFragment(null);
     }
 
     @Override
-    public void onShowUserArea(@NonNull String areaId) {
-        showShowUserAreaFragment(areaId);
+    public void onShowUserAreaView(@NonNull String areaId) {
+        showUserAreaFragment(areaId);
     }
 
     @Override
-    public void onEditUserArea(@NonNull String areaId) {
-        showEditUserAreaFragment(areaId);
+    public void onShowUserAreaEditView(@NonNull String areaId) {
+        showUserAreaEditFragment(areaId);
     }
 
     @Override
-    public void onShowUserAreaDescriptionsInArea(@NonNull String areaId) {
+    public void onShowUserAreaDescriptionsInAreaView(@NonNull String areaId) {
         showUserAreaDescriptionListInAreaFragment(areaId);
     }
 
@@ -265,8 +265,8 @@ public final class MainActivity extends AppCompatActivity
     public void onUserAreaSelected(String areaId) {
         getSupportFragmentManager().popBackStack();
 
-        EditUserAreaDescriptionFragment fragment =
-                (EditUserAreaDescriptionFragment) findFragment(EditUserAreaDescriptionFragment.class);
+        UserAreaDescriptionFragmentEdit fragment =
+                (UserAreaDescriptionFragmentEdit) findFragment(UserAreaDescriptionFragmentEdit.class);
         if (fragment != null) {
             fragment.onUserAreaSelected(areaId);
         }
@@ -331,31 +331,31 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showEditUserAreaDescriptionFragment(String areaDescriptionId) {
+    private void showUserAreaDescriptionFragmentEdit(String areaDescriptionId) {
         toolbar.setVisibility(View.VISIBLE);
 
-        EditUserAreaDescriptionFragment fragment = EditUserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        UserAreaDescriptionFragmentEdit fragment = UserAreaDescriptionFragmentEdit.newInstance(areaDescriptionId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
-    private void showShowUserAreaFragment(@NonNull String areaId) {
+    private void showUserAreaFragment(@NonNull String areaId) {
         toolbar.setVisibility(View.VISIBLE);
 
-        ShowUserAreaFragment fragment = ShowUserAreaFragment.newInstance(areaId);
+        UserAreaFragment fragment = UserAreaFragment.newInstance(areaId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
-    private void showEditUserAreaFragment(String areaId) {
+    private void showUserAreaEditFragment(String areaId) {
         toolbar.setVisibility(View.VISIBLE);
 
-        EditUserAreaFragment fragment = EditUserAreaFragment.newInstance(areaId);
+        UserAreaEditFragment fragment = UserAreaEditFragment.newInstance(areaId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
-    private void showSelectUserAreaFragment() {
+    private void showUserAreaSelectFragment() {
         toolbar.setVisibility(View.VISIBLE);
 
-        SelectUserAreaFragment fragment = SelectUserAreaFragment.newInstance();
+        UserAreaSelectFragment fragment = UserAreaSelectFragment.newInstance();
         replaceFragmentAndAddToBackStack(fragment);
     }
 

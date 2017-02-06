@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.SelectUserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -19,7 +19,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaView> {
+public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectView> {
 
     private final List<UserAreaItemModel> items = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public final class SelectUserAreaPresenter extends BasePresenter<SelectUserAreaV
     GetPlaceUseCase getPlaceUseCase;
 
     @Inject
-    public SelectUserAreaPresenter() {
+    public UserAreaSelectPresenter() {
     }
 
     @Override

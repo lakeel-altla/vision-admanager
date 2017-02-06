@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
-import com.lakeel.altla.vision.admanager.presentation.presenter.ShowUserAreaPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
-import com.lakeel.altla.vision.admanager.presentation.view.ShowUserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,11 +27,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaView, ShowUserAreaPresenter>
-        implements ShowUserAreaView {
+public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserAreaPresenter>
+        implements UserAreaView {
 
     @Inject
-    ShowUserAreaPresenter presenter;
+    UserAreaPresenter presenter;
 
     @BindView(R.id.view_top)
     View viewTop;
@@ -57,20 +57,20 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
     private InteractionListener interactionListener;
 
     @NonNull
-    public static ShowUserAreaFragment newInstance(@NonNull String areaId) {
-        ShowUserAreaFragment fragment = new ShowUserAreaFragment();
-        Bundle bundle = ShowUserAreaPresenter.createArguments(areaId);
+    public static UserAreaFragment newInstance(@NonNull String areaId) {
+        UserAreaFragment fragment = new UserAreaFragment();
+        Bundle bundle = UserAreaPresenter.createArguments(areaId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public ShowUserAreaPresenter getPresenter() {
+    public UserAreaPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected ShowUserAreaView getViewInterface() {
+    protected UserAreaView getViewInterface() {
         return this;
     }
 
@@ -99,7 +99,7 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_show_user_area, container, false);
+        return inflater.inflate(R.layout.fragment_user_area, container, false);
     }
 
     @Override
@@ -148,13 +148,13 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
     }
 
     @Override
-    public void onEdit(@NonNull String areaId) {
-        interactionListener.onEditUserArea(areaId);
+    public void onShowUserAreaEditView(@NonNull String areaId) {
+        interactionListener.onShowUserAreaEditView(areaId);
     }
 
     @Override
-    public void onShowUserAreaDescriptionsInArea(@NonNull String areaId) {
-        interactionListener.onShowUserAreaDescriptionsInArea(areaId);
+    public void onShowUserAreaDescriptionsInAreaView(@NonNull String areaId) {
+        interactionListener.onShowUserAreaDescriptionsInAreaView(areaId);
     }
 
     @Override
@@ -169,8 +169,8 @@ public final class ShowUserAreaFragment extends AbstractFragment<ShowUserAreaVie
 
     public interface InteractionListener {
 
-        void onEditUserArea(@NonNull String areaId);
+        void onShowUserAreaEditView(@NonNull String areaId);
 
-        void onShowUserAreaDescriptionsInArea(@NonNull String areaId);
+        void onShowUserAreaDescriptionsInAreaView(@NonNull String areaId);
     }
 }

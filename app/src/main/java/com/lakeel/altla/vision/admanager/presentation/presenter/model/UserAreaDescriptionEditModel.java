@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter.model;
 
-public final class EditUserAreaDescriptionModel {
+public final class UserAreaDescriptionEditModel {
 
     public String areaDescriptionId;
 

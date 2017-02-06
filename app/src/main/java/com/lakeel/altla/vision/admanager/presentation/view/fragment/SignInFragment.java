@@ -114,7 +114,7 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
 
     @Override
     public void onCloseSignInView() {
-        interactionListener.onCloseSignInFragment();
+        interactionListener.onCloseSignInView();
     }
 
     @Override
@@ -129,6 +129,6 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
 
     public interface InteractionListener {
 
-        void onCloseSignInFragment();
+        void onCloseSignInView();
     }
 }

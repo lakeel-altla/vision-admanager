@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.SelectUserAreaPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaSelectPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 
@@ -15,15 +15,15 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class SelectUserAreaAdapter extends RecyclerView.Adapter<SelectUserAreaAdapter.ViewHolder> {
+public final class UserAreaSelectAdapter extends RecyclerView.Adapter<UserAreaSelectAdapter.ViewHolder> {
 
-    private final SelectUserAreaPresenter presenter;
+    private final UserAreaSelectPresenter presenter;
 
     private RecyclerView recyclerView;
 
     private LayoutInflater inflater;
 
-    public SelectUserAreaAdapter(@NonNull SelectUserAreaPresenter presenter) {
+    public UserAreaSelectAdapter(@NonNull UserAreaSelectPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -44,7 +44,7 @@ public final class SelectUserAreaAdapter extends RecyclerView.Adapter<SelectUser
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = inflater.inflate(R.layout.item_select_user_area, parent, false);
+        View itemView = inflater.inflate(R.layout.item_user_area_select, parent, false);
         itemView.setOnClickListener(v -> {
             if (recyclerView != null) {
                 int position = recyclerView.getChildAdapterPosition(v);
@@ -81,7 +81,7 @@ public final class SelectUserAreaAdapter extends RecyclerView.Adapter<SelectUser
         @BindView(R.id.text_view_level)
         TextView textViewLevel;
 
-        private SelectUserAreaPresenter.ItemPresenter itemPresenter;
+        private UserAreaSelectPresenter.ItemPresenter itemPresenter;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

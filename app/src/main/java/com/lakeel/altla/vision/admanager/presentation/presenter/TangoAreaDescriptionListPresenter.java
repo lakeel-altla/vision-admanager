@@ -144,7 +144,7 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(directory -> {
                         exportingAreaDescriptionId = items.get(position).areaDescriptionId;
-                        getView().onExportActivity(exportingAreaDescriptionId, directory);
+                        getView().onShowTangoAreaDescriptionExportActivity(exportingAreaDescriptionId, directory);
                     });
             manageDisposable(disposable);
         }

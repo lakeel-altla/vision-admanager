@@ -18,7 +18,7 @@ public final class TangoPermissionPresenter extends BasePresenter<TangoPermissio
     }
 
     public void onConfirmPermission() {
-        getView().onStartTangoPermissionActivity();
+        getView().onShowTangoPermissionActivity();
     }
 
     public void onTangoPermissionResult(boolean isCanceled) {

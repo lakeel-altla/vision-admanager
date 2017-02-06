@@ -8,7 +8,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.EditUserAreaFragment">
+              tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment">
 
     <TextView android:id="@+id/text_view_label_id"
               android:text="@string/label_id"

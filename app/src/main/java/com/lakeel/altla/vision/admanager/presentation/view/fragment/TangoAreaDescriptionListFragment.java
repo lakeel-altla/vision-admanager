@@ -110,7 +110,7 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
-    public void onExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
+    public void onShowTangoAreaDescriptionExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
         Intent intent = TangoIntents.createAdfExportIntent(uuid, destinationDirectory.getPath());
         startActivityForResult(intent, 0);
     }
