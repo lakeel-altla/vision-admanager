@@ -110,7 +110,7 @@ public final class TangoAreaDescriptionFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_user_area_description, menu);
+        inflater.inflate(R.menu.fragment_tango_area_description, menu);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
@@ -40,8 +39,6 @@ public final class TangoAreaDescriptionListFragment
     RecyclerView recyclerView;
 
     private InteractionListener interactionListener;
-
-    private MaterialDialog materialDialog;
 
     public static TangoAreaDescriptionListFragment newInstance() {
         return new TangoAreaDescriptionListFragment();
@@ -135,23 +132,6 @@ public final class TangoAreaDescriptionListFragment
     public void onShowTangoAreaDescriptionExportActivity(@NonNull String uuid, @NonNull File destinationDirectory) {
         Intent intent = TangoIntents.createAdfExportIntent(uuid, destinationDirectory.getPath());
         startActivityForResult(intent, 0);
-    }
-
-    @Override
-    public void onShowDeleteConfirmationDialog(int position) {
-        if (materialDialog != null && materialDialog.isShowing()) {
-            // Skip to protect against double taps.
-            return;
-        }
-
-        materialDialog = new MaterialDialog.Builder(getContext())
-                .content(R.string.dialog_content_confirm_delete)
-                .positiveText(R.string.dialog_ok)
-                .negativeText(R.string.dialog_cancel)
-                .onPositive((dialog, which) -> presenter.onDelete(position))
-                .build();
-
-        materialDialog.show();
     }
 
     public interface InteractionListener {

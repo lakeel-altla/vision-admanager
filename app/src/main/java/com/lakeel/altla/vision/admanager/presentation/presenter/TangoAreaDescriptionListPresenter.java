@@ -6,10 +6,8 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
-import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
@@ -35,9 +33,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
 
     @Inject
     ExportUserAreaDescriptionUseCase exportUserAreaDescriptionUseCase;
-
-    @Inject
-    DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
 
     @Inject
     TangoWrapper tangoWrapper;
@@ -101,23 +96,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         getView().onSnackbar(R.string.snackbar_done);
     }
 
-    public void onDelete(int position) {
-        String areaDescriptionId = items.get(position).areaDescriptionId;
-
-        Disposable disposable = deleteTangoAreaDescriptionUseCase
-                .execute(tangoWrapper.getTango(), areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    items.remove(position);
-                    getView().onItemRemoved(position);
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
-    }
-
     public int getItemCount() {
         return items.size();
     }
@@ -153,10 +131,6 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                         getView().onShowTangoAreaDescriptionExportActivity(exportingAreaDescriptionId, directory);
                     });
             manageDisposable(disposable);
-        }
-
-        public void onClickImageButtonDelete(int position) {
-            getView().onShowDeleteConfirmationDialog(position);
         }
     }
 }

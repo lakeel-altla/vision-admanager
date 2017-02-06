@@ -96,10 +96,5 @@ public final class TangoAreaDescriptionListAdapter
         void onClickImageButtonExport() {
             itemPresenter.onClickImageButtonExport(getAdapterPosition());
         }
-
-        @OnClick(R.id.image_button_delete)
-        void onClickImageButtonDelete() {
-            itemPresenter.onClickImageButtonDelete(getAdapterPosition());
-        }
     }
 }
