@@ -5,9 +5,13 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDe
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import java.io.File;
+
 public interface UserAreaDescriptionView {
 
     void onModelUpdated(@NonNull UserAreaDescriptionModel model);
+
+    void onShowImportActivity(File file);
 
     void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
 

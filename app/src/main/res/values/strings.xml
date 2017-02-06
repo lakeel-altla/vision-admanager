@@ -67,5 +67,6 @@
     <string name="input_error_name_required">Name is required.</string>
 
     <string name="dummy_abc">ABCDEFG</string>
+    <string name="action_import">Import</string>
 
 </resources>

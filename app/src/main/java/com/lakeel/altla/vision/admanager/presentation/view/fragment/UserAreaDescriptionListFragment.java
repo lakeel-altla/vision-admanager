@@ -1,16 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionListAdapter;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -98,15 +93,6 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (resultCode == Activity.RESULT_OK) {
-            presenter.onImported();
-        } else {
-            super.onActivityResult(requestCode, resultCode, intent);
-        }
-    }
-
-    @Override
     public void onItemsUpdated() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -124,12 +110,6 @@ public final class UserAreaDescriptionListFragment
     @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(recyclerView, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onShowImportActivity(@NonNull File destinationFile) {
-        Intent intent = TangoIntents.createAdfImportIntent(destinationFile.getPath());
-        startActivityForResult(intent, 0);
     }
 
     @Override

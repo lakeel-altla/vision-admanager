@@ -113,11 +113,6 @@ public final class UserAreaDescriptionListAdapter
             }
         }
 
-        @OnClick(R.id.image_button_import)
-        void onClickImageButtonImport() {
-            itemPresenter.onClickImageButtonImport(getAdapterPosition());
-        }
-
         @OnClick(R.id.image_button_upload)
         void onClickImageButtonUpload() {
             itemPresenter.onClickImageButtonUpload(getAdapterPosition());

@@ -8,7 +8,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionLi
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
 
 import android.support.annotation.NonNull;
@@ -25,9 +24,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
     @Inject
     FindAllUserAreaDescriptionsUseCase findAllUserAreaDescriptionsUseCase;
-
-    @Inject
-    GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
 
     @Inject
     UploadUserAreaDescriptionFileUseCase uploadUserAreaDescriptionFileUseCase;
@@ -67,10 +63,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         manageDisposable(disposable);
     }
 
-    public void onImported() {
-        getView().onSnackbar(R.string.snackbar_done);
-    }
-
     public int getItemCount() {
         return items.size();
     }
@@ -95,19 +87,6 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         public void onBind(int position) {
             UserAreaDescriptionItemModel itemModel = items.get(position);
             itemView.onModelUpdated(itemModel);
-        }
-
-        public void onClickImageButtonImport(int position) {
-            String areaDescriptionId = items.get(position).areaDescriptionId;
-
-            Disposable disposable = getAreaDescriptionCacheFileUseCase
-                    .execute(areaDescriptionId)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(getView()::onShowImportActivity, e -> {
-                        getLog().e("Failed.", e);
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    });
-            manageDisposable(disposable);
         }
 
         public void onClickImageButtonUpload(int position) {

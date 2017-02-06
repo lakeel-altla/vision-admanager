@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionVi
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
+import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 
 import android.os.Bundle;
@@ -30,6 +31,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
+
+    @Inject
+    GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
 
     @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
@@ -97,12 +101,27 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
         manageDisposable(disposable);
     }
 
+    public void onActionImport() {
+        Disposable disposable = getAreaDescriptionCacheFileUseCase
+                .execute(areaDescriptionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getView()::onShowImportActivity, e -> {
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
+    }
+
     public void onActionEdit() {
         getView().onShowUserAreaDescriptionEditView(areaDescriptionId);
     }
 
     public void onActionDelete() {
         getView().onShowDeleteConfirmationDialog();
+    }
+
+    public void onImported() {
+        getView().onSnackbar(R.string.snackbar_done);
     }
 
     public void onDelete() {
