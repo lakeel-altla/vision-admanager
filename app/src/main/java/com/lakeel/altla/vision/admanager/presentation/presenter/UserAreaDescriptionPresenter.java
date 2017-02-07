@@ -207,6 +207,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe(() -> {
                     model.fileUploaded = true;
                     updateActions();
+                    getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -230,6 +231,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe(() -> {
                     model.fileCached = true;
                     updateActions();
+                    getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -245,6 +247,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe(() -> {
                     model.fileCached = false;
                     updateActions();
+                    getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);

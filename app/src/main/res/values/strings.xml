@@ -76,5 +76,11 @@
     <string name="field_not_imported">Not Imported</string>
 
     <string name="dummy_abc">ABCDEFG</string>
+    <string name="label_in_cloud">In Cloud</string>
+    <string name="field_uploaded">Uploaded</string>
+    <string name="field_not_uploaded">Not Uploaded</string>
+    <string name="label_in_cache">In Cache</string>
+    <string name="field_cached">Cached</string>
+    <string name="field_not_cached">Not Cached</string>
 
 </resources>

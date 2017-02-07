@@ -52,6 +52,12 @@ public final class UserAreaDescriptionFragment
     @BindView(R.id.text_view_in_tango)
     TextView textViewInTango;
 
+    @BindView(R.id.text_view_in_cloud)
+    TextView textViewInCloud;
+
+    @BindView(R.id.text_view_in_cache)
+    TextView textViewInCache;
+
     @BindView(R.id.text_view_name)
     TextView textViewName;
 
@@ -183,12 +189,14 @@ public final class UserAreaDescriptionFragment
     @Override
     public void onModelUpdated(@NonNull UserAreaDescriptionModel model) {
         textViewId.setText(model.areaDescriptionId);
+
         String createdAtString = null;
         if (0 < model.createdAt) {
             createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +
                               DateFormat.getTimeFormat(getContext()).format(model.createdAt);
         }
         textViewCreatedAt.setText(createdAtString);
+
         String importStatusString = null;
         switch (model.importStatus) {
             case IMPORTED:
@@ -202,6 +210,14 @@ public final class UserAreaDescriptionFragment
                 break;
         }
         textViewInTango.setText(importStatusString);
+
+        String uploadStatusString =
+                getString(model.fileUploaded ? R.string.field_uploaded : R.string.field_not_uploaded);
+        textViewInCloud.setText(uploadStatusString);
+
+        String cacheStatusString = getString(model.fileCached ? R.string.field_cached : R.string.field_not_cached);
+        textViewInCache.setText(cacheStatusString);
+
         textViewName.setText(model.name);
         textViewAreaName.setText(model.areaName);
 
