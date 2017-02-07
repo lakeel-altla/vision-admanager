@@ -10,7 +10,7 @@ import java.util.List;
 
 public final class TangoAreaDescriptionMetadataRepository {
 
-    public TangoAreaDescriptionMetaData find(Tango tango, String areaDescriptionId) {
+    public TangoAreaDescriptionMetaData get(Tango tango, String areaDescriptionId) {
         if (tango == null) throw new ArgumentNullException("tango");
         if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
 
@@ -24,7 +24,7 @@ public final class TangoAreaDescriptionMetadataRepository {
         List<TangoAreaDescriptionMetaData> metaDatas = new ArrayList<>(areaDescriptionIds.size());
 
         for (String areaDescriptionId : areaDescriptionIds) {
-            TangoAreaDescriptionMetaData metaData = find(tango, areaDescriptionId);
+            TangoAreaDescriptionMetaData metaData = get(tango, areaDescriptionId);
             metaDatas.add(metaData);
         }
 

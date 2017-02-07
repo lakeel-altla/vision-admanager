@@ -31,6 +31,17 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"/>
 
+    <TextView android:text="@string/label_in_tango"
+              android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+              android:layout_marginTop="@dimen/content_vertical_margin"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
+    <TextView android:id="@+id/text_view_in_tango"
+              android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
     <TextView android:text="@string/label_name"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"

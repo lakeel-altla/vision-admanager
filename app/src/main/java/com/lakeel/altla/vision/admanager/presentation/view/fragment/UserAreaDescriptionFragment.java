@@ -49,6 +49,9 @@ public final class UserAreaDescriptionFragment
     @BindView(R.id.text_view_created_at)
     TextView textViewCreatedAt;
 
+    @BindView(R.id.text_view_in_tango)
+    TextView textViewInTango;
+
     @BindView(R.id.text_view_name)
     TextView textViewName;
 
@@ -57,11 +60,13 @@ public final class UserAreaDescriptionFragment
 
     private InteractionListener interactionListener;
 
-    private boolean uploadMenuEnabled;
+    private boolean actionImportEnabled;
 
-    private boolean downloadMenuEnabled;
+    private boolean actionUploadEnabled;
 
-    private boolean deleteCacheEnabled;
+    private boolean actionDownloadEnabled;
+
+    private boolean actionDeleteCacheEnabled;
 
     private ProgressDialog progressDialog;
 
@@ -132,9 +137,10 @@ public final class UserAreaDescriptionFragment
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_upload).setVisible(uploadMenuEnabled);
-        menu.findItem(R.id.action_download).setVisible(downloadMenuEnabled);
-        menu.findItem(R.id.action_delete_cache).setVisible(deleteCacheEnabled);
+        menu.findItem(R.id.action_import).setVisible(actionImportEnabled);
+        menu.findItem(R.id.action_upload).setVisible(actionUploadEnabled);
+        menu.findItem(R.id.action_download).setVisible(actionDownloadEnabled);
+        menu.findItem(R.id.action_delete_cache).setVisible(actionDeleteCacheEnabled);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -183,6 +189,19 @@ public final class UserAreaDescriptionFragment
                               DateFormat.getTimeFormat(getContext()).format(model.createdAt);
         }
         textViewCreatedAt.setText(createdAtString);
+        String importStatusString = null;
+        switch (model.importStatus) {
+            case IMPORTED:
+                importStatusString = getString(R.string.field_imported);
+                break;
+            case NOT_IMPORTED:
+                importStatusString = getString(R.string.field_not_imported);
+                break;
+            case UNKNOWN:
+            default:
+                break;
+        }
+        textViewInTango.setText(importStatusString);
         textViewName.setText(model.name);
         textViewAreaName.setText(model.areaName);
 
@@ -223,20 +242,26 @@ public final class UserAreaDescriptionFragment
     }
 
     @Override
-    public void onUpdateUploadMenu(boolean enabled) {
-        uploadMenuEnabled = enabled;
+    public void onUpdateActionImport(boolean enabled) {
+        actionImportEnabled = enabled;
         interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
-    public void onUpdateDownloadMenu(boolean enabled) {
-        downloadMenuEnabled = enabled;
+    public void onUpdateActionUpload(boolean enabled) {
+        actionUploadEnabled = enabled;
         interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
-    public void onUpdateDeleteCacheMenu(boolean enabled) {
-        deleteCacheEnabled = enabled;
+    public void onUpdateActionDownload(boolean enabled) {
+        actionDownloadEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onUpdateActionDeleteCache(boolean enabled) {
+        actionDeleteCacheEnabled = enabled;
         interactionListener.onInvalidateOptionsMenu();
     }
 

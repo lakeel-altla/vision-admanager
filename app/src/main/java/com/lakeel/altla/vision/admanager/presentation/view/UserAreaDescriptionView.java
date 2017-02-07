@@ -19,11 +19,13 @@ public interface UserAreaDescriptionView {
 
     void onHideProgressDialog();
 
-    void onUpdateUploadMenu(boolean enabled);
+    void onUpdateActionImport(boolean enabled);
 
-    void onUpdateDownloadMenu(boolean enabled);
+    void onUpdateActionUpload(boolean enabled);
 
-    void onUpdateDeleteCacheMenu(boolean enabled);
+    void onUpdateActionDownload(boolean enabled);
+
+    void onUpdateActionDeleteCache(boolean enabled);
 
     void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
 

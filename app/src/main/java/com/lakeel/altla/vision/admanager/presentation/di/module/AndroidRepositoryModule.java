@@ -4,6 +4,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
+import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
 
@@ -21,6 +22,12 @@ public final class AndroidRepositoryModule {
     @Provides
     public TangoAreaDescriptionMetadataRepository provideTangoAreaDescriptionMetadataRepository() {
         return new TangoAreaDescriptionMetadataRepository();
+    }
+
+    @ActivityScope
+    @Provides
+    public TangoAreaDescriptionIdRepository provideTangoAreaDescriptionIdRepository() {
+        return new TangoAreaDescriptionIdRepository();
     }
 
     @ActivityScope

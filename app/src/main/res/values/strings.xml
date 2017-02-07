@@ -16,6 +16,10 @@
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+    <string name="action_upload">Upload</string>
+    <string name="action_download">Download</string>
+    <string name="action_delete_cache">Delete cache</string>
     <string name="action_settings">Settings</string>
 
     <string name="nav_user_area_list">Areas</string>
@@ -61,16 +65,16 @@
     <string name="label_place">Place</string>
     <string name="label_level">Level</string>
     <string name="label_area">Area</string>
+    <string name="label_in_tango">In Tango</string>
 
     <string name="hint_edit_name">Type the name</string>
     <string name="hint_edit_place">Place</string>
 
     <string name="input_error_name_required">Name is required.</string>
 
+    <string name="field_imported">Imported</string>
+    <string name="field_not_imported">Not Imported</string>
+
     <string name="dummy_abc">ABCDEFG</string>
-    <string name="action_import">Import</string>
-    <string name="action_upload">Upload</string>
-    <string name="action_download">Download</string>
-    <string name="action_delete_cache">Delete cache</string>
 
 </resources>

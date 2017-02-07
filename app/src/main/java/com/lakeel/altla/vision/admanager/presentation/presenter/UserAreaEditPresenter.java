@@ -95,7 +95,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                         getView().onModelUpdated(model);
                     }, e -> {
                         getView().onSnackbar(R.string.snackbar_failed);
-                        getLog().e(String.format("Failed to find the user area: areaId = %s", areaId), e);
+                        getLog().e(String.format("Failed to get the user area: areaId = %s", areaId), e);
                     });
             manageDisposable(disposable);
         } else {

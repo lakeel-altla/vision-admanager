@@ -7,9 +7,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
 import com.lakeel.altla.vision.ArgumentNullException;
+import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,6 +20,9 @@ import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
 public final class ExportUserAreaDescriptionUseCase {
+
+    @Inject
+    TangoAreaDescriptionIdRepository tangoAreaDescriptionIdRepository;
 
     @Inject
     TangoAreaDescriptionMetadataRepository tangoAreaDescriptionMetadataRepository;
@@ -36,10 +42,10 @@ public final class ExportUserAreaDescriptionUseCase {
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 
         return Single.<UserAreaDescription>create(e -> {
-            // Get the metadata from Tango.
-            TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.find(
-                    tango, areaDescriptionId);
-            if (metaData != null) {
+            List<String> areaDescriptionIds = tangoAreaDescriptionIdRepository.findAll(tango);
+            if (areaDescriptionIds.contains(areaDescriptionId)) {
+                TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.get(
+                        tango, areaDescriptionId);
                 UserAreaDescription userAreaDescription = new UserAreaDescription();
                 userAreaDescription.userId = user.getUid();
                 userAreaDescription.areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);

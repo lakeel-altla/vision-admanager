@@ -14,5 +14,7 @@ public final class UserAreaDescriptionModel {
 
     public String areaName;
 
+    public ImportStatus importStatus = ImportStatus.UNKNOWN;
+
     public boolean fileCached;
 }

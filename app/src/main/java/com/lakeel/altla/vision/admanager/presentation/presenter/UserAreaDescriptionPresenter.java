@@ -1,11 +1,16 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.atap.tangoservice.Tango;
+
+import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
@@ -22,7 +27,8 @@ import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDescriptionView> {
+public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDescriptionView>
+        implements TangoWrapper.OnTangoReadyListener {
 
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
@@ -34,6 +40,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
+
+    @Inject
+    FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
 
     @Inject
     GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
@@ -50,9 +59,14 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     @Inject
     DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
+    @Inject
+    TangoWrapper tangoWrapper;
+
     private String areaDescriptionId;
 
     private UserAreaDescriptionModel model;
+
+    private ImportStatus importStatus = ImportStatus.UNKNOWN;
 
     private long prevBytesTransferred;
 
@@ -82,8 +96,32 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     }
 
     @Override
+    public void onTangoReady(Tango tango) {
+        runOnUiThread(() -> {
+            Disposable disposable = findTangoAreaDescriptionUseCase
+                    .execute(tango, areaDescriptionId)
+                    .map(tangoAreaDescription -> ImportStatus.IMPORTED)
+                    .defaultIfEmpty(ImportStatus.NOT_IMPORTED)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(importStatus -> {
+                        this.importStatus = importStatus;
+                        if (model != null) {
+                            model.importStatus = importStatus;
+                            updateActions();
+                            getView().onModelUpdated(model);
+                        }
+                    }, e -> {
+                        getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    });
+            manageDisposable(disposable);
+        });
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
+
+        tangoWrapper.addOnTangoReadyListener(this);
 
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
@@ -121,7 +159,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     this.model = model;
-                    updateMenus();
+                    this.model.importStatus = importStatus;
+                    updateActions();
                     getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -129,11 +168,20 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
         manageDisposable(disposable);
     }
 
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        tangoWrapper.removeOnTangoReadyListener(this);
+    }
+
     public void onActionImport() {
         Disposable disposable = getAreaDescriptionCacheFileUseCase
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getView()::onShowImportActivity, e -> {
+                .subscribe((file) -> {
+                    getView().onShowImportActivity(file);
+                }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
@@ -158,7 +206,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
                     model.fileUploaded = true;
-                    updateMenus();
+                    updateActions();
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -181,7 +229,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
                     model.fileCached = true;
-                    updateMenus();
+                    updateActions();
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -196,7 +244,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     model.fileCached = false;
-                    updateMenus();
+                    updateActions();
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -226,9 +274,10 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
         manageDisposable(disposable);
     }
 
-    private void updateMenus() {
-        getView().onUpdateUploadMenu(!model.fileUploaded && model.fileCached);
-        getView().onUpdateDownloadMenu(model.fileUploaded && !model.fileCached);
-        getView().onUpdateDeleteCacheMenu(model.fileUploaded && model.fileCached);
+    private void updateActions() {
+        getView().onUpdateActionImport(model.importStatus == ImportStatus.NOT_IMPORTED);
+        getView().onUpdateActionUpload(!model.fileUploaded && model.fileCached);
+        getView().onUpdateActionDownload(model.fileUploaded && !model.fileCached);
+        getView().onUpdateActionDeleteCache(model.fileUploaded && model.fileCached);
     }
 }
