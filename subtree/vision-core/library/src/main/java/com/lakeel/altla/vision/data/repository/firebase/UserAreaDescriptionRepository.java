@@ -7,10 +7,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +26,11 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     private static final String FIELD_AREA_ID = "areaId";
 
-    public UserAreaDescriptionRepository(FirebaseDatabase database) {
+    public UserAreaDescriptionRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserAreaDescription userAreaDescription) {
-        if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
-
+    public void save(@NonNull UserAreaDescription userAreaDescription) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userAreaDescription.userId)
@@ -43,11 +42,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void find(String userId, String areaDescriptionId, OnSuccessListener<UserAreaDescription> onSuccessListener,
-                     OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void find(@NonNull String userId, @NonNull String areaDescriptionId,
+                     OnSuccessListener<UserAreaDescription> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
@@ -69,10 +65,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void findAll(String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
                         OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
@@ -94,12 +88,9 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void findByAreaId(String userId, String areaId,
+    public void findByAreaId(@NonNull String userId, @NonNull String areaId,
                              OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
                              OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaId == null) throw new ArgumentNullException("areaId");
-
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
@@ -122,10 +113,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void delete(String userId, String areaDescriptionId) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)

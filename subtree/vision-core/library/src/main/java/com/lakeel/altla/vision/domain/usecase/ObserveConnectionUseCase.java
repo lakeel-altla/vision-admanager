@@ -11,6 +11,8 @@ import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository
 import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
 import com.lakeel.altla.vision.domain.model.UserConnection;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -30,6 +32,7 @@ public final class ObserveConnectionUseCase {
     public ObserveConnectionUseCase() {
     }
 
+    @NonNull
     public Observable<Boolean> execute() {
         return ObservableDataObservable
                 .using(() -> connectionRepository.observe())

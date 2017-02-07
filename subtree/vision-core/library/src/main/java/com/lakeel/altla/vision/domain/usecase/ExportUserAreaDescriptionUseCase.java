@@ -6,11 +6,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -34,10 +35,8 @@ public final class ExportUserAreaDescriptionUseCase {
     public ExportUserAreaDescriptionUseCase() {
     }
 
-    public Single<UserAreaDescription> execute(Tango tango, String areaDescriptionId) {
-        if (tango == null) throw new ArgumentNullException("tango");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Single<UserAreaDescription> execute(@NonNull Tango tango, @NonNull String areaDescriptionId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

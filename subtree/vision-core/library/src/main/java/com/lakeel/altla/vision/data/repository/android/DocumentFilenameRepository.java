@@ -4,16 +4,19 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public final class DocumentFilenameRepository {
 
     private final ContentResolver contentResolver;
 
-    public DocumentFilenameRepository(ContentResolver contentResolver) {
+    public DocumentFilenameRepository(@NonNull ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
     }
 
-    public String find(Uri uri) {
+    @Nullable
+    public String find(@NonNull Uri uri) {
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         if (cursor == null) {
             throw new IllegalStateException(

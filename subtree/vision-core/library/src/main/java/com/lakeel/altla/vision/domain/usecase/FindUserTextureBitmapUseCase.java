@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.FileBitmapRepository;
 import com.lakeel.altla.vision.data.repository.android.TextureCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileMetadataRepository;
@@ -14,6 +13,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 
@@ -45,9 +45,8 @@ public final class FindUserTextureBitmapUseCase {
     public FindUserTextureBitmapUseCase() {
     }
 
-    public Single<Bitmap> execute(String textureId, OnProgressListener onProgressListener) {
-        if (textureId == null) throw new ArgumentNullException("textureId");
-
+    @NonNull
+    public Single<Bitmap> execute(@NonNull String textureId, OnProgressListener onProgressListener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

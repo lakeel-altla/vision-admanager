@@ -6,8 +6,9 @@ import com.google.firebase.database.ServerValue;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserConnection;
+
+import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +23,11 @@ public final class UserConnectionRepository extends BaseDatabaseRepository {
 
     private static final String PATH_LAST_ONLINE_TIME = "lastOnlineTime";
 
-    public UserConnectionRepository(FirebaseDatabase database) {
+    public UserConnectionRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void markAsOnline(UserConnection userConnection) {
-        if (userConnection == null) throw new ArgumentNullException("userConnection");
-
+    public void markAsOnline(@NonNull UserConnection userConnection) {
         DatabaseReference connectionReference = getDatabase().getReference()
                                                              .child(PATH_USER_CONNECTIONS)
                                                              .child(userConnection.userId)
@@ -56,9 +55,7 @@ public final class UserConnectionRepository extends BaseDatabaseRepository {
         });
     }
 
-    public void markAsOffline(UserConnection userConnection) {
-        if (userConnection == null) throw new ArgumentNullException("userConnection");
-
+    public void markAsOffline(@NonNull UserConnection userConnection) {
         DatabaseReference connectionReference = getDatabase().getReference()
                                                              .child(PATH_USER_CONNECTIONS)
                                                              .child(userConnection.userId)

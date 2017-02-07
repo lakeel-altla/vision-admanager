@@ -1,7 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+
+import android.support.annotation.NonNull;
 
 import java.io.File;
 
@@ -19,9 +20,8 @@ public final class GetAreaDescriptionCacheFileUseCase {
     public GetAreaDescriptionCacheFileUseCase() {
     }
 
-    public Single<File> execute(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Single<File> execute(@NonNull String areaDescriptionId) {
         return Single.<File>create(e -> {
             File file = areaDescriptionCacheRepository.getFile(areaDescriptionId);
             e.onSuccess(file);

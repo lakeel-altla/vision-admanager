@@ -7,6 +7,8 @@ import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
 import com.lakeel.altla.vision.domain.model.UserProfile;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -21,6 +23,7 @@ public final class ObserveUserProfileUseCase {
     public ObserveUserProfileUseCase() {
     }
 
+    @NonNull
     public Observable<UserProfile> execute() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");

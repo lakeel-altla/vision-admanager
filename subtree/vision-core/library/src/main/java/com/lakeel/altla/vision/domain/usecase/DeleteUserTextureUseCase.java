@@ -3,10 +3,11 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.TextureCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -28,9 +29,8 @@ public final class DeleteUserTextureUseCase {
     public DeleteUserTextureUseCase() {
     }
 
-    public Completable execute(String textureId) {
-        if (textureId == null) throw new ArgumentNullException("textureId");
-
+    @NonNull
+    public Completable execute(@NonNull String textureId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

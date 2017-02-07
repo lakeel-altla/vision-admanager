@@ -3,12 +3,13 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.model.UserTexture;
+
+import android.support.annotation.NonNull;
 
 import java.io.InputStream;
 import java.util.UUID;
@@ -34,10 +35,9 @@ public final class SaveUserTextureUseCase {
     public SaveUserTextureUseCase() {
     }
 
-    public Single<String> execute(String textureId, String name, String localUri,
+    @NonNull
+    public Single<String> execute(String textureId, @NonNull String name, String localUri,
                                   OnProgressListener onProgressListener) {
-        if (name == null) throw new ArgumentNullException("name");
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

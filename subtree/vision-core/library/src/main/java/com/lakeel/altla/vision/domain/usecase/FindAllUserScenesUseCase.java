@@ -5,9 +5,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
 import com.lakeel.altla.vision.domain.model.UserScene;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -25,9 +26,8 @@ public final class FindAllUserScenesUseCase {
     public FindAllUserScenesUseCase() {
     }
 
-    public Observable<UserScene> execute(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Observable<UserScene> execute(@NonNull String areaDescriptionId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

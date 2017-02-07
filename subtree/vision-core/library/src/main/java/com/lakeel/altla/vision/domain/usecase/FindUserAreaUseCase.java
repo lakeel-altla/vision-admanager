@@ -3,9 +3,10 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.domain.model.UserArea;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -20,9 +21,8 @@ public final class FindUserAreaUseCase {
     public FindUserAreaUseCase() {
     }
 
-    public Maybe<UserArea> execute(String areaId) {
-        if (areaId == null) throw new ArgumentNullException("areaId");
-
+    @NonNull
+    public Maybe<UserArea> execute(@NonNull String areaId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");
 

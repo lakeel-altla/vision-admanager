@@ -7,10 +7,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserTexture;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,11 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
 
     private static final String FIELD_NAME = "name";
 
-    public UserTextureRepository(FirebaseDatabase database) {
+    public UserTextureRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserTexture userTexture) {
-        if (userTexture == null) throw new ArgumentNullException("userTexture");
-
+    public void save(@NonNull UserTexture userTexture) {
         getDatabase().getReference()
                      .child(PATH_USER_TEXTURES)
                      .child(userTexture.userId)
@@ -41,11 +40,8 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(String userId, String textureId, OnSuccessListener<UserTexture> onSuccessListener,
-                     OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (textureId == null) throw new ArgumentNullException("textureId");
-
+    public void find(@NonNull String userId, @NonNull String textureId,
+                     OnSuccessListener<UserTexture> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(PATH_USER_TEXTURES)
                      .child(userId)
@@ -67,10 +63,8 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void findAll(String userId, OnSuccessListener<List<UserTexture>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<UserTexture>> onSuccessListener,
                         OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-
         getDatabase().getReference()
                      .child(PATH_USER_TEXTURES)
                      .child(userId)
@@ -92,10 +86,7 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void delete(String userId, String textureId) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (textureId == null) throw new ArgumentNullException("textureId");
-
+    public void delete(@NonNull String userId, @NonNull String textureId) {
         getDatabase().getReference()
                      .child(PATH_USER_TEXTURES)
                      .child(userId)

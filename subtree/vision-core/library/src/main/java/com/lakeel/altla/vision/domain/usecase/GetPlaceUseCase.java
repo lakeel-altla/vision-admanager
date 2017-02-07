@@ -2,8 +2,9 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.google.android.gms.location.places.Place;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -19,9 +20,8 @@ public final class GetPlaceUseCase {
     public GetPlaceUseCase() {
     }
 
-    public Single<Place> execute(String placeId) {
-        if (placeId == null) throw new ArgumentNullException("placeId");
-
+    @NonNull
+    public Single<Place> execute(@NonNull String placeId) {
         return Single.<Place>create(e -> {
             placeRepository.get(placeId, e::onSuccess, e::onError);
         }).subscribeOn(Schedulers.io());

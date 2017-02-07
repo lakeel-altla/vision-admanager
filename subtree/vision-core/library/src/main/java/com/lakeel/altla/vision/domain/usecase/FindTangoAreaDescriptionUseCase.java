@@ -3,11 +3,12 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.domain.mapper.TangoAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -28,10 +29,8 @@ public final class FindTangoAreaDescriptionUseCase {
     public FindTangoAreaDescriptionUseCase() {
     }
 
-    public Maybe<TangoAreaDescription> execute(Tango tango, String areaDescriptionId) {
-        if (tango == null) throw new ArgumentNullException("tango");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Maybe<TangoAreaDescription> execute(@NonNull Tango tango, @NonNull String areaDescriptionId) {
         return Maybe.<TangoAreaDescription>create(e -> {
             List<String> areaDescriptionIds = tangoAreaDescriptionIdRepository.findAll(tango);
             if (areaDescriptionIds.contains(areaDescriptionId)) {

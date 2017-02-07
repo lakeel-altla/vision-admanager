@@ -1,10 +1,10 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepository;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -20,9 +20,8 @@ public final class FindDocumentBitmapUseCase {
     public FindDocumentBitmapUseCase() {
     }
 
-    public Single<Bitmap> execute(Uri uri) {
-        if (uri == null) throw new ArgumentNullException("uri");
-
+    @NonNull
+    public Single<Bitmap> execute(@NonNull Uri uri) {
         return Single.<Bitmap>create(e -> {
             Bitmap bitmap = documentBitmapRepository.find(uri);
             e.onSuccess(bitmap);

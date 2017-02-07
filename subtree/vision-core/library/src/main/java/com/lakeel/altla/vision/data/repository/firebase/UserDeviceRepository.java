@@ -4,8 +4,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserDevice;
+
+import android.support.annotation.NonNull;
 
 public final class UserDeviceRepository extends BaseDatabaseRepository {
 
@@ -13,13 +14,11 @@ public final class UserDeviceRepository extends BaseDatabaseRepository {
 
     private static final String PATH_USER_DEVICES = "userDevices";
 
-    public UserDeviceRepository(FirebaseDatabase database) {
+    public UserDeviceRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserDevice userDevice) {
-        if (userDevice == null) throw new ArgumentNullException("userDevice");
-
+    public void save(@NonNull UserDevice userDevice) {
         getDatabase().getReference()
                      .child(PATH_USER_DEVICES)
                      .child(userDevice.userId)

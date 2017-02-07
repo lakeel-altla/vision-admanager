@@ -8,6 +8,8 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.domain.model.UserArea;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -24,6 +26,7 @@ public final class FindAllUserAreasUseCase {
     public FindAllUserAreasUseCase() {
     }
 
+    @NonNull
     public Observable<UserArea> execute() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) throw new IllegalStateException("The user is not signed in.");

@@ -1,8 +1,9 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -18,9 +19,8 @@ public final class SaveUserAreaDescriptionUseCase {
     public SaveUserAreaDescriptionUseCase() {
     }
 
-    public Completable execute(UserAreaDescription userAreaDescription) {
-        if (userAreaDescription == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Completable execute(@NonNull UserAreaDescription userAreaDescription) {
         return Completable.create(e -> {
             userAreaDescriptionRepository.save(userAreaDescription);
             e.onComplete();

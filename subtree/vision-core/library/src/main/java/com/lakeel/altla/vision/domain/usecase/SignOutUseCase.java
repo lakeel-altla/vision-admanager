@@ -7,6 +7,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.domain.model.UserConnection;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
@@ -21,6 +23,7 @@ public final class SignOutUseCase {
     public SignOutUseCase() {
     }
 
+    @NonNull
     public Completable execute() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser == null) throw new IllegalStateException("The current user not found.");
