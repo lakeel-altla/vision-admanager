@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
@@ -100,6 +100,7 @@ public final class UserAreaDescriptionFragment
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
     }
 
@@ -108,13 +109,6 @@ public final class UserAreaDescriptionFragment
         super.onDetachOverride();
 
         interactionListener = null;
-    }
-
-    @Override
-    protected void onInject(@NonNull ActivityComponent component) {
-        super.onInject(component);
-
-        component.inject(this);
     }
 
     @Nullable

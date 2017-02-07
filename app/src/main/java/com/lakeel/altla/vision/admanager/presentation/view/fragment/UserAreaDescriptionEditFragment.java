@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionEditPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
@@ -86,16 +86,10 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    protected void onInject(@NonNull ActivityComponent component) {
-        super.onInject(component);
-
-        component.inject(this);
-    }
-
-    @Override
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
     }
 

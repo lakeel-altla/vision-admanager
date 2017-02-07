@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.TangoAreaDescriptionListAdapter;
@@ -53,6 +53,7 @@ public final class TangoAreaDescriptionListFragment
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
     }
 
@@ -61,13 +62,6 @@ public final class TangoAreaDescriptionListFragment
         super.onDetachOverride();
 
         interactionListener = null;
-    }
-
-    @Override
-    protected void onInject(@NonNull ActivityComponent component) {
-        super.onInject(component);
-
-        component.inject(this);
     }
 
     @Nullable

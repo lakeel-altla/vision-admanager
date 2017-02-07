@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionListAdapter;
@@ -50,16 +50,10 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    protected void onInject(@NonNull ActivityComponent component) {
-        super.onInject(component);
-
-        component.inject(this);
-    }
-
-    @Override
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
     }
 

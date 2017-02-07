@@ -7,7 +7,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaEditPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
@@ -124,16 +124,10 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    protected void onInject(@NonNull ActivityComponent component) {
-        super.onInject(component);
-
-        component.inject(this);
-    }
-
-    @Override
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
     }
 

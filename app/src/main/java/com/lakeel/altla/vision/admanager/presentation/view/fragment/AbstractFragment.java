@@ -2,8 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.presenter.Presenter;
 
 import android.content.Context;
@@ -27,15 +25,7 @@ public abstract class AbstractFragment<TView, TPresenter extends Presenter<TView
     public final void onAttach(Context context) {
         super.onAttach(context);
 
-        ActivityComponent component = ActivityScopeContext.class.cast(context).getActivityComponent();
-        if (component != null) {
-            onInject(component);
-        }
-
         onAttachOverride(context);
-    }
-
-    protected void onInject(@NonNull ActivityComponent component) {
     }
 
     protected void onAttachOverride(@NonNull Context context) {
