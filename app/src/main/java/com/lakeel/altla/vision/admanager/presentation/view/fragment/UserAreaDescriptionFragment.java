@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
+import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

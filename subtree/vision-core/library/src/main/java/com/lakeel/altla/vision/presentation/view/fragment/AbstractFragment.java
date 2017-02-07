@@ -1,8 +1,8 @@
-package com.lakeel.altla.vision.admanager.presentation.view.fragment;
+package com.lakeel.altla.vision.presentation.view.fragment;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.admanager.presentation.presenter.Presenter;
+import com.lakeel.altla.vision.presentation.presenter.Presenter;
 
 import android.content.Context;
 import android.os.Bundle;

@@ -16,6 +16,7 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

@@ -5,6 +5,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaSelectPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
 import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaSelectAdapter;
+import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
 import android.os.Bundle;

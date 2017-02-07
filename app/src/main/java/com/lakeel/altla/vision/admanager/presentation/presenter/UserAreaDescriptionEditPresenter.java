@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.content.res.Resources;
 import android.os.Bundle;

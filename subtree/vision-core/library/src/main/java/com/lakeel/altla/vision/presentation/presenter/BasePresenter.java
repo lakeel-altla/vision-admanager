@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.presenter;
+package com.lakeel.altla.vision.presentation.presenter;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;

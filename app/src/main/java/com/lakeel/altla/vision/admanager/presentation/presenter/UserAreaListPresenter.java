@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.support.annotation.NonNull;
 

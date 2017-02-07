@@ -8,6 +8,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescript
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
 import android.os.Bundle;

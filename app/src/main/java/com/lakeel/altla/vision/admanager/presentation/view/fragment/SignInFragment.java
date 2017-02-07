@@ -4,6 +4,7 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
+import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;

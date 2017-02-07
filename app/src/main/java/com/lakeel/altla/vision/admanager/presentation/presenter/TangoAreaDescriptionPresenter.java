@@ -13,6 +13,7 @@ import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

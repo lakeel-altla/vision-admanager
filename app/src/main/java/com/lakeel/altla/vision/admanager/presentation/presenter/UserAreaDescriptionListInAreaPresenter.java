@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionIt
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionsByAreaIdUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.content.res.Resources;
 import android.os.Bundle;

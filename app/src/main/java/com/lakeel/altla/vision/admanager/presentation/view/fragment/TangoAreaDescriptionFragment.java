@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
+import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.Activity;
 import android.content.Context;

@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaM
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

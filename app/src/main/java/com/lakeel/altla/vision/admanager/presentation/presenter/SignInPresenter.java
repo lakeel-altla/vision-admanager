@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
 import com.lakeel.altla.vision.domain.usecase.SignInWithGoogleUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.app.Activity;
 import android.content.Intent;

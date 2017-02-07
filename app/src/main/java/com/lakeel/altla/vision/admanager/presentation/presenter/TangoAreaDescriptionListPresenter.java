@@ -8,6 +8,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaD
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
+import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.support.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.presenter;
+package com.lakeel.altla.vision.presentation.presenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
