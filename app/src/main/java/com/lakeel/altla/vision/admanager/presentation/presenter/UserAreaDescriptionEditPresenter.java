@@ -1,8 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionEditModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
@@ -89,14 +88,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .map(userAreaDescription -> {
-                    UserAreaDescriptionEditModel model = new UserAreaDescriptionEditModel();
-                    model.areaDescriptionId = areaDescriptionId;
-                    model.name = userAreaDescription.name;
-                    model.creationTime = userAreaDescription.createdAt;
-                    model.areaId = userAreaDescription.areaId;
-                    return model;
-                })
+                .map(UserAreaDescriptionEditModelMapper::map)
                 .flatMap(model -> {
                     if (model.areaId != null) {
                         return findUserAreaUseCase
@@ -159,12 +151,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     }
 
     private void saveUserAreaDescription() {
-        UserAreaDescription userAreaDescription = new UserAreaDescription();
-        userAreaDescription.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userAreaDescription.areaDescriptionId = areaDescriptionId;
-        userAreaDescription.name = model.name;
-        userAreaDescription.createdAt = model.creationTime;
-        userAreaDescription.areaId = model.areaId;
+        UserAreaDescription userAreaDescription = UserAreaDescriptionEditModelMapper.map(model);
 
         Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
