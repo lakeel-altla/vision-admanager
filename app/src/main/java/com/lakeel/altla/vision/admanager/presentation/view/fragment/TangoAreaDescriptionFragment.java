@@ -48,12 +48,17 @@ public final class TangoAreaDescriptionFragment
     @BindView(R.id.text_view_created_at)
     TextView textViewCreatedAt;
 
+    @BindView(R.id.text_view_in_cloud)
+    TextView textViewInCloud;
+
     @BindView(R.id.text_view_name)
     TextView textViewName;
 
     private InteractionListener interactionListener;
 
     private MaterialDialog materialDialog;
+
+    private boolean actionExportEnabled;
 
     @NonNull
     public static TangoAreaDescriptionFragment newInstance(@NonNull String areaDescriptionId) {
@@ -119,6 +124,13 @@ public final class TangoAreaDescriptionFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.action_export).setVisible(actionExportEnabled);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_export:
@@ -144,15 +156,26 @@ public final class TangoAreaDescriptionFragment
     @Override
     public void onModelUpdated(@NonNull TangoAreaDescriptionModel model) {
         textViewId.setText(model.areaDescriptionId);
+
         String createdAtString = null;
         if (0 < model.createdAt) {
             createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +
                               DateFormat.getTimeFormat(getContext()).format(model.createdAt);
         }
         textViewCreatedAt.setText(createdAtString);
+
+        String exportedString = getString(model.exported ? R.string.field_exported : R.string.field_not_exported);
+        textViewInCloud.setText(exportedString);
+
         textViewName.setText(model.name);
 
         getActivity().setTitle(model.name);
+    }
+
+    @Override
+    public void onUpdateActionExport(boolean enabled) {
+        actionExportEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
@@ -191,5 +214,7 @@ public final class TangoAreaDescriptionFragment
     public interface InteractionListener {
 
         void onCloseTangoAreaDescriptionView();
+
+        void onInvalidateOptionsMenu();
     }
 }

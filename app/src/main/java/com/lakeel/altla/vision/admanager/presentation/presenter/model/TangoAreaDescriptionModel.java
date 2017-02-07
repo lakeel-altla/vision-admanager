@@ -7,4 +7,6 @@ public final class TangoAreaDescriptionModel {
     public String name;
 
     public long createdAt;
+
+    public boolean exported;
 }

@@ -11,6 +11,8 @@ public interface TangoAreaDescriptionView {
 
     void onModelUpdated(@NonNull TangoAreaDescriptionModel model);
 
+    void onUpdateActionExport(boolean enabled);
+
     void onShowTangoAreaDescriptionExportActivity(String areaDescriptionId, File directory);
 
     void onShowDeleteConfirmationDialog();

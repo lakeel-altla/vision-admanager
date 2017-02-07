@@ -6,10 +6,12 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
 
 import android.os.Bundle;
@@ -30,6 +32,9 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
     FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
 
     @Inject
+    FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
+
+    @Inject
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
 
     @Inject
@@ -42,6 +47,8 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
     TangoWrapper tangoWrapper;
 
     private String areaDescriptionId;
+
+    private TangoAreaDescriptionModel model;
 
     @Inject
     public TangoAreaDescriptionPresenter() {
@@ -73,8 +80,18 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
         Disposable disposable = findTangoAreaDescriptionUseCase
                 .execute(tangoWrapper.getTango(), areaDescriptionId)
                 .map(TangoAreaDescriptionModelMapper::map)
+                .flatMap(model -> {
+                    return findUserAreaDescriptionUseCase
+                            .execute(areaDescriptionId)
+                            .map(userAreaDescription -> {
+                                model.exported = true;
+                                return model;
+                            }).defaultIfEmpty(model);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
+                    this.model = model;
+                    getView().onUpdateActionExport(!model.exported);
                     getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
@@ -116,6 +133,9 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                 .execute(tangoWrapper.getTango(), areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userAreaDescription -> {
+                    model.exported = true;
+                    getView().onUpdateActionExport(!model.exported);
+                    getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
