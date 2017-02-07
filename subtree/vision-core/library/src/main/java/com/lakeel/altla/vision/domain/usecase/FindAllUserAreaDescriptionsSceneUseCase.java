@@ -1,11 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionSceneRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserAreaDescriptionScene;
 
 import android.support.annotation.NonNull;
@@ -17,10 +13,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public final class FindAllUserAreaDescriptionsSceneUseCase {
 
-    private static final Log LOG = LogFactory.getLog(FindAllUserAreaDescriptionsSceneUseCase.class);
-
     @Inject
     UserAreaDescriptionSceneRepository userAreaDescriptionSceneRepository;
+
+    @Inject
+    CurrentUserResolver currentUserResolver;
 
     @Inject
     public FindAllUserAreaDescriptionsSceneUseCase() {
@@ -28,10 +25,7 @@ public final class FindAllUserAreaDescriptionsSceneUseCase {
 
     @NonNull
     public Observable<UserAreaDescriptionScene> execute(@NonNull String areaDescriptionId) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
-
-        String userId = user.getUid();
+        String userId = currentUserResolver.getUserId();
 
         return Observable.<UserAreaDescriptionScene>create(e -> {
             userAreaDescriptionSceneRepository.findAll(userId, areaDescriptionId, userAreaDescriptionScenes -> {

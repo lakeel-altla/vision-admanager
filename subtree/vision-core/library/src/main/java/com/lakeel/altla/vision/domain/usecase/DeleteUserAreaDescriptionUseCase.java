@@ -1,10 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 
 import android.support.annotation.NonNull;
 
@@ -22,15 +20,15 @@ public final class DeleteUserAreaDescriptionUseCase {
     UserAreaDescriptionFileRepository userAreaDescriptionFileRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public DeleteUserAreaDescriptionUseCase() {
     }
 
     @NonNull
     public Completable execute(@NonNull String areaDescriptionId) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user in not signed in.");
-
-        String userId = user.getUid();
+        String userId = currentUserResolver.getUserId();
 
         return Completable.create(e -> userAreaDescriptionFileRepository.delete(userId, areaDescriptionId, aVoid -> {
             userAreaDescriptionRepository.delete(userId, areaDescriptionId);

@@ -1,9 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
 import android.support.annotation.NonNull;
@@ -19,16 +17,18 @@ public final class FindUserAreaDescriptionsByAreaIdUseCase {
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public FindUserAreaDescriptionsByAreaIdUseCase() {
     }
 
     @NonNull
     public Observable<UserAreaDescription> execute(@NonNull String areaId) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
+        String userId = currentUserResolver.getUserId();
 
         return Observable.<UserAreaDescription>create(e -> {
-            userAreaDescriptionRepository.findByAreaId(user.getUid(), areaId, userAreaDescriptions -> {
+            userAreaDescriptionRepository.findByAreaId(userId, areaId, userAreaDescriptions -> {
                 for (UserAreaDescription userAreaDescription : userAreaDescriptions) {
                     e.onNext(userAreaDescription);
                 }

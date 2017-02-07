@@ -1,9 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
 import com.lakeel.altla.vision.domain.model.UserProfile;
 
@@ -20,16 +18,18 @@ public final class ObserveUserProfileUseCase {
     UserProfileRepository userProfileRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public ObserveUserProfileUseCase() {
     }
 
     @NonNull
     public Observable<UserProfile> execute() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
+        String userId = currentUserResolver.getUserId();
 
         return ObservableDataObservable
-                .using(() -> userProfileRepository.observe(user.getUid()))
+                .using(() -> userProfileRepository.observe(userId))
                 .subscribeOn(Schedulers.io());
     }
 }
