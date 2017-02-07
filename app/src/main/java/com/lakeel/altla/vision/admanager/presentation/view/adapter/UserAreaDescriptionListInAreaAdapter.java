@@ -20,10 +20,24 @@ public final class UserAreaDescriptionListInAreaAdapter
 
     private final UserAreaDescriptionListInAreaPresenter presenter;
 
+    private RecyclerView recyclerView;
+
     private LayoutInflater inflater;
 
     public UserAreaDescriptionListInAreaAdapter(@NonNull UserAreaDescriptionListInAreaPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        this.recyclerView = null;
     }
 
     @Override
@@ -32,6 +46,12 @@ public final class UserAreaDescriptionListInAreaAdapter
             inflater = LayoutInflater.from(parent.getContext());
         }
         View itemView = inflater.inflate(R.layout.item_user_area_description_in_area, parent, false);
+        itemView.setOnClickListener(v -> {
+            if (recyclerView != null) {
+                int position = recyclerView.getChildAdapterPosition(itemView);
+                presenter.onClickItem(position);
+            }
+        });
         return new ViewHolder(itemView);
     }
 

@@ -99,6 +99,16 @@ public final class UserAreaDescriptionListInAreaFragment
     }
 
     @Override
+    public void onItemsUpdated() {
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemSelected(@NonNull String areaDescriptionId) {
+        interactionListener.onShowUserAreaDescriptionView(areaDescriptionId);
+    }
+
+    @Override
     public void onUpdateTitle(String title) {
         getActivity().setTitle(title);
     }
@@ -110,5 +120,6 @@ public final class UserAreaDescriptionListInAreaFragment
 
     public interface InteractionListener {
 
+        void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId);
     }
 }

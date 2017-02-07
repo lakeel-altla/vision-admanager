@@ -69,6 +69,9 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     protected void onStartOverride() {
         super.onStartOverride();
 
+        items.clear();
+        getView().onItemsUpdated();
+
         Disposable disposable1 = findUserAreaDescriptionsByAreaIdUseCase
                 .execute(areaId)
                 .map(UserAreaDescriptionItemModelMapper::map)
@@ -106,6 +109,11 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
         return new ItemPresenter();
     }
 
+    public void onClickItem(int position) {
+        UserAreaDescriptionItemModel model = items.get(position);
+        getView().onItemSelected(model.areaDescriptionId);
+    }
+
     public final class ItemPresenter {
 
         private UserAreaDescriptionItemView itemView;
@@ -115,8 +123,8 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
         }
 
         public void onBind(int position) {
-            UserAreaDescriptionItemModel itemModel = items.get(position);
-            itemView.onModelUpdated(itemModel);
+            UserAreaDescriptionItemModel model = items.get(position);
+            itemView.onModelUpdated(model);
         }
     }
 }
