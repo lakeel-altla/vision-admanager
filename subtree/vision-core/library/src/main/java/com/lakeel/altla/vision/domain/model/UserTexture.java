@@ -1,14 +1,17 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.google.firebase.database.Exclude;
+import android.support.annotation.NonNull;
 
 public final class UserTexture {
 
-    @Exclude
-    public String userId;
+    public final String userId;
 
-    @Exclude
-    public String textureId;
+    public final String textureId;
 
     public String name;
+
+    public UserTexture(@NonNull String userId, @NonNull String textureId) {
+        this.userId = userId;
+        this.textureId = textureId;
+    }
 }

@@ -80,7 +80,7 @@ public final class FindUserTextureBitmapUseCase {
         return Single.create(e -> userTextureFileMetadataRepository.find(model.userId, model.textureId, metadata -> {
             if (metadata != null) {
                 LOG.d("Found the texture metadata: textureId = %s", model.textureId);
-                model.remoteUpdateTimeMillis = metadata.updateTimeMillis;
+                model.remoteUpdateTimeMillis = metadata.updatedAt;
                 e.onSuccess(model);
             } else {
                 throw new RuntimeException(String.format(

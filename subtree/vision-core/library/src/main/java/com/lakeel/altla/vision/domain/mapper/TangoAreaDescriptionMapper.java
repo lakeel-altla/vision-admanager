@@ -14,8 +14,8 @@ public final class TangoAreaDescriptionMapper {
 
     @NonNull
     public static TangoAreaDescription map(@NonNull TangoAreaDescriptionMetaData metaData) {
-        TangoAreaDescription description = new TangoAreaDescription();
-        description.areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
+        TangoAreaDescription description = new TangoAreaDescription(
+                TangoAreaDescriptionMetaDataHelper.getUuid(metaData));
         description.name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
         description.createdAt = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);
         return description;

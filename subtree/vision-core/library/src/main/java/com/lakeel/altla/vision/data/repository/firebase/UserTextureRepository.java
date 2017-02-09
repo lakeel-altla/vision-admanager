@@ -33,7 +33,7 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
                      .child(PATH_USER_TEXTURES)
                      .child(userTexture.userId)
                      .child(userTexture.textureId)
-                     .setValue(userTexture, (error, reference) -> {
+                     .setValue(map(userTexture), (error, reference) -> {
                          if (error != null) {
                              LOG.e("Failed to save.", error.toException());
                          }
@@ -98,10 +98,23 @@ public final class UserTextureRepository extends BaseDatabaseRepository {
                      });
     }
 
-    private UserTexture map(String userId, DataSnapshot snapshot) {
-        UserTexture userTexture = snapshot.getValue(UserTexture.class);
-        userTexture.userId = userId;
-        userTexture.textureId = snapshot.getKey();
+    @NonNull
+    public static Value map(@NonNull UserTexture userTexture) {
+        Value value = new Value();
+        value.name = userTexture.name;
+        return value;
+    }
+
+    @NonNull
+    private static UserTexture map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserTexture userTexture = new UserTexture(userId, snapshot.getKey());
+        userTexture.name = value.name;
         return userTexture;
+    }
+
+    public static final class Value {
+
+        public String name;
     }
 }
