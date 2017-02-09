@@ -4,6 +4,7 @@ import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
@@ -112,7 +113,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                             getView().onModelUpdated(model);
                         }
                     }, e -> {
-                        getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                        getLog().e("Failed.", e);
+                        getView().onSnackbar(R.string.snackbar_failed);
                     });
             manageDisposable(disposable);
         });
@@ -126,15 +128,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .map(userAreaDescription -> {
-                    UserAreaDescriptionModel model = new UserAreaDescriptionModel();
-                    model.areaDescriptionId = areaDescriptionId;
-                    model.name = userAreaDescription.name;
-                    model.createdAt = userAreaDescription.createdAt;
-                    model.fileUploaded = userAreaDescription.fileUploaded;
-                    model.areaId = userAreaDescription.areaId;
-                    return model;
-                })
+                .map(UserAreaDescriptionModelMapper::map)
                 .flatMap(model -> {
                     // Resolve the area name
                     if (model.areaId != null) {
@@ -164,7 +158,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     updateActions();
                     getView().onModelUpdated(model);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -183,7 +178,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe((file) -> {
                     getView().onShowImportActivity(file);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -235,7 +230,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -251,7 +246,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -272,7 +267,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .subscribe(() -> {
                     getView().onDeleted();
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);

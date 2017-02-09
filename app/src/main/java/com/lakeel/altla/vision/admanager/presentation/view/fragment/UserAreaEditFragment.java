@@ -185,8 +185,8 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     @Override
     public void onModelUpdated(@NonNull UserAreaModel model) {
         textInputEditTextName.setText(model.name);
-        textViewPlaceName.setText(model.placeName);
-        textViewPlaceAddress.setText(model.placeAddress);
+        textViewPlaceName.setText(model.place != null ? model.place.name : null);
+        textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
 
         int position = LEVELS.indexOf(model.level);
         spinnerLevel.setSelection(position);

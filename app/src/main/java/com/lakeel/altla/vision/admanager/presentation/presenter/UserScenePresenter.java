@@ -61,8 +61,8 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
                 .subscribe(model -> {
                     getView().onModelUpdated(model);
                 }, e -> {
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
-                    getLog().e(String.format("Failed: sceneId = %s", sceneId), e);
                 });
         manageDisposable(disposable);
     }

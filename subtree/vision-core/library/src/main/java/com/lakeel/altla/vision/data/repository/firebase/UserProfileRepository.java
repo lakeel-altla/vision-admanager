@@ -4,6 +4,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
@@ -11,6 +12,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
 import com.lakeel.altla.vision.domain.model.UserProfile;
 
 import android.support.annotation.NonNull;
@@ -29,7 +31,7 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
         getDatabase().getReference()
                      .child(PATH_USER_PROFILES)
                      .child(userProfile.userId)
-                     .setValue(userProfile, (error, reference) -> {
+                     .setValue(map(userProfile), (error, reference) -> {
                          if (error != null) {
                              LOG.e("Failed to save.", error.toException());
                          }
@@ -67,9 +69,39 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
         return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
     }
 
-    private UserProfile map(String userId, DataSnapshot snapshot) {
-        UserProfile userProfile = snapshot.getValue(UserProfile.class);
-        userProfile.userId = userId;
+    @NonNull
+    private static Value map(@NonNull UserProfile userProfile) {
+        Value value = new Value();
+        value.displayName = userProfile.displayName;
+        value.email = userProfile.email;
+        value.photoUri = userProfile.photoUri;
+        value.createdAt = ServerTimestampMapper.map(userProfile.createdAt);
+        value.updatedAt = ServerValue.TIMESTAMP;
+        return value;
+    }
+
+    @NonNull
+    private static UserProfile map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserProfile userProfile = new UserProfile(userId);
+        userProfile.displayName = value.displayName;
+        userProfile.email = value.email;
+        userProfile.photoUri = value.photoUri;
+        userProfile.createdAt = ServerTimestampMapper.map(value.createdAt);
+        userProfile.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userProfile;
+    }
+
+    public static final class Value {
+
+        public String displayName;
+
+        public String email;
+
+        public String photoUri;
+
+        public Object createdAt;
+
+        public Object updatedAt;
     }
 }

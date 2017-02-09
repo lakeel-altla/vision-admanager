@@ -95,7 +95,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                     getView().onUpdateActionExport(!model.exported);
                     getView().onModelUpdated(model);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -139,7 +139,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                     getView().onModelUpdated(model);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -154,7 +154,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                 .subscribe(() -> {
                     getView().onDeleted();
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);

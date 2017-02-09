@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.android.gms.location.places.Place;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
@@ -45,8 +46,6 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     private UserAreaModel model;
 
-    private boolean creatingNew;
-
     private boolean processing;
 
     @Inject
@@ -81,13 +80,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                     .map(UserAreaModelMapper::map)
                     .flatMapObservable(model -> {
                         if (model.placeId != null) {
-                            return getPlaceUseCase.execute(model.placeId)
-                                                  .map(place -> {
-                                                      model.placeName = place.getName().toString();
-                                                      model.placeAddress = place.getAddress().toString();
-                                                      return model;
-                                                  })
-                                                  .toObservable();
+                            return getPlaceUseCase
+                                    .execute(model.placeId)
+                                    .map(place -> {
+                                        model.place = PlaceModelMapper.map(place);
+                                        return model;
+                                    })
+                                    .toObservable();
                         } else {
                             return Observable.just(model);
                         }
@@ -99,13 +98,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                         getView().onUpdateTitle(model.name);
                         getView().onModelUpdated(model);
                     }, e -> {
+                        getLog().e("Failed.", e);
                         getView().onSnackbar(R.string.snackbar_failed);
-                        getLog().e(String.format("Failed to get the user area: areaId = %s", areaId), e);
                     });
             manageDisposable(disposable);
         } else {
-            creatingNew = true;
-            model = new UserAreaModel();
+            areaId = UUID.randomUUID().toString();
+            model = new UserAreaModel(currentUserResolver.getUserId(), areaId);
 
             getView().onModelUpdated(model);
         }
@@ -141,8 +140,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         processing = true;
 
         model.placeId = place.getId();
-        model.placeName = place.getName().toString();
-        model.placeAddress = place.getAddress().toString();
+        model.place = PlaceModelMapper.map(place);
 
         getView().onModelUpdated(model);
 
@@ -155,8 +153,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         processing = true;
 
         model.placeId = null;
-        model.placeName = null;
-        model.placeAddress = null;
+        model.place = null;
 
         getView().onModelUpdated(model);
 
@@ -175,22 +172,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     }
 
     private void save() {
-        if (creatingNew) {
-            areaId = UUID.randomUUID().toString();
-            model.areaId = areaId;
-            // TODO: server timestamp?
-            model.createdAt = System.currentTimeMillis();
-            creatingNew = false;
-        }
-
-        UserArea userArea = new UserArea();
-        userArea.userId = currentUserResolver.getUserId();
-        userArea.areaId = model.areaId;
-        userArea.name = model.name;
-        userArea.createdAt = model.createdAt;
-
-        userArea.placeId = model.placeId;
-        userArea.level = model.level;
+        UserArea userArea = UserAreaModelMapper.map(model);
 
         Disposable disposable = saveUserAreaUseCase
                 .execute(userArea)
@@ -198,7 +180,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);

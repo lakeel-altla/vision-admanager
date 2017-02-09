@@ -81,7 +81,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
                     items.add(model);
                     getView().onItemInserted(items.size() - 1);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable1);
@@ -95,7 +95,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
                     String title = String.format(titleFormat, model.name);
                     getView().onUpdateTitle(title);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
+                    getLog().e("Failed.", e);
                 });
         manageDisposable(disposable2);
     }

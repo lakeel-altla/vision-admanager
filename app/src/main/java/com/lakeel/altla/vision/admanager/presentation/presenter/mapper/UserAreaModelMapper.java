@@ -12,12 +12,23 @@ public final class UserAreaModelMapper {
 
     @NonNull
     public static UserAreaModel map(@NonNull UserArea userArea) {
-        UserAreaModel model = new UserAreaModel();
-        model.areaId = userArea.areaId;
+        UserAreaModel model = new UserAreaModel(userArea.userId, userArea.areaId);
         model.name = userArea.name;
-        model.createdAt = userArea.createdAt;
         model.placeId = userArea.placeId;
         model.level = userArea.level;
+        model.createdAt = userArea.createdAt;
+        model.updatedAt = userArea.updatedAt;
         return model;
+    }
+
+    @NonNull
+    public static UserArea map(@NonNull UserAreaModel model) {
+        UserArea userArea = new UserArea(model.userId, model.areaId);
+        userArea.name = model.name;
+        userArea.placeId = model.placeId;
+        userArea.level = model.level;
+        userArea.createdAt = model.createdAt;
+        userArea.updatedAt = model.updatedAt;
+        return userArea;
     }
 }

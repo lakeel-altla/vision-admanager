@@ -3,12 +3,14 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 
 import android.support.annotation.NonNull;
@@ -35,7 +37,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userAreaDescription.userId)
                      .child(userAreaDescription.areaDescriptionId)
-                     .setValue(userAreaDescription, (error, reference) -> {
+                     .setValue(map(userAreaDescription), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
@@ -125,10 +127,39 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    private UserAreaDescription map(String userId, DataSnapshot snapshot) {
-        UserAreaDescription userAreaDescription = snapshot.getValue(UserAreaDescription.class);
-        userAreaDescription.userId = userId;
-        userAreaDescription.areaDescriptionId = snapshot.getKey();
+    @NonNull
+    private static Value map(@NonNull UserAreaDescription userAreaDescription) {
+        Value value = new Value();
+        value.name = userAreaDescription.name;
+        value.fileUploaded = userAreaDescription.fileUploaded;
+        value.areaId = userAreaDescription.areaId;
+        value.createdAt = ServerTimestampMapper.map(userAreaDescription.createdAt);
+        value.updatedAt = ServerValue.TIMESTAMP;
+        return value;
+    }
+
+    @NonNull
+    private static UserAreaDescription map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserAreaDescription userAreaDescription = new UserAreaDescription(userId, snapshot.getKey());
+        userAreaDescription.name = value.name;
+        userAreaDescription.fileUploaded = value.fileUploaded;
+        userAreaDescription.areaId = value.areaId;
+        userAreaDescription.createdAt = ServerTimestampMapper.map(value.createdAt);
+        userAreaDescription.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userAreaDescription;
+    }
+
+    public static final class Value {
+
+        public String name;
+
+        public boolean fileUploaded;
+
+        public String areaId;
+
+        public Object createdAt;
+
+        public Object updatedAt;
     }
 }

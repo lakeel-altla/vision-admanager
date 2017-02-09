@@ -12,8 +12,7 @@ public final class UserSceneItemModelMapper {
 
     @NonNull
     public static UserSceneItemModel map(@NonNull UserScene userScene) {
-        UserSceneItemModel model = new UserSceneItemModel();
-        model.sceneId = userScene.sceneId;
+        UserSceneItemModel model = new UserSceneItemModel(userScene.userId, userScene.sceneId);
         model.name = userScene.name;
         return model;
     }

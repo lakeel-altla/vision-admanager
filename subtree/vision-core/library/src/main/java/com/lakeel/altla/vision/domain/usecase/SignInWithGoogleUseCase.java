@@ -44,7 +44,8 @@ public final class SignInWithGoogleUseCase {
                      .subscribeOn(Schedulers.io());
     }
 
-    private Single<FirebaseUser> signIn(GoogleSignInAccount googleSignInAccount) {
+    @NonNull
+    private Single<FirebaseUser> signIn(@NonNull GoogleSignInAccount googleSignInAccount) {
         return Single.create(e -> {
             AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
             Task<AuthResult> task = FirebaseAuth.getInstance().signInWithCredential(credential);
@@ -54,13 +55,13 @@ public final class SignInWithGoogleUseCase {
         });
     }
 
-    private Single<FirebaseUser> ensureUserProfile(FirebaseUser firebaseUser) {
+    @NonNull
+    private Single<FirebaseUser> ensureUserProfile(@NonNull FirebaseUser firebaseUser) {
         // Check if the user profile exists.
         return Single.create(e -> userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
             // Create the user profile if it does not exist.
             if (userProfile == null) {
-                userProfile = new UserProfile();
-                userProfile.userId = firebaseUser.getUid();
+                userProfile = new UserProfile(firebaseUser.getUid());
                 userProfile.displayName = firebaseUser.getDisplayName();
                 userProfile.email = firebaseUser.getEmail();
                 if (firebaseUser.getPhotoUrl() != null) {
@@ -73,12 +74,11 @@ public final class SignInWithGoogleUseCase {
         }, e::onError));
     }
 
-    private Completable saveUserDevice(FirebaseUser firebaseUser) {
+    @NonNull
+    private Completable saveUserDevice(@NonNull FirebaseUser firebaseUser) {
         return Completable.create(e -> {
-            UserDevice userDevice = new UserDevice();
-            userDevice.userId = firebaseUser.getUid();
-            userDevice.instanceId = FirebaseInstanceId.getInstance().getId();
-            userDevice.creationTime = FirebaseInstanceId.getInstance().getCreationTime();
+            UserDevice userDevice = new UserDevice(firebaseUser.getUid(), FirebaseInstanceId.getInstance().getId());
+            userDevice.createdAt = FirebaseInstanceId.getInstance().getCreationTime();
             userDevice.osName = "android";
             userDevice.osModel = Build.MODEL;
             userDevice.osVersion = Build.VERSION.RELEASE;

@@ -12,11 +12,21 @@ public final class UserSceneModelMapper {
 
     @NonNull
     public static UserSceneModel map(@NonNull UserScene userScene) {
-        UserSceneModel model = new UserSceneModel();
-        model.sceneId = userScene.sceneId;
+        UserSceneModel model = new UserSceneModel(userScene.userId, userScene.sceneId);
         model.name = userScene.name;
-        model.createdAt = userScene.createdAt;
         model.areaId = userScene.areaId;
+        model.createdAt = userScene.createdAt;
+        model.updatedAt = userScene.updatedAt;
         return model;
+    }
+
+    @NonNull
+    public static UserScene map(@NonNull UserSceneModel model) {
+        UserScene userScene = new UserScene(model.userId, model.sceneId);
+        userScene.name = model.name;
+        userScene.areaId = model.areaId;
+        userScene.createdAt = model.createdAt;
+        userScene.updatedAt = model.updatedAt;
+        return userScene;
     }
 }

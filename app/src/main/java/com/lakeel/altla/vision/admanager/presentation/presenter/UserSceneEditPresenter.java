@@ -38,8 +38,6 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     private UserSceneModel model;
 
-    private boolean creatingNew;
-
     private boolean processing;
 
     @Inject
@@ -81,13 +79,13 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                         getView().onUpdateTitle(model.name);
                         getView().onModelUpdated(model);
                     }, e -> {
+                        getLog().e("Failed.", e);
                         getView().onSnackbar(R.string.snackbar_failed);
-                        getLog().e(String.format("Failed: sceneId = %s", sceneId), e);
                     });
             manageDisposable(disposable);
         } else {
-            creatingNew = true;
-            model = new UserSceneModel();
+            sceneId = UUID.randomUUID().toString();
+            model = new UserSceneModel(currentUserResolver.getUserId(), sceneId);
 
             getView().onModelUpdated(model);
         }
@@ -110,20 +108,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
     }
 
     private void save() {
-        if (creatingNew) {
-            sceneId = UUID.randomUUID().toString();
-            model.sceneId = sceneId;
-            // TODO: server timestamp?
-            model.createdAt = System.currentTimeMillis();
-            creatingNew = false;
-        }
-
-        UserScene userScene = new UserScene();
-        userScene.userId = currentUserResolver.getUserId();
-        userScene.sceneId = model.sceneId;
-        userScene.createdAt = model.createdAt;
-        userScene.name = model.name;
-        userScene.areaId = model.areaId;
+        UserScene userScene = UserSceneModelMapper.map(model);
 
         Disposable disposable = saveUserSceneUseCase
                 .execute(userScene)
@@ -131,7 +116,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    getLog().e(String.format("Failed: sceneId = %s", sceneId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);

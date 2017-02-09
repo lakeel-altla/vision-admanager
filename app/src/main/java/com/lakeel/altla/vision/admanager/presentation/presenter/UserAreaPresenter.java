@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
@@ -64,13 +65,13 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
                 .map(UserAreaModelMapper::map)
                 .flatMapObservable(model -> {
                     if (model.placeId != null) {
-                        return getPlaceUseCase.execute(model.placeId)
-                                              .map(place -> {
-                                                  model.placeName = place.getName().toString();
-                                                  model.placeAddress = place.getAddress().toString();
-                                                  return model;
-                                              })
-                                              .toObservable();
+                        return getPlaceUseCase
+                                .execute(model.placeId)
+                                .map(place -> {
+                                    model.place = PlaceModelMapper.map(place);
+                                    return model;
+                                })
+                                .toObservable();
                     } else {
                         return Observable.just(model);
                     }
@@ -79,8 +80,8 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
                 .subscribe(model -> {
                     getView().onModelUpdated(model);
                 }, e -> {
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
-                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
                 });
         manageDisposable(disposable);
     }

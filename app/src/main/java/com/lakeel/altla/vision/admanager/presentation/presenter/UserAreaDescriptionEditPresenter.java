@@ -109,7 +109,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     this.model = model;
                     getView().onModelUpdated(model);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
@@ -126,7 +127,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
             processing = false;
             getView().onShowNameError(R.string.input_error_name_required);
         } else {
-            saveUserAreaDescription();
+            save();
         }
     }
 
@@ -137,7 +138,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     public void onUserAreaSelected(String areaId) {
         model.areaId = areaId;
 
-        saveUserAreaDescription();
+        save();
 
         Disposable disposable = findUserAreaUseCase
                 .execute(areaId)
@@ -146,12 +147,13 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     model.areaName = userArea.name;
                     getView().onAreaNameUpdated(model.areaName);
                 }, e -> {
-                    getLog().e(String.format("Failed: areaId = %s", areaId), e);
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }
 
-    private void saveUserAreaDescription() {
+    private void save() {
         UserAreaDescription userAreaDescription = UserAreaDescriptionEditModelMapper.map(model);
 
         Disposable disposable = saveUserAreaDescriptionUseCase
@@ -160,7 +162,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                 .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
                 }, e -> {
-                    getLog().e(String.format("Failed: areaDescriptionId = %s", areaDescriptionId), e);
+                    getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);

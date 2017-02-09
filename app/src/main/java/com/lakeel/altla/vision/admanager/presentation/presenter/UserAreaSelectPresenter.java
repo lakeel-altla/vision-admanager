@@ -1,10 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
-import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -46,9 +47,13 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
                 .map(UserAreaItemModelMapper::map)
                 .concatMap(model -> {
                     if (model.placeId != null) {
-                        return getPlaceUseCase.execute(model.placeId)
-                                              .map(place -> UserAreaItemModelMapper.map(model, place))
-                                              .toObservable();
+                        return getPlaceUseCase
+                                .execute(model.placeId)
+                                .map(place -> {
+                                    model.place = PlaceModelMapper.map(place);
+                                    return model;
+                                })
+                                .toObservable();
                     } else {
                         return Observable.just(model);
                     }

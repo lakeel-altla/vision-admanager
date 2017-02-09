@@ -96,8 +96,8 @@ public final class UserAreaSelectAdapter extends RecyclerView.Adapter<UserAreaSe
         public void onModelUpdated(@NonNull UserAreaItemModel model) {
             textViewName.setText(model.name);
             textViewId.setText(model.areaId);
-            textViewPlaceName.setText(model.placeName);
-            textViewPlaceAddress.setText(model.placeAddress);
+            textViewPlaceName.setText(model.place != null ? model.place.name : null);
+            textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
             textViewLevel.setText(model.level);
         }
     }

@@ -135,8 +135,8 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
         }
         textViewCreatedAt.setText(createdAtString);
         textViewName.setText(model.name);
-        textViewPlaceName.setText(model.placeName);
-        textViewPlaceAddress.setText(model.placeAddress);
+        textViewPlaceName.setText(model.place != null ? model.place.name : null);
+        textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
         textViewLevel.setText(String.valueOf(model.level));
 
         getActivity().setTitle(model.name);

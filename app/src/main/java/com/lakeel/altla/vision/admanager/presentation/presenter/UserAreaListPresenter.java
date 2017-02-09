@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
@@ -46,9 +47,13 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
                 .map(UserAreaItemModelMapper::map)
                 .concatMap(model -> {
                     if (model.placeId != null) {
-                        return getPlaceUseCase.execute(model.placeId)
-                                              .map(place -> UserAreaItemModelMapper.map(model, place))
-                                              .toObservable();
+                        return getPlaceUseCase
+                                .execute(model.placeId)
+                                .map(place -> {
+                                    model.place = PlaceModelMapper.map(place);
+                                    return model;
+                                })
+                                .toObservable();
                     } else {
                         return Observable.just(model);
                     }
