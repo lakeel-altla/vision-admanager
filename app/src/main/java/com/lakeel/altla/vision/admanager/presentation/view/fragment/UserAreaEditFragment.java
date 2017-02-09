@@ -25,7 +25,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,12 +70,6 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
 
     @BindView(R.id.view_top)
     View viewTop;
-
-    @BindView(R.id.text_view_id)
-    TextView textViewId;
-
-    @BindView(R.id.text_view_created_at)
-    TextView textViewCreatedAt;
 
     @BindView(R.id.text_input_layput_name)
     TextInputLayout textInputLayoutName;
@@ -171,6 +164,8 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         adapter.addAll(LEVELS);
         spinnerLevel.setAdapter(adapter);
+
+        getActivity().setTitle(null);
     }
 
     @Override
@@ -188,25 +183,7 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onAreaIdUpdated(String areaId) {
-        textViewId.setText(areaId);
-    }
-
-    @Override
-    public void onCreatedAtUpdated(long createdAt) {
-        String createdAtString = null;
-        if (0 < createdAt) {
-            createdAtString = DateFormat.getDateFormat(getContext()).format(createdAt) + " " +
-                              DateFormat.getTimeFormat(getContext()).format(createdAt);
-        }
-        textViewCreatedAt.setText(createdAtString);
-    }
-
-    @Override
     public void onModelUpdated(@NonNull UserAreaModel model) {
-        onAreaIdUpdated(model.areaId);
-        onCreatedAtUpdated(model.createdAt);
-
         textInputEditTextName.setText(model.name);
         textViewPlaceName.setText(model.placeName);
         textViewPlaceAddress.setText(model.placeAddress);
@@ -216,8 +193,8 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onSnackbar(@StringRes int resId) {
-        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
     }
 
     @Override
@@ -233,6 +210,11 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
             }
         }
 
+    }
+
+    @Override
+    public void onSnackbar(@StringRes int resId) {
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

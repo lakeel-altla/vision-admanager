@@ -1,12 +1,12 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.google.android.gms.location.places.Place;
-import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -37,6 +37,9 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     @Inject
     SaveUserAreaUseCase saveUserAreaUseCase;
+
+    @Inject
+    CurrentUserResolver currentUserResolver;
 
     private String areaId;
 
@@ -93,6 +96,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                     .doOnTerminate(() -> processing = false)
                     .subscribe(model -> {
                         this.model = model;
+                        getView().onUpdateTitle(model.name);
                         getView().onModelUpdated(model);
                     }, e -> {
                         getView().onSnackbar(R.string.snackbar_failed);
@@ -174,14 +178,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         if (creatingNew) {
             areaId = UUID.randomUUID().toString();
             model.areaId = areaId;
+            // TODO: server timestamp?
             model.createdAt = System.currentTimeMillis();
-            getView().onAreaIdUpdated(areaId);
-            getView().onCreatedAtUpdated(model.createdAt);
             creatingNew = false;
         }
 
         UserArea userArea = new UserArea();
-        userArea.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userArea.userId = currentUserResolver.getUserId();
         userArea.areaId = model.areaId;
         userArea.name = model.name;
         userArea.createdAt = model.createdAt;
@@ -199,5 +202,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
+
+        getView().onUpdateTitle(model.name);
     }
 }
