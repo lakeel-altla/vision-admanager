@@ -10,6 +10,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Module;
@@ -58,5 +59,11 @@ public final class FirebaseRepositoryModule {
     @Provides
     public UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
         return new UserAreaRepository(database);
+    }
+
+    @ActivityScope
+    @Provides
+    public UserSceneRepository provideUserSceneRepository(FirebaseDatabase database) {
+        return new UserSceneRepository(database);
     }
 }

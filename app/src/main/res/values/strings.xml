@@ -25,6 +25,7 @@
     <string name="nav_user_area_list">Areas</string>
     <string name="nav_tango_area_description_list">Tango area descriptions</string>
     <string name="nav_user_area_description_list">User area descriptions</string>
+    <string name="nav_user_scene_list">User scenes</string>
     <string name="nav_sign_out">Sign out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -66,6 +67,8 @@
     <string name="label_level">Level</string>
     <string name="label_area">Area</string>
     <string name="label_in_tango">In Tango</string>
+    <string name="label_in_cloud">In Cloud</string>
+    <string name="label_in_cache">In Cache</string>
 
     <string name="hint_edit_name">Type the name</string>
     <string name="hint_edit_place">Place</string>
@@ -75,14 +78,13 @@
     <string name="field_imported">Imported</string>
     <string name="field_not_imported">Not Imported</string>
 
-    <string name="dummy_abc">ABCDEFG</string>
-    <string name="label_in_cloud">In Cloud</string>
     <string name="field_uploaded">Uploaded</string>
     <string name="field_not_uploaded">Not Uploaded</string>
-    <string name="label_in_cache">In Cache</string>
     <string name="field_cached">Cached</string>
     <string name="field_not_cached">Not Cached</string>
     <string name="field_exported">Exported</string>
     <string name="field_not_exported">Not Exported</string>
+
+    <string name="dummy_abc">ABCDEFG</string>
 
 </resources>

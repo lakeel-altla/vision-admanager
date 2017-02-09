@@ -21,6 +21,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
@@ -65,6 +66,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaEditFragment.InteractionListener,
                    UserAreaSelectFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
+                   UserSceneListFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
@@ -201,11 +203,14 @@ public final class MainActivity extends AppCompatActivity
             case R.id.nav_user_area_list:
                 showUserAreaListFragment();
                 break;
-            case R.id.nav_tango_area_descriptions:
+            case R.id.nav_tango_area_description_list:
                 showTangoAreaDescriptionListFragment();
                 break;
-            case R.id.nav_user_area_descriptions:
+            case R.id.nav_user_area_description_list:
                 showUserAreaDescriptionListFragment();
+                break;
+            case R.id.nav_user_scene_list:
+                showUserSceneListFragment();
                 break;
             case R.id.nav_sign_out:
                 onSignOut();
@@ -292,6 +297,16 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onShowUserSceneCreateView() {
+        // TODO
+    }
+
+    @Override
+    public void onShowUserSceneView(@NonNull String sceneId) {
+        // TODO
+    }
+
+    @Override
     public void onUserAreaSelected(String areaId) {
         getSupportFragmentManager().popBackStack();
 
@@ -360,6 +375,18 @@ public final class MainActivity extends AppCompatActivity
             replaceFragment(fragment);
         }
     }
+
+
+    private void showUserSceneListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
+        Fragment fragment = findFragment(UserSceneListFragment.class);
+        if (fragment == null) {
+            fragment = UserSceneListFragment.newInstance();
+            replaceFragment(fragment);
+        }
+    }
+
 
     private void showTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
         toolbar.setVisibility(View.VISIBLE);

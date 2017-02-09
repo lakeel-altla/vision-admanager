@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaListAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserSceneListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserSceneListView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserSceneListAdapter;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -27,11 +27,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserAreaListFragment extends AbstractFragment<UserAreaListView, UserAreaListPresenter>
-        implements UserAreaListView {
+public final class UserSceneListFragment extends AbstractFragment<UserSceneListView, UserSceneListPresenter>
+        implements UserSceneListView {
 
     @Inject
-    UserAreaListPresenter presenter;
+    UserSceneListPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -39,17 +39,17 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     private InteractionListener interactionListener;
 
     @NonNull
-    public static UserAreaListFragment newInstance() {
-        return new UserAreaListFragment();
+    public static UserSceneListFragment newInstance() {
+        return new UserSceneListFragment();
     }
 
     @Override
-    public UserAreaListPresenter getPresenter() {
+    protected UserSceneListPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserAreaListView getViewInterface() {
+    protected UserSceneListView getViewInterface() {
         return this;
     }
 
@@ -57,8 +57,8 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
-        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
     }
 
     @Override
@@ -72,7 +72,7 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user_area_list, container, false);
+        return inflater.inflate(R.layout.fragment_user_scene_list, container, false);
     }
 
     @Override
@@ -81,7 +81,7 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
         ButterKnife.bind(this, view);
 
-        recyclerView.setAdapter(new UserAreaListAdapter(presenter));
+        recyclerView.setAdapter(new UserSceneListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         setHasOptionsMenu(true);
@@ -91,14 +91,14 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_user_area_list, menu);
+        inflater.inflate(R.menu.fragment_user_scene_list, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create:
-                interactionListener.onShowUserAreaCreateView();
+                interactionListener.onShowUserSceneCreateView();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -116,8 +116,8 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
     }
 
     @Override
-    public void onItemSelected(String areaId) {
-        interactionListener.onShowUserAreaView(areaId);
+    public void onItemSelected(String sceneId) {
+        interactionListener.onShowUserSceneView(sceneId);
     }
 
     @Override
@@ -127,8 +127,8 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
 
     public interface InteractionListener {
 
-        void onShowUserAreaCreateView();
+        void onShowUserSceneCreateView();
 
-        void onShowUserAreaView(@NonNull String areaId);
+        void onShowUserSceneView(@NonNull String sceneId);
     }
 }
