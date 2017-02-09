@@ -1,11 +1,10 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -17,17 +16,18 @@ public final class FindUserAreaDescriptionUseCase {
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public FindUserAreaDescriptionUseCase() {
     }
 
-    public Maybe<UserAreaDescription> execute(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
+    @NonNull
+    public Maybe<UserAreaDescription> execute(@NonNull String areaDescriptionId) {
+        String userId = currentUserResolver.getUserId();
 
         return Maybe.create(e -> {
-            userAreaDescriptionRepository.find(user.getUid(), areaDescriptionId, userAreaDescription -> {
+            userAreaDescriptionRepository.find(userId, areaDescriptionId, userAreaDescription -> {
                 if (userAreaDescription != null) {
                     e.onSuccess(userAreaDescription);
                 } else {

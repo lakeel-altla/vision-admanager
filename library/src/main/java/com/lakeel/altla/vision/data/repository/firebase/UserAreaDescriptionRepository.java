@@ -7,10 +7,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,13 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
 
     private static final String FIELD_NAME = "name";
 
-    public UserAreaDescriptionRepository(FirebaseDatabase database) {
+    private static final String FIELD_AREA_ID = "areaId";
+
+    public UserAreaDescriptionRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserAreaDescription userAreaDescription) {
-        if (userAreaDescription == null) throw new ArgumentNullException("userAreaDescription");
-
+    public void save(@NonNull UserAreaDescription userAreaDescription) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userAreaDescription.userId)
@@ -41,10 +42,8 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void find(String userId, String areaDescriptionId, OnSuccessListener<UserAreaDescription> onSuccessListener,
-                     OnFailureListener onFailureListener) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void find(@NonNull String userId, @NonNull String areaDescriptionId,
+                     OnSuccessListener<UserAreaDescription> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)
@@ -66,7 +65,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void findAll(String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
                         OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
@@ -75,12 +74,11 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserAreaDescription> userAreaDescriptions =
-                                     new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 userAreaDescriptions.add(map(userId, child));
+                                 list.add(map(userId, child));
                              }
-                             if (onSuccessListener != null) onSuccessListener.onSuccess(userAreaDescriptions);
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
 
                          @Override
@@ -90,9 +88,32 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void delete(String userId, String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
+    public void findByAreaId(@NonNull String userId, @NonNull String areaId,
+                             OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+                             OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(userId)
+                     .orderByChild(FIELD_AREA_ID)
+                     .equalTo(areaId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(map(userId, child));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
 
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
+    public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)
                      .child(userId)

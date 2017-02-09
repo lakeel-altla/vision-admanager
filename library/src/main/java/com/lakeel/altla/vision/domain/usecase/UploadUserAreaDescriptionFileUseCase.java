@@ -1,13 +1,12 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
+
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +31,9 @@ public final class UploadUserAreaDescriptionFileUseCase {
     @Inject
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
+    @Inject
+    CurrentUserResolver currentUserResolver;
+
     private final Consumer<? super InputStream> closeStream = stream -> {
         try {
             stream.close();
@@ -44,14 +46,12 @@ public final class UploadUserAreaDescriptionFileUseCase {
     public UploadUserAreaDescriptionFileUseCase() {
     }
 
-    public Completable execute(String areaDescriptionId, OnProgressListener onProgressListener) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
+    @NonNull
+    public Completable execute(@NonNull String areaDescriptionId, OnProgressListener onProgressListener) {
+        String userId = currentUserResolver.getUserId();
 
         // Convert arguments to the internal model.
-        return Single.just(new Model(user.getUid(), areaDescriptionId, onProgressListener))
+        return Single.just(new Model(userId, areaDescriptionId, onProgressListener))
                      // Open the stream of the area description file as cache.
                      .flatMap(this::createCacheStream)
                      // Upload it to Firebase Storage.

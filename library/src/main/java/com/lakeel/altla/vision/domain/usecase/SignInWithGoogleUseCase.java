@@ -15,6 +15,7 @@ import com.lakeel.altla.vision.domain.model.UserDevice;
 import com.lakeel.altla.vision.domain.model.UserProfile;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -34,7 +35,8 @@ public final class SignInWithGoogleUseCase {
     public SignInWithGoogleUseCase() {
     }
 
-    public Completable execute(GoogleSignInAccount googleSignInAccount) {
+    @NonNull
+    public Completable execute(@NonNull GoogleSignInAccount googleSignInAccount) {
         return Single.just(googleSignInAccount)
                      .flatMap(this::signIn)
                      .flatMap(this::ensureUserProfile)

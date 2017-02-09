@@ -3,10 +3,11 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.InputStream;
@@ -15,15 +16,12 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
-    public UserAreaDescriptionFileRepository(FirebaseStorage storage) {
+    public UserAreaDescriptionFileRepository(@NonNull FirebaseStorage storage) {
         super(storage);
     }
 
-    public void exists(String userId, String areaDescriptionId, OnSuccessListener<Boolean> onSuccessListener,
-                       OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void exists(@NonNull String userId, @NonNull String areaDescriptionId,
+                       OnSuccessListener<Boolean> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(PATH_USER_AREA_DESCRIPTIONS)
                     .child(userId)
@@ -44,13 +42,9 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void upload(String userId, String areaDescriptionId, InputStream stream,
+    public void upload(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull InputStream stream,
                        OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                        OnProgressListener onProgressListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-        if (stream == null) throw new ArgumentNullException("stream");
-
         getStorage().getReference()
                     .child(PATH_USER_AREA_DESCRIPTIONS)
                     .child(userId)
@@ -70,13 +64,9 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void download(String userId, String areaDescriptionId, File destination,
+    public void download(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull File destination,
                          OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                          OnProgressListener onProgressListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-        if (destination == null) throw new ArgumentNullException("destination");
-
         getStorage().getReference()
                     .child(PATH_USER_AREA_DESCRIPTIONS)
                     .child(userId)
@@ -96,11 +86,8 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void delete(String userId, String areaDescriptionId, OnSuccessListener<Void> onSuccessListener,
-                       OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void delete(@NonNull String userId, @NonNull String areaDescriptionId,
+                       OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(PATH_USER_AREA_DESCRIPTIONS)
                     .child(userId)

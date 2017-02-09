@@ -1,7 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -17,9 +18,8 @@ public final class DeleteAreaDescriptionCacheUseCase {
     public DeleteAreaDescriptionCacheUseCase() {
     }
 
-    public Completable execute(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public Completable execute(@NonNull String areaDescriptionId) {
         return Completable.create(e -> {
             areaDescriptionCacheRepository.delete(areaDescriptionId);
             e.onComplete();

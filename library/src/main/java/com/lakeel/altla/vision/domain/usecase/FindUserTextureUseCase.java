@@ -1,11 +1,10 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserTexture;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -18,16 +17,17 @@ public final class FindUserTextureUseCase {
     UserTextureRepository userTextureRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public FindUserTextureUseCase() {
     }
 
-    public Maybe<UserTexture> execute(String textureId) {
-        if (textureId == null) throw new ArgumentNullException("textureId");
+    @NonNull
+    public Maybe<UserTexture> execute(@NonNull String textureId) {
+        String userId = currentUserResolver.getUserId();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) throw new IllegalStateException("The user is not signed in.");
-
-        return Maybe.<UserTexture>create(e -> userTextureRepository.find(user.getUid(), textureId, userTexture -> {
+        return Maybe.<UserTexture>create(e -> userTextureRepository.find(userId, textureId, userTexture -> {
             if (userTexture != null) {
                 e.onSuccess(userTexture);
             } else {

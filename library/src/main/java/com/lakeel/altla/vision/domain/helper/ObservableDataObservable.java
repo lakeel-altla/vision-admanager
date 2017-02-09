@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.domain.helper;
 
-import com.lakeel.altla.vision.ArgumentNullException;
+import android.support.annotation.NonNull;
 
 import java.util.concurrent.Callable;
 
@@ -11,9 +11,8 @@ public final class ObservableDataObservable {
     private ObservableDataObservable() {
     }
 
-    public static <TData> Observable<TData> using(Callable<ObservableData<TData>> observableDataFactory) {
-        if (observableDataFactory == null) throw new ArgumentNullException("observableDataFactory");
-
+    @NonNull
+    public static <TData> Observable<TData> using(@NonNull Callable<ObservableData<TData>> observableDataFactory) {
         return Observable.using(observableDataFactory,
                                 observableData -> Observable.<TData>create(subscriber -> {
                                     observableData.observe(subscriber::onNext, subscriber::onError);

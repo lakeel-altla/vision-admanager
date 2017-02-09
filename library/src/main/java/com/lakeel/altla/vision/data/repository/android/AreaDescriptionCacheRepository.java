@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.lakeel.altla.vision.ArgumentNullException;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 
@@ -10,38 +10,33 @@ public final class AreaDescriptionCacheRepository {
 
     private final File rootDirectory;
 
-    public AreaDescriptionCacheRepository(File rootDirectory) {
-        if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
-
+    public AreaDescriptionCacheRepository(@NonNull File rootDirectory) {
         this.rootDirectory = rootDirectory;
     }
 
-    public boolean exists(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public boolean exists(@NonNull String areaDescriptionId) {
         File file = resolveCacheFile(areaDescriptionId);
         return file.exists();
     }
 
+    @NonNull
     public File getDirectory() {
         return ensureCacheDirectory();
     }
 
-    public File getFile(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    @NonNull
+    public File getFile(@NonNull String areaDescriptionId) {
         return resolveCacheFile(areaDescriptionId);
     }
 
-    public void delete(String areaDescriptionId) {
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
+    public void delete(@NonNull String areaDescriptionId) {
         File file = resolveCacheFile(areaDescriptionId);
         if (file.exists()) {
             file.delete();
         }
     }
 
+    @NonNull
     private File ensureCacheDirectory() {
         File directory = new File(rootDirectory, PATH);
         if (!directory.exists()) {
@@ -50,6 +45,7 @@ public final class AreaDescriptionCacheRepository {
         return directory;
     }
 
+    @NonNull
     private File resolveCacheFile(String areaDescriptionId) {
         File directory = ensureCacheDirectory();
         return new File(directory, areaDescriptionId);

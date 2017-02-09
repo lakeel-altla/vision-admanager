@@ -7,10 +7,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserScene;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,13 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
 
     private static final String FIELD_NAME = "name";
 
-    public UserSceneRepository(FirebaseDatabase database) {
+    private static final String FIELD_AREA_ID = "areaId";
+
+    public UserSceneRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserScene userScene) {
-        if (userScene == null) throw new ArgumentNullException("userScene");
-
+    public void save(@NonNull UserScene userScene) {
         getDatabase().getReference()
                      .child(PATH_USER_SCENES)
                      .child(userScene.userId)
@@ -41,10 +42,8 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(String userId, String sceneId, OnSuccessListener<UserScene> onSuccessListener,
+    public void find(@NonNull String userId, @NonNull String sceneId, OnSuccessListener<UserScene> onSuccessListener,
                      OnFailureListener onFailureListener) {
-        if (sceneId == null) throw new ArgumentNullException("sceneId");
-
         getDatabase().getReference()
                      .child(PATH_USER_SCENES)
                      .child(userId)
@@ -66,7 +65,7 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void findAll(String userId, OnSuccessListener<List<UserScene>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<UserScene>> onSuccessListener,
                         OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(PATH_USER_SCENES)
@@ -89,9 +88,32 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void delete(String userId, String sceneId) {
-        if (sceneId == null) throw new ArgumentNullException("sceneId");
+    public void findByAreaId(@NonNull String userId, @NonNull String areaId,
+                             OnSuccessListener<List<UserScene>> onSuccessListener,
+                             OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(PATH_USER_SCENES)
+                     .child(userId)
+                     .orderByChild(FIELD_AREA_ID)
+                     .equalTo(areaId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<UserScene> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(map(userId, child));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
 
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
+    public void delete(@NonNull String userId, @NonNull String sceneId) {
         getDatabase().getReference()
                      .child(PATH_USER_SCENES)
                      .child(userId)

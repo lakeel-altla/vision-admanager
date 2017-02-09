@@ -1,13 +1,12 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.lakeel.altla.vision.ArgumentNullException;
-
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -16,13 +15,12 @@ public final class DocumentBitmapRepository {
 
     private final ContentResolver contentResolver;
 
-    public DocumentBitmapRepository(ContentResolver contentResolver) {
-        if (contentResolver == null) throw new ArgumentNullException("contentResolver");
-
+    public DocumentBitmapRepository(@NonNull ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
     }
 
-    public Bitmap find(Uri uri) throws IOException {
+    @NonNull
+    public Bitmap find(@NonNull Uri uri) throws IOException {
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {

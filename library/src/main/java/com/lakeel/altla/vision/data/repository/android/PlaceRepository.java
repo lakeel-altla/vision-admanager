@@ -4,23 +4,21 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+
+import android.support.annotation.NonNull;
 
 public final class PlaceRepository {
 
     private final GoogleApiClient googleApiClient;
 
-    public PlaceRepository(GoogleApiClient googleApiClient) {
-        if (googleApiClient == null) throw new ArgumentNullException("googleApiClient");
-
+    public PlaceRepository(@NonNull GoogleApiClient googleApiClient) {
         this.googleApiClient = googleApiClient;
     }
 
-    public void get(String placeId, OnSuccessListener<Place> onSuccessListener, OnFailureListener onFailureListener) {
-        if (placeId == null) throw new ArgumentNullException("placeId");
-
+    public void get(@NonNull String placeId, OnSuccessListener<Place> onSuccessListener,
+                    OnFailureListener onFailureListener) {
         Places.GeoDataApi.getPlaceById(googleApiClient, placeId)
                          .setResultCallback(places -> {
                              if (places.getStatus().isSuccess()) {
@@ -47,7 +45,7 @@ public final class PlaceRepository {
 
         private final String placeId;
 
-        private StatusException(String message, String placeId) {
+        private StatusException(@NonNull String message, @NonNull String placeId) {
             super(message);
             this.placeId = placeId;
         }

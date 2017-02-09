@@ -5,7 +5,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.vision.ArgumentNullException;
+import android.support.annotation.NonNull;
 
 import java.io.Closeable;
 
@@ -19,10 +19,7 @@ public final class ObservableData<TData> implements Closeable {
 
     private boolean closed;
 
-    public ObservableData(Query query, DataSnapshotConverter<TData> dataSnapshotConverter) {
-        if (query == null) throw new ArgumentNullException("query");
-        if (dataSnapshotConverter == null) throw new ArgumentNullException("dataSnapshotConverter");
-
+    public ObservableData(@NonNull Query query, @NonNull DataSnapshotConverter<TData> dataSnapshotConverter) {
         this.query = query;
         this.dataSnapshotConverter = dataSnapshotConverter;
     }

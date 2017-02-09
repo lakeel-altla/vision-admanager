@@ -1,15 +1,16 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
 import com.lakeel.altla.vision.domain.model.UserConnection;
+
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -27,9 +28,13 @@ public final class ObserveConnectionUseCase {
     UserConnectionRepository userConnectionRepository;
 
     @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
     public ObserveConnectionUseCase() {
     }
 
+    @NonNull
     public Observable<Boolean> execute() {
         return ObservableDataObservable
                 .using(() -> connectionRepository.observe())
@@ -40,10 +45,7 @@ public final class ObserveConnectionUseCase {
 
     private Observable<Boolean> registerUserConnection(Boolean connected) {
         if (connected) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user == null) throw new IllegalStateException("The user is not signed in.");
-
-            String userId = user.getUid();
+            String userId = currentUserResolver.getUserId();
             String instanceId = FirebaseInstanceId.getInstance().getId();
             UserConnection userConnection = new UserConnection(userId, instanceId);
 

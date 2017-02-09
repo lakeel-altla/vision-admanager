@@ -8,11 +8,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserProfile;
+
+import android.support.annotation.NonNull;
 
 public final class UserProfileRepository extends BaseDatabaseRepository {
 
@@ -20,13 +21,11 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
 
     private static final String PATH_USER_PROFILES = "userProfiles";
 
-    public UserProfileRepository(FirebaseDatabase database) {
+    public UserProfileRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserProfile userProfile) {
-        if (userProfile == null) throw new ArgumentNullException("userProfile");
-
+    public void save(@NonNull UserProfile userProfile) {
         getDatabase().getReference()
                      .child(PATH_USER_PROFILES)
                      .child(userProfile.userId)
@@ -37,10 +36,8 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(String userId, OnSuccessListener<UserProfile> onSuccessListener,
+    public void find(@NonNull String userId, OnSuccessListener<UserProfile> onSuccessListener,
                      OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-
         getDatabase().getReference()
                      .child(PATH_USER_PROFILES)
                      .child(userId)
@@ -61,9 +58,8 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public ObservableData<UserProfile> observe(String userId) {
-        if (userId == null) throw new ArgumentNullException("userId");
-
+    @NonNull
+    public ObservableData<UserProfile> observe(@NonNull String userId) {
         DatabaseReference reference = getDatabase().getReference()
                                                    .child(PATH_USER_PROFILES)
                                                    .child(userId);

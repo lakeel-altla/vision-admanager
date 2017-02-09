@@ -7,10 +7,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.UserAreaDescriptionScene;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +22,11 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
 
     private static final String BASE_PATH = "userAreaDescriptionScenes";
 
-    public UserAreaDescriptionSceneRepository(FirebaseDatabase database) {
+    public UserAreaDescriptionSceneRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(UserAreaDescriptionScene userAreaDescriptionScene) {
-        if (userAreaDescriptionScene == null) throw new ArgumentNullException("userAreaDescriptionScene");
-
+    public void save(@NonNull UserAreaDescriptionScene userAreaDescriptionScene) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userAreaDescriptionScene.userId)
@@ -40,13 +39,9 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
                      });
     }
 
-    public void find(String userId, String areaDescriptionId, String sceneId,
+    public void find(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull String sceneId,
                      OnSuccessListener<UserAreaDescriptionScene> onSuccessListener,
                      OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-        if (sceneId == null) throw new ArgumentNullException("sceneId");
-
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
@@ -69,12 +64,9 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
                      });
     }
 
-    public void findAll(String userId, String areaDescriptionId,
+    public void findAll(@NonNull String userId, @NonNull String areaDescriptionId,
                         OnSuccessListener<List<UserAreaDescriptionScene>> onSuccessListener,
                         OnFailureListener onFailureListener) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
@@ -97,11 +89,7 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
                      });
     }
 
-    public void delete(String userId, String areaDescriptionId, String sceneId) {
-        if (userId == null) throw new ArgumentNullException("userId");
-        if (areaDescriptionId == null) throw new ArgumentNullException("areaDescriptionId");
-        if (sceneId == null) throw new ArgumentNullException("sceneId");
-
+    public void delete(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull String sceneId) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
