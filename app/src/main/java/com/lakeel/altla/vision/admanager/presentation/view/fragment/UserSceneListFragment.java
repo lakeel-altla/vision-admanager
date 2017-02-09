@@ -86,7 +86,7 @@ public final class UserSceneListFragment extends AbstractFragment<UserSceneListV
 
         setHasOptionsMenu(true);
 
-        getActivity().setTitle(R.string.title_user_area_list);
+        getActivity().setTitle(R.string.title_user_scene_list);
     }
 
     @Override
