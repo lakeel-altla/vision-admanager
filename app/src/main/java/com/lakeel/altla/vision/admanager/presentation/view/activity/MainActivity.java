@@ -21,6 +21,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
@@ -31,6 +32,7 @@ import com.squareup.picasso.Picasso;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -69,6 +71,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
                    UserSceneListFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
+                   UserSceneEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
@@ -300,7 +303,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserSceneCreateView() {
-        // TODO
+        showUserSceneEditView(null);
     }
 
     @Override
@@ -310,7 +313,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserSceneEditView(@NonNull String sceneId) {
-
+        showUserSceneEditView(sceneId);
     }
 
     @Override
@@ -423,7 +426,7 @@ public final class MainActivity extends AppCompatActivity
         replaceFragmentAndAddToBackStack(fragment);
     }
 
-    private void showUserAreaEditFragment(String areaId) {
+    private void showUserAreaEditFragment(@Nullable String areaId) {
         toolbar.setVisibility(View.VISIBLE);
 
         UserAreaEditFragment fragment = UserAreaEditFragment.newInstance(areaId);
@@ -448,6 +451,13 @@ public final class MainActivity extends AppCompatActivity
         toolbar.setVisibility(View.VISIBLE);
 
         UserSceneFragment fragment = UserSceneFragment.newInstance(sceneId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showUserSceneEditView(@Nullable String sceneId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(sceneId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 

@@ -117,7 +117,7 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
 
     @Override
     public void onModelUpdated(@NonNull UserSceneModel model) {
-        textViewId.setText(model.areaId);
+        textViewId.setText(model.sceneId);
         String createdAtString = null;
         if (0 < model.createdAt) {
             createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +

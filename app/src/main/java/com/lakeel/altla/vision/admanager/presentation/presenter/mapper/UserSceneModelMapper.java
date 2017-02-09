@@ -13,9 +13,10 @@ public final class UserSceneModelMapper {
     @NonNull
     public static UserSceneModel map(@NonNull UserScene userScene) {
         UserSceneModel model = new UserSceneModel();
-        model.areaId = userScene.areaId;
+        model.sceneId = userScene.sceneId;
         model.name = userScene.name;
         model.createdAt = userScene.createdAt;
+        model.areaId = userScene.areaId;
         return model;
     }
 }
