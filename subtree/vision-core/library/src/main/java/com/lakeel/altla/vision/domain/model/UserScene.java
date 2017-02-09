@@ -12,5 +12,7 @@ public final class UserScene {
 
     public String name;
 
-    public long creationTime;
+    public long createdAt;
+
+    public String areaId;
 }

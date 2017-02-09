@@ -24,6 +24,8 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
 
     private static final String FIELD_NAME = "name";
 
+    private static final String FIELD_AREA_ID = "areaId";
+
     public UserSceneRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
@@ -69,6 +71,31 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      .child(PATH_USER_SCENES)
                      .child(userId)
                      .orderByChild(FIELD_NAME)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<UserScene> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(map(userId, child));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
+
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
+    public void findByAreaId(@NonNull String userId, @NonNull String areaId,
+                             OnSuccessListener<List<UserScene>> onSuccessListener,
+                             OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(PATH_USER_SCENES)
+                     .child(userId)
+                     .orderByChild(FIELD_AREA_ID)
+                     .equalTo(areaId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
