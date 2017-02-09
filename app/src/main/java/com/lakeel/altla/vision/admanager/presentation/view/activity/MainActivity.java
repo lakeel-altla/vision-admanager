@@ -21,6 +21,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
@@ -67,6 +68,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaSelectFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
                    UserSceneListFragment.InteractionListener,
+                   UserSceneFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
@@ -303,7 +305,12 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserSceneView(@NonNull String sceneId) {
-        // TODO
+        showUserSceneFragment(sceneId);
+    }
+
+    @Override
+    public void onShowUserSceneEditView(@NonNull String sceneId) {
+
     }
 
     @Override
@@ -434,6 +441,13 @@ public final class MainActivity extends AppCompatActivity
         toolbar.setVisibility(View.VISIBLE);
 
         UserAreaDescriptionListInAreaFragment fragment = UserAreaDescriptionListInAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showUserSceneFragment(@NonNull String sceneId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        UserSceneFragment fragment = UserSceneFragment.newInstance(sceneId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
