@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/drawer_menu_main"
+           android:checkableBehavior="single">
 
         <item android:id="@+id/nav_user_area_list"
               android:icon="@drawable/ic_map_black_24dp"
               android:title="@string/nav_user_area_list"/>
 
-        <item android:id="@+id/nav_tango_space"
-              android:icon="@drawable/ic_folder_shared_black_24dp"
+        <item android:id="@+id/nav_tango_area_descriptions"
+              android:icon="@drawable/ic_cube_outline_black_24dp"
               android:title="@string/nav_tango_area_description_list"/>
 
-        <item android:id="@+id/nav_app_space"
-              android:icon="@drawable/ic_folder_black_24dp"
+        <item android:id="@+id/nav_user_area_descriptions"
+              android:icon="@drawable/ic_cube_black_24dp"
               android:title="@string/nav_user_area_description_list"/>
 
     </group>
 
-    <group android:checkableBehavior="none">
+    <group android:id="@+id/drawer_menu_sign_out"
+           android:checkableBehavior="none">
 
         <item android:id="@+id/nav_sign_out"
               android:title="@string/nav_sign_out"/>

@@ -201,10 +201,10 @@ public final class MainActivity extends AppCompatActivity
             case R.id.nav_user_area_list:
                 showUserAreaListFragment();
                 break;
-            case R.id.nav_tango_space:
+            case R.id.nav_tango_area_descriptions:
                 showTangoAreaDescriptionListFragment();
                 break;
-            case R.id.nav_app_space:
+            case R.id.nav_user_area_descriptions:
                 showUserAreaDescriptionListFragment();
                 break;
             case R.id.nav_sign_out:
