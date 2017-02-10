@@ -20,11 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
 public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditView, UserSceneEditPresenter>
@@ -38,6 +40,9 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
 
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
+
+    @BindView(R.id.text_view_area_name)
+    TextView textViewAreaName;
 
     private InteractionListener interactionListener;
 
@@ -109,6 +114,12 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
     @Override
     public void onModelUpdated(@NonNull UserSceneModel model) {
         textInputEditTextName.setText(model.name);
+        textViewAreaName.setText(model.areaName);
+    }
+
+    @Override
+    public void onAreaNameUpdated(String areaName) {
+        textViewAreaName.setText(areaName);
     }
 
     @Override
@@ -121,12 +132,27 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onShowUserAreaSelectView() {
+        interactionListener.onShowUserAreaSelectView();
+    }
+
+    public void onUserAreaSelected(String areaId) {
+        presenter.onUserAreaSelected(areaId);
+    }
+
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void onEditTextNameAfterTextChanged(Editable editable) {
         presenter.onEditTextNameAfterTextChanged(editable.toString());
     }
 
+    @OnClick(R.id.image_button_select_area)
+    void onClickImageButtonSelectArea() {
+        presenter.onClickImageButtonSelectArea();
+    }
+
     public interface InteractionListener {
 
+        void onShowUserAreaSelectView();
     }
 }

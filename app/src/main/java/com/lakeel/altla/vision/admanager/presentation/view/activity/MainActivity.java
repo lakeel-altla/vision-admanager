@@ -320,10 +320,17 @@ public final class MainActivity extends AppCompatActivity
     public void onUserAreaSelected(String areaId) {
         getSupportFragmentManager().popBackStack();
 
-        UserAreaDescriptionEditFragment fragment =
+        // if you should back to the user area description edit view.
+        UserAreaDescriptionEditFragment userAreaDescriptionEditFragment =
                 (UserAreaDescriptionEditFragment) findFragment(UserAreaDescriptionEditFragment.class);
-        if (fragment != null) {
-            fragment.onUserAreaSelected(areaId);
+        if (userAreaDescriptionEditFragment != null) {
+            userAreaDescriptionEditFragment.onUserAreaSelected(areaId);
+        }
+
+        // if you should back to the user scene edit view.
+        UserSceneEditFragment userSceneEditFragment = (UserSceneEditFragment) findFragment(UserSceneEditFragment.class);
+        if (userSceneEditFragment != null) {
+            userSceneEditFragment.onUserAreaSelected(areaId);
         }
     }
 

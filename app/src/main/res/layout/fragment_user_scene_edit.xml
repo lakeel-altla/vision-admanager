@@ -31,4 +31,28 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <TextView android:text="@string/label_area"
+              android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+              android:layout_marginTop="@dimen/content_vertical_margin"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+
+        <ImageButton android:id="@+id/image_button_select_area"
+                     android:src="@drawable/ic_map_black_24dp"
+                     android:background="?android:attr/actionBarItemBackground"
+                     android:tint="@color/tint_image_button_area_description_model"
+                     android:layout_width="@dimen/touch_target_width"
+                     android:layout_height="@dimen/touch_target_height"/>
+
+        <TextView android:id="@+id/text_view_area_name"
+                  android:layout_gravity="center_vertical"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
 </LinearLayout>

@@ -10,7 +10,11 @@ public interface UserSceneEditView {
 
     void onModelUpdated(@NonNull UserSceneModel model);
 
+    void onAreaNameUpdated(String areaName);
+
     void onUpdateTitle(@Nullable String title);
+
+    void onShowUserAreaSelectView();
 
     void onSnackbar(@StringRes int resId);
 }

@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneM
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserScene;
+import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -30,6 +32,9 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     @Inject
     SaveUserSceneUseCase saveUserSceneUseCase;
+
+    @Inject
+    FindUserAreaUseCase findUserAreaUseCase;
 
     @Inject
     CurrentUserResolver currentUserResolver;
@@ -70,6 +75,18 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
             Disposable disposable = findUserSceneUseCase
                     .execute(sceneId)
                     .map(UserSceneModelMapper::map)
+                    .flatMap(model -> {
+                        if (model.areaId != null) {
+                            return findUserAreaUseCase
+                                    .execute(model.areaId)
+                                    .map(userArea -> {
+                                        model.areaName = userArea.name;
+                                        return model;
+                                    });
+                        } else {
+                            return Maybe.just(model);
+                        }
+                    })
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess(model -> processing = false)
                     .doOnComplete(() -> processing = false)
@@ -105,6 +122,28 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         model.name = name;
 
         save();
+    }
+
+    public void onClickImageButtonSelectArea() {
+        getView().onShowUserAreaSelectView();
+    }
+
+    public void onUserAreaSelected(String areaId) {
+        model.areaId = areaId;
+
+        save();
+
+        Disposable disposable = findUserAreaUseCase
+                .execute(areaId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userArea -> {
+                    model.areaName = userArea.name;
+                    getView().onAreaNameUpdated(model.areaName);
+                }, e -> {
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
     }
 
     private void save() {
