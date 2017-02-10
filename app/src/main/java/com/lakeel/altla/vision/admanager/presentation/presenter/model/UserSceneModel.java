@@ -12,6 +12,8 @@ public final class UserSceneModel {
 
     public String areaId;
 
+    public String areaName;
+
     public long createdAt = -1;
 
     public long updatedAt = -1;

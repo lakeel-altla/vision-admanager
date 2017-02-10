@@ -4,6 +4,7 @@ import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
+import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -22,6 +24,9 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
 
     @Inject
     FindUserSceneUseCase findUserSceneUseCase;
+
+    @Inject
+    FindUserAreaUseCase findUserAreaUseCase;
 
     private String sceneId;
 
@@ -57,6 +62,19 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
         Disposable disposable = findUserSceneUseCase
                 .execute(sceneId)
                 .map(UserSceneModelMapper::map)
+                .flatMap(model -> {
+                    // Resolve the area name
+                    if (model.areaId != null) {
+                        return findUserAreaUseCase
+                                .execute(model.areaId)
+                                .map(userArea -> {
+                                    model.areaName = userArea.name;
+                                    return model;
+                                });
+                    } else {
+                        return Maybe.just(model);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     getView().onModelUpdated(model);

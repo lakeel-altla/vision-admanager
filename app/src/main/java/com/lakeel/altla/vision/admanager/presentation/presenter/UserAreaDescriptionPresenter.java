@@ -15,7 +15,6 @@ import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -36,9 +35,6 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     @Inject
     FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
-
-    @Inject
-    GetPlaceUseCase getPlaceUseCase;
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;

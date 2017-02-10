@@ -42,6 +42,9 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     @BindView(R.id.text_view_name)
     TextView textViewName;
 
+    @BindView(R.id.text_view_area_name)
+    TextView textViewAreaName;
+
     @BindView(R.id.text_view_created_at)
     TextView textViewCreatedAt;
 
@@ -122,6 +125,7 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     public void onModelUpdated(@NonNull UserSceneModel model) {
         textViewId.setText(model.sceneId);
         textViewName.setText(model.name);
+        textViewAreaName.setText(model.areaName);
         textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
         textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
 
