@@ -5,6 +5,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserScenePresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,11 +39,14 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     @BindView(R.id.text_view_id)
     TextView textViewId;
 
+    @BindView(R.id.text_view_name)
+    TextView textViewName;
+
     @BindView(R.id.text_view_created_at)
     TextView textViewCreatedAt;
 
-    @BindView(R.id.text_view_name)
-    TextView textViewName;
+    @BindView(R.id.text_view_updated_at)
+    TextView textViewUpdatedAt;
 
     private InteractionListener interactionListener;
 
@@ -118,13 +121,9 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     @Override
     public void onModelUpdated(@NonNull UserSceneModel model) {
         textViewId.setText(model.sceneId);
-        String createdAtString = null;
-        if (0 < model.createdAt) {
-            createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +
-                              DateFormat.getTimeFormat(getContext()).format(model.createdAt);
-        }
-        textViewCreatedAt.setText(createdAtString);
         textViewName.setText(model.name);
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
+        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
 
         getActivity().setTitle(model.name);
     }

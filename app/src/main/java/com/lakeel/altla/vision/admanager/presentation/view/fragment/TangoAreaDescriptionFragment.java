@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.Activity;
@@ -17,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,14 +46,14 @@ public final class TangoAreaDescriptionFragment
     @BindView(R.id.text_view_id)
     TextView textViewId;
 
-    @BindView(R.id.text_view_created_at)
-    TextView textViewCreatedAt;
-
     @BindView(R.id.text_view_in_cloud)
     TextView textViewInCloud;
 
     @BindView(R.id.text_view_name)
     TextView textViewName;
+
+    @BindView(R.id.text_view_created_at)
+    TextView textViewCreatedAt;
 
     private InteractionListener interactionListener;
 
@@ -151,18 +151,10 @@ public final class TangoAreaDescriptionFragment
     @Override
     public void onModelUpdated(@NonNull TangoAreaDescriptionModel model) {
         textViewId.setText(model.areaDescriptionId);
-
-        String createdAtString = null;
-        if (0 < model.createdAt) {
-            createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +
-                              DateFormat.getTimeFormat(getContext()).format(model.createdAt);
-        }
-        textViewCreatedAt.setText(createdAtString);
-
         String exportedString = getString(model.exported ? R.string.field_exported : R.string.field_not_exported);
         textViewInCloud.setText(exportedString);
-
         textViewName.setText(model.name);
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
 
         getActivity().setTitle(model.name);
     }

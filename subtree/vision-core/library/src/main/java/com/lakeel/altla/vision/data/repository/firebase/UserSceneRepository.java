@@ -37,7 +37,7 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      .child(PATH_USER_SCENES)
                      .child(userScene.userId)
                      .child(userScene.sceneId)
-                     .setValue(userScene, (error, reference) -> {
+                     .setValue(map(userScene), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }

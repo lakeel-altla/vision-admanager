@@ -5,6 +5,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaPresenter;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,9 +40,6 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     @BindView(R.id.text_view_id)
     TextView textViewId;
 
-    @BindView(R.id.text_view_created_at)
-    TextView textViewCreatedAt;
-
     @BindView(R.id.text_view_name)
     TextView textViewName;
 
@@ -54,6 +51,12 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
 
     @BindView(R.id.text_view_level)
     TextView textViewLevel;
+
+    @BindView(R.id.text_view_created_at)
+    TextView textViewCreatedAt;
+
+    @BindView(R.id.text_view_updated_at)
+    TextView textViewUpdatedAt;
 
     private InteractionListener interactionListener;
 
@@ -128,16 +131,12 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     @Override
     public void onModelUpdated(@NonNull UserAreaModel model) {
         textViewId.setText(model.areaId);
-        String createdAtString = null;
-        if (0 < model.createdAt) {
-            createdAtString = DateFormat.getDateFormat(getContext()).format(model.createdAt) + " " +
-                              DateFormat.getTimeFormat(getContext()).format(model.createdAt);
-        }
-        textViewCreatedAt.setText(createdAtString);
         textViewName.setText(model.name);
         textViewPlaceName.setText(model.place != null ? model.place.name : null);
         textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
         textViewLevel.setText(String.valueOf(model.level));
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
+        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
 
         getActivity().setTitle(model.name);
     }

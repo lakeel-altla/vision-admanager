@@ -76,9 +76,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     protected void onCreateViewOverride() {
         super.onCreateViewOverride();
 
-        String format = resources.getString(R.string.title_format_user_area_description_edit);
-        String title = String.format(format, areaDescriptionId);
-        getView().onUpdateTitle(title);
+        getView().onUpdateTitle(null);
     }
 
     @Override
@@ -104,9 +102,11 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                 })
                 .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnDispose(() -> processing = false)
+                .doOnSuccess(model -> processing = false)
+                .doOnError(e -> processing = false)
                 .subscribe(model -> {
                     this.model = model;
+                    getView().onUpdateTitle(model.name);
                     getView().onModelUpdated(model);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -116,6 +116,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
+        getLog().v("onEditTextNameAfterTextChanged");
+
         if (processing) return;
         processing = true;
 
@@ -129,6 +131,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         } else {
             save();
         }
+
+        getView().onUpdateTitle(model.name);
     }
 
     public void onClickImageButtonSelectArea() {

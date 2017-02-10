@@ -129,7 +129,7 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onUpdateTitle(@NonNull String title) {
+    public void onUpdateTitle(@Nullable String title) {
         getActivity().setTitle(title);
     }
 
