@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 public interface UserAreaSelectView {
@@ -8,7 +9,7 @@ public interface UserAreaSelectView {
 
     void onItemsUpdated();
 
-    void onItemSelected(String areaId);
+    void onItemSelected(@NonNull String areaId);
 
     void onSnackbar(@StringRes int resId);
 }

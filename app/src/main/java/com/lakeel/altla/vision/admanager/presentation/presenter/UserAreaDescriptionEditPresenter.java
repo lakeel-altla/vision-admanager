@@ -11,6 +11,8 @@ import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
+import org.parceler.Parcels;
+
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +27,8 @@ import io.reactivex.disposables.Disposable;
 public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAreaDescriptionEditView> {
 
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
+
+    private static final String STATE_MODEL = "model";
 
     @Inject
     FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
@@ -45,7 +49,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
     private UserAreaDescriptionEditModel model;
 
-    private boolean processing;
+    private boolean areaNameDirty;
 
     @Inject
     public UserAreaDescriptionEditPresenter() {
@@ -70,6 +74,19 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         }
 
         this.areaDescriptionId = areaDescriptionId;
+
+        if (savedInstanceState != null) {
+            model = Parcels.unwrap(savedInstanceState.getParcelable(STATE_MODEL));
+        } else {
+            model = null;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(STATE_MODEL, Parcels.wrap(model));
     }
 
     @Override
@@ -83,88 +100,96 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     protected void onStartOverride() {
         super.onStartOverride();
 
-        processing = true;
+        if (model == null) {
+            getView().onUpdateViewsEnabled(false);
 
-        Disposable disposable = findUserAreaDescriptionUseCase
-                .execute(areaDescriptionId)
-                .map(UserAreaDescriptionEditModelMapper::map)
-                .flatMap(model -> {
-                    if (model.areaId != null) {
-                        return findUserAreaUseCase
-                                .execute(model.areaId)
-                                .map(userArea -> {
-                                    model.areaName = userArea.name;
-                                    return model;
-                                });
-                    } else {
-                        return Maybe.just(model);
-                    }
-                })
-                .toSingle()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(model -> processing = false)
-                .doOnError(e -> processing = false)
-                .subscribe(model -> {
-                    this.model = model;
-                    getView().onUpdateTitle(model.name);
-                    getView().onModelUpdated(model);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+            Disposable disposable = findUserAreaDescriptionUseCase
+                    .execute(areaDescriptionId)
+                    .map(UserAreaDescriptionEditModelMapper::map)
+                    .flatMap(model -> {
+                        if (model.areaId == null) {
+                            return Maybe.just(model);
+                        } else {
+                            return findUserAreaUseCase
+                                    .execute(model.areaId)
+                                    .map(userArea -> {
+                                        model.areaName = userArea.name;
+                                        return model;
+                                    });
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(model -> {
+                        this.model = model;
+
+                        getView().onUpdateTitle(model.name);
+                        getView().onUpdateName(model.name);
+                        getView().onUpdateAreaName(model.areaName);
+                        getView().onUpdateViewsEnabled(true);
+                    }, e -> {
+                        getLog().e("Failed.", e);
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    }, () -> {
+                        getLog().e("Entity not found.");
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    });
+            manageDisposable(disposable);
+        } else {
+            getView().onUpdateTitle(model.name);
+            getView().onUpdateName(model.name);
+
+            if (areaNameDirty) {
+                areaNameDirty = false;
+
+                getView().onUpdateViewsEnabled(false);
+
+                Disposable disposable = findUserAreaUseCase
+                        .execute(model.areaId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(userArea -> {
+                            model.areaName = userArea.name;
+                            getView().onUpdateAreaName(model.areaName);
+                            getView().onUpdateViewsEnabled(true);
+                        });
+                manageDisposable(disposable);
+            } else {
+                getView().onUpdateAreaName(model.areaName);
+            }
+        }
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
-        getLog().v("onEditTextNameAfterTextChanged");
-
-        if (processing) return;
-        processing = true;
-
         model.name = name;
         getView().onHideNameError();
 
         // Don't save the empty name.
         if (name == null || name.length() == 0) {
-            processing = false;
             getView().onShowNameError(R.string.input_error_name_required);
-        } else {
-            save();
         }
-
-        getView().onUpdateTitle(model.name);
     }
 
     public void onClickImageButtonSelectArea() {
         getView().onShowUserAreaSelectView();
     }
 
-    public void onUserAreaSelected(String areaId) {
+    public void onUserAreaSelected(@NonNull String areaId) {
+        // This method will be called before Fragment#onStart().
         model.areaId = areaId;
-
-        save();
-
-        Disposable disposable = findUserAreaUseCase
-                .execute(areaId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userArea -> {
-                    model.areaName = userArea.name;
-                    getView().onAreaNameUpdated(model.areaName);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        areaNameDirty = true;
     }
 
-    private void save() {
+    public void onClickButtonSave() {
+        getView().onUpdateViewsEnabled(false);
+
         UserAreaDescription userAreaDescription = UserAreaDescriptionEditModelMapper.map(model);
 
         Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateViewsEnabled(true);
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);

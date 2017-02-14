@@ -30,6 +30,10 @@ public class BasePresenter<TView> implements Presenter<TView> {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+    }
+
+    @Override
     public final void onCreateView(@NonNull TView view) {
         this.view = view;
 

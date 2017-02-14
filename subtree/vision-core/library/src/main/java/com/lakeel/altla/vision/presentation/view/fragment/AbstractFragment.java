@@ -53,6 +53,18 @@ public abstract class AbstractFragment<TView, TPresenter extends Presenter<TView
     protected void onCreateOverride(@Nullable Bundle savedInstanceState) {
     }
 
+    @Override
+    public final void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getPresenter().onSaveInstanceState(outState);
+
+        onSaveInstanceStateOverride(outState);
+    }
+
+    protected void onSaveInstanceStateOverride(Bundle outState) {
+    }
+
     @Nullable
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,

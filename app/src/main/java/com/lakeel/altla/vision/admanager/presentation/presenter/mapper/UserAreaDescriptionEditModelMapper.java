@@ -12,8 +12,9 @@ public final class UserAreaDescriptionEditModelMapper {
 
     @NonNull
     public static UserAreaDescriptionEditModel map(@NonNull UserAreaDescription userAreaDescription) {
-        UserAreaDescriptionEditModel model = new UserAreaDescriptionEditModel(
-                userAreaDescription.userId, userAreaDescription.areaDescriptionId);
+        UserAreaDescriptionEditModel model = new UserAreaDescriptionEditModel();
+        model.userId = userAreaDescription.userId;
+        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
         model.name = userAreaDescription.name;
         model.fileUploaded = userAreaDescription.fileUploaded;
         model.areaId = userAreaDescription.areaId;

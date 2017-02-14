@@ -11,4 +11,9 @@
     <!-- royalblue -->
     <color name="tint_image_button_area_description_model">#4169e1</color>
 
+    <!-- royalblue -->
+    <color name="tint_image_button_enabled">#4169e1</color>
+    <!-- white (75%)  -->
+    <color name="tint_image_button_disabled">#ccffffff</color>
+
 </resources>

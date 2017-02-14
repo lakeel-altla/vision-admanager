@@ -1,17 +1,17 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
-
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 public interface UserAreaDescriptionEditView {
 
+    void onUpdateViewsEnabled(boolean enabled);
+
     void onUpdateTitle(@Nullable String title);
 
-    void onAreaNameUpdated(String areaName);
+    void onUpdateName(String name);
 
-    void onModelUpdated(UserAreaDescriptionEditModel model);
+    void onUpdateAreaName(String areaName);
 
     void onSnackbar(@StringRes int resId);
 

@@ -87,5 +87,6 @@
     <string name="field_not_exported">Not Exported</string>
 
     <string name="dummy_abc">ABCDEFG</string>
+    <string name="button_save">Save</string>
 
 </resources>

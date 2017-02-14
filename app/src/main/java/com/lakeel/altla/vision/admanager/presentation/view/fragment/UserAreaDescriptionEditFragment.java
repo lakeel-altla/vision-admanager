@@ -5,7 +5,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionEditPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -134,14 +133,25 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onAreaNameUpdated(String areaName) {
+    public void onUpdateName(String name) {
+        textInputEditTextName.setText(name);
+    }
+
+    @Override
+    public void onUpdateAreaName(String areaName) {
         textViewAreaName.setText(areaName);
     }
 
     @Override
-    public void onModelUpdated(UserAreaDescriptionEditModel model) {
-        textInputEditTextName.setText(model.name);
-        textViewAreaName.setText(model.areaName);
+    public void onUpdateViewsEnabled(boolean enabled) {
+        textInputEditTextName.setEnabled(enabled);
+        imageButtonSelectArea.setEnabled(enabled);
+
+        int enabledTint = getResources().getColor(R.color.tint_image_button_enabled);
+        int disabledTint = getResources().getColor(R.color.tint_image_button_disabled);
+        int tint = enabled ? enabledTint : disabledTint;
+
+        imageButtonSelectArea.setColorFilter(tint);
     }
 
     @Override
@@ -164,7 +174,7 @@ public final class UserAreaDescriptionEditFragment
         interactionListener.onShowUserAreaSelectView();
     }
 
-    public void onUserAreaSelected(String areaId) {
+    public void onUserAreaSelected(@NonNull String areaId) {
         presenter.onUserAreaSelected(areaId);
     }
 
@@ -176,6 +186,11 @@ public final class UserAreaDescriptionEditFragment
     @OnClick(R.id.image_button_select_area)
     void onClickImageButtonSelectArea() {
         presenter.onClickImageButtonSelectArea();
+    }
+
+    @OnClick(R.id.button_save)
+    void onClickButtonSave() {
+        presenter.onClickButtonSave();
     }
 
     public interface InteractionListener {

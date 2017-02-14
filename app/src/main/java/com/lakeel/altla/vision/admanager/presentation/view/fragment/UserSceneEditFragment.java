@@ -137,7 +137,7 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
         interactionListener.onShowUserAreaSelectView();
     }
 
-    public void onUserAreaSelected(String areaId) {
+    public void onUserAreaSelected(@NonNull String areaId) {
         presenter.onUserAreaSelected(areaId);
     }
 

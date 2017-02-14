@@ -1,12 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter.model;
 
-import android.support.annotation.NonNull;
+import org.parceler.Parcel;
 
-public final class UserAreaDescriptionEditModel {
+@Parcel
+public class UserAreaDescriptionEditModel {
 
-    public final String userId;
+    public String userId;
 
-    public final String areaDescriptionId;
+    public String areaDescriptionId;
 
     public String name;
 
@@ -19,9 +20,4 @@ public final class UserAreaDescriptionEditModel {
     public long createdAt;
 
     public long updatedAt;
-
-    public UserAreaDescriptionEditModel(@NonNull String userId, @NonNull String areaDescriptionId) {
-        this.userId = userId;
-        this.areaDescriptionId = areaDescriptionId;
-    }
 }

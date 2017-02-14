@@ -128,7 +128,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         getView().onShowUserAreaSelectView();
     }
 
-    public void onUserAreaSelected(String areaId) {
+    public void onUserAreaSelected(@NonNull String areaId) {
         model.areaId = areaId;
 
         save();

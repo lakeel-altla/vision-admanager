@@ -134,7 +134,9 @@ public final class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationViewHeader = new NavigationViewHeader(navigationView);
 
-        showSignInFragment();
+        if (savedInstanceState == null) {
+            showSignInFragment();
+        }
     }
 
     @Override
@@ -317,7 +319,7 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onUserAreaSelected(String areaId) {
+    public void onUserAreaSelected(@NonNull String areaId) {
         getSupportFragmentManager().popBackStack();
 
         // if you should back to the user area description edit view.
