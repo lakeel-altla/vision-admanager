@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
@@ -67,6 +66,13 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 
@@ -88,11 +94,10 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
         Disposable disposable2 = findUserAreaUseCase
                 .execute(areaId)
-                .map(UserAreaModelMapper::map)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
+                .subscribe(userArea -> {
                     String titleFormat = resources.getString(R.string.title_format_user_area_description_list_in_area);
-                    String title = String.format(titleFormat, model.name);
+                    String title = String.format(titleFormat, userArea.name);
                     getView().onUpdateTitle(title);
                 }, e -> {
                     getLog().e("Failed.", e);

@@ -5,7 +5,7 @@ import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -129,9 +129,6 @@ public final class UserAreaDescriptionFragment
         ButterKnife.bind(this, view);
 
         setHasOptionsMenu(true);
-
-        // Reset the title of the previous view.
-        getActivity().setTitle(null);
     }
 
     @Override
@@ -185,37 +182,62 @@ public final class UserAreaDescriptionFragment
     }
 
     @Override
-    public void onModelUpdated(@NonNull UserAreaDescriptionModel model) {
-        textViewId.setText(model.areaDescriptionId);
+    public void onUpdateTitle(@Nullable String name) {
+        getActivity().setTitle(name);
+    }
 
-        String importStatusString = null;
-        switch (model.importStatus) {
+    @Override
+    public void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId) {
+        textViewId.setText(areaDescriptionId);
+    }
+
+    @Override
+    public void onUpdateImportStatus(@NonNull ImportStatus importStatus) {
+        String text = null;
+        switch (importStatus) {
             case IMPORTED:
-                importStatusString = getString(R.string.field_imported);
+                text = getString(R.string.field_imported);
                 break;
             case NOT_IMPORTED:
-                importStatusString = getString(R.string.field_not_imported);
+                text = getString(R.string.field_not_imported);
                 break;
             case UNKNOWN:
             default:
                 break;
         }
-        textViewInTango.setText(importStatusString);
+        textViewInTango.setText(text);
+    }
 
-        String uploadStatusString =
-                getString(model.fileUploaded ? R.string.field_uploaded : R.string.field_not_uploaded);
-        textViewInCloud.setText(uploadStatusString);
+    @Override
+    public void onUpdateFileUploaded(boolean fileUploaded) {
+        String text = getString(fileUploaded ? R.string.field_uploaded : R.string.field_not_uploaded);
+        textViewInCloud.setText(text);
+    }
 
-        String cacheStatusString = getString(model.fileCached ? R.string.field_cached : R.string.field_not_cached);
-        textViewInCache.setText(cacheStatusString);
+    @Override
+    public void onUpdateFileCached(boolean fileCached) {
+        String text = getString(fileCached ? R.string.field_cached : R.string.field_not_cached);
+        textViewInCache.setText(text);
+    }
 
-        textViewName.setText(model.name);
-        textViewAreaName.setText(model.areaName);
+    @Override
+    public void onUpdateName(@NonNull String name) {
+        textViewName.setText(name);
+    }
 
-        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
-        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
+    @Override
+    public void onUpdateAreaName(@Nullable String areaName) {
+        textViewAreaName.setText(areaName);
+    }
 
-        getActivity().setTitle(model.name);
+    @Override
+    public void onUpdateCreatedAt(long createdAt) {
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), createdAt));
+    }
+
+    @Override
+    public void onUpdateUpdatedAt(long updatedAt) {
+        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), updatedAt));
     }
 
     @Override

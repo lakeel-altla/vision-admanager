@@ -80,8 +80,11 @@ public final class UserAreaDescriptionListFragment
 
         recyclerView.setAdapter(new UserAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
 
-        getActivity().setTitle(R.string.title_user_area_description_list);
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

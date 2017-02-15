@@ -85,8 +85,6 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         setHasOptionsMenu(true);
-
-        getActivity().setTitle(R.string.title_user_area_list);
     }
 
     @Override
@@ -103,6 +101,11 @@ public final class UserAreaListFragment extends AbstractFragment<UserAreaListVie
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

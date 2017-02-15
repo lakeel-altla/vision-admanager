@@ -88,5 +88,7 @@
 
     <string name="dummy_abc">ABCDEFG</string>
     <string name="button_save">Save</string>
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_tango_permission">Tango Permission</string>
 
 </resources>

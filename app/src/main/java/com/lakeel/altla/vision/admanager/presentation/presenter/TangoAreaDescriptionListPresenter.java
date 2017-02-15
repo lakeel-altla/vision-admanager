@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
+import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.TangoAreaDescriptionItemModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
@@ -48,6 +49,13 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
                     getLog().e("Failed.", e);
                 });
         manageDisposable(disposable);
+    }
+
+    @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_tango_area_description_list);
     }
 
     @Override

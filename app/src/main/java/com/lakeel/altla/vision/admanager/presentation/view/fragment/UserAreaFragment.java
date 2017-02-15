@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -107,9 +106,6 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
         ButterKnife.bind(this, view);
 
         setHasOptionsMenu(true);
-
-        // Reset the title of the previous view.
-        getActivity().setTitle(null);
     }
 
     @Override
@@ -129,16 +125,43 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     }
 
     @Override
-    public void onModelUpdated(@NonNull UserAreaModel model) {
-        textViewId.setText(model.areaId);
-        textViewName.setText(model.name);
-        textViewPlaceName.setText(model.place != null ? model.place.name : null);
-        textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
-        textViewLevel.setText(String.valueOf(model.level));
-        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
-        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
+    }
 
-        getActivity().setTitle(model.name);
+    @Override
+    public void onUpdateAreaId(@NonNull String areaId) {
+        textViewId.setText(areaId);
+    }
+
+    @Override
+    public void onUpdateName(@NonNull String name) {
+        textViewName.setText(name);
+    }
+
+    @Override
+    public void onUpdatePlaceName(@Nullable String placeName) {
+        textViewPlaceName.setText(placeName);
+    }
+
+    @Override
+    public void onUpdatePlaceAddress(@Nullable String placeAddress) {
+        textViewPlaceAddress.setText(placeAddress);
+    }
+
+    @Override
+    public void onUpdateLevel(int level) {
+        textViewLevel.setText(String.valueOf(level));
+    }
+
+    @Override
+    public void onUpdateCreatedAt(long createdAt) {
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), createdAt));
+    }
+
+    @Override
+    public void onUpdateUpdatedAt(long updatedAt) {
+        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), updatedAt));
     }
 
     @Override

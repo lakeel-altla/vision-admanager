@@ -114,8 +114,6 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
             }
             return false;
         });
-
-        getActivity().setTitle(null);
     }
 
     @Override

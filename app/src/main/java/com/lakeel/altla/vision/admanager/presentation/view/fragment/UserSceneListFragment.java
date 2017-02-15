@@ -85,8 +85,6 @@ public final class UserSceneListFragment extends AbstractFragment<UserSceneListV
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         setHasOptionsMenu(true);
-
-        getActivity().setTitle(R.string.title_user_scene_list);
     }
 
     @Override
@@ -103,6 +101,11 @@ public final class UserSceneListFragment extends AbstractFragment<UserSceneListV
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

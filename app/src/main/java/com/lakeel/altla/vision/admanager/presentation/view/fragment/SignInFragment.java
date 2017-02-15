@@ -86,6 +86,11 @@ public final class SignInFragment extends AbstractFragment<SignInView, SignInPre
     }
 
     @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
+    }
+
+    @Override
     public void onShowProgressDialog() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_signin_in));

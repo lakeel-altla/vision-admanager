@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter.model;
 import org.parceler.Parcel;
 
 @Parcel
-public final class UserAreaModel {
+public final class UserAreaEditModel {
 
     public String userId;
 

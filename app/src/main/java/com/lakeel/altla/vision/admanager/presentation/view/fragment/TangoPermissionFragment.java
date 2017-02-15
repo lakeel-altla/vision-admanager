@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,6 +84,11 @@ public final class TangoPermissionFragment extends AbstractFragment<TangoPermiss
 
         boolean isCanceled = (Activity.RESULT_CANCELED == resultCode);
         presenter.onTangoPermissionResult(isCanceled);
+    }
+
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

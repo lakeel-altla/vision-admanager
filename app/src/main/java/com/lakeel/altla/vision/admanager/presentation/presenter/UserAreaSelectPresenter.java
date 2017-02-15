@@ -36,6 +36,13 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_select_user_area);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 
 public interface UserSceneView {
 
-    void onUpdateTitle(@NonNull String name);
+    void onUpdateTitle(@Nullable String name);
 
     void onUpdateSceneId(@NonNull String sceneId);
 

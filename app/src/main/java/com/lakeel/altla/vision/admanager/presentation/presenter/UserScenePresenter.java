@@ -2,8 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneEditModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
+import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.UserScene;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -56,32 +57,43 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 
         Disposable disposable = findUserSceneUseCase
                 .execute(sceneId)
-                .map(UserSceneEditModelMapper::map)
+                .map(userScene -> {
+                    Model model = new Model();
+                    model.userScene = userScene;
+                    return model;
+                })
                 .flatMap(model -> {
-                    if (model.areaId == null) {
+                    if (model.userScene.areaId == null) {
                         return Maybe.just(model);
                     } else {
                         return findUserAreaUseCase
-                                .execute(model.areaId)
+                                .execute(model.userScene.areaId)
                                 .map(userArea -> {
-                                    model.areaName = userArea.name;
+                                    model.userArea = userArea;
                                     return model;
                                 });
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateSceneId(model.sceneId);
-                    getView().onUpdateName(model.name);
-                    getView().onUpdateAreaName(model.areaName);
-                    getView().onUpdateCreatedAt(model.createdAt);
-                    getView().onUpdateUpdatedAt(model.updatedAt);
+                    getView().onUpdateTitle(model.userScene.name);
+                    getView().onUpdateSceneId(model.userScene.sceneId);
+                    getView().onUpdateName(model.userScene.name);
+                    getView().onUpdateAreaName(model.userArea.name);
+                    getView().onUpdateCreatedAt(model.userScene.createdAt);
+                    getView().onUpdateUpdatedAt(model.userScene.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -94,5 +106,12 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
 
     public void onEdit() {
         getView().onShowUserSceneEditView(sceneId);
+    }
+
+    private final class Model {
+
+        UserScene userScene;
+
+        UserArea userArea;
     }
 }

@@ -32,6 +32,13 @@ public final class UserSceneListPresenter extends BasePresenter<UserSceneListVie
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_user_scene_list);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

@@ -6,6 +6,8 @@ import android.support.annotation.StringRes;
 
 public interface SignInView {
 
+    void onUpdateTitle(@StringRes int resId);
+
     void onShowProgressDialog();
 
     void onHideProgressDialog();

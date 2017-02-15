@@ -4,10 +4,10 @@ import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
+import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
@@ -62,9 +62,11 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     private String areaDescriptionId;
 
-    private UserAreaDescriptionModel model;
-
     private ImportStatus importStatus = ImportStatus.UNKNOWN;
+
+    private boolean fileUploaded;
+
+    private boolean fileCached;
 
     private long prevBytesTransferred;
 
@@ -94,6 +96,13 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     public void onTangoReady(Tango tango) {
         runOnUiThread(() -> {
             Disposable disposable = findTangoAreaDescriptionUseCase
@@ -103,11 +112,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(importStatus -> {
                         this.importStatus = importStatus;
-                        if (model != null) {
-                            model.importStatus = importStatus;
-                            updateActions();
-                            getView().onModelUpdated(model);
-                        }
+                        updateActions();
+                        getView().onUpdateImportStatus(importStatus);
                     }, e -> {
                         getLog().e("Failed.", e);
                         getView().onSnackbar(R.string.snackbar_failed);
@@ -124,37 +130,51 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         Disposable disposable = findUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .map(UserAreaDescriptionModelMapper::map)
+                .map(userAreaDescription -> {
+                    Model model = new Model();
+                    model.userAreaDescription = userAreaDescription;
+                    return model;
+                })
                 .flatMap(model -> {
                     // Resolve the area name
-                    if (model.areaId != null) {
+                    if (model.userAreaDescription.areaId != null) {
                         return findUserAreaUseCase
-                                .execute(model.areaId)
+                                .execute(model.userAreaDescription.areaId)
                                 .map(userArea -> {
-                                    model.areaName = userArea.name;
+                                    model.userArea = userArea;
                                     return model;
                                 });
                     } else {
                         return Maybe.just(model);
                     }
                 })
-                .flatMapSingle(model -> {
+                .flatMap(model -> {
                     // Check if the cache file exists.
                     return getAreaDescriptionCacheFileUseCase
-                            .execute(model.areaDescriptionId)
+                            .execute(areaDescriptionId)
                             .map(file -> {
                                 model.fileCached = file.exists();
                                 return model;
-                            });
+                            })
+                            .toMaybe();
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    this.model = model;
-                    this.model.importStatus = importStatus;
                     updateActions();
-                    getView().onModelUpdated(model);
+                    getView().onUpdateTitle(model.userAreaDescription.name);
+                    getView().onUpdateAreaDescriptionId(areaDescriptionId);
+                    getView().onUpdateImportStatus(importStatus);
+                    getView().onUpdateFileUploaded(model.userAreaDescription.fileUploaded);
+                    getView().onUpdateFileCached(model.fileCached);
+                    getView().onUpdateName(model.userAreaDescription.name);
+                    getView().onUpdateAreaName(model.userArea.name);
+                    getView().onUpdateCreatedAt(model.userAreaDescription.createdAt);
+                    getView().onUpdateUpdatedAt(model.userAreaDescription.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                }, () -> {
+                    getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -197,9 +217,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_upload))
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
-                    model.fileUploaded = true;
+                    fileUploaded = true;
                     updateActions();
-                    getView().onModelUpdated(model);
+                    getView().onUpdateFileUploaded(fileUploaded);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -221,9 +241,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_download))
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
-                    model.fileCached = true;
+                    fileCached = true;
                     updateActions();
-                    getView().onModelUpdated(model);
+                    getView().onUpdateFileCached(fileCached);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -237,9 +257,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    model.fileCached = false;
+                    fileCached = false;
                     updateActions();
-                    getView().onModelUpdated(model);
+                    getView().onUpdateFileCached(fileCached);
                     getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -270,9 +290,34 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     }
 
     private void updateActions() {
-        getView().onUpdateActionImport(model.importStatus == ImportStatus.NOT_IMPORTED);
-        getView().onUpdateActionUpload(!model.fileUploaded && model.fileCached);
-        getView().onUpdateActionDownload(model.fileUploaded && !model.fileCached);
-        getView().onUpdateActionDeleteCache(model.fileUploaded && model.fileCached);
+        getView().onUpdateActionImport(canImport());
+        getView().onUpdateActionUpload(canUpload());
+        getView().onUpdateActionDownload(canDownload());
+        getView().onUpdateActionDeleteCache(canDeleteCache());
+    }
+
+    private boolean canImport() {
+        return importStatus == ImportStatus.NOT_IMPORTED;
+    }
+
+    private boolean canUpload() {
+        return !fileUploaded && fileCached;
+    }
+
+    private boolean canDownload() {
+        return fileUploaded && !fileCached;
+    }
+
+    private boolean canDeleteCache() {
+        return fileUploaded && fileCached;
+    }
+
+    private final class Model {
+
+        UserAreaDescription userAreaDescription;
+
+        UserArea userArea;
+
+        boolean fileCached;
     }
 }

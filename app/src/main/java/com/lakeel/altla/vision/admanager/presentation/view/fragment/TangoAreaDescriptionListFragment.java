@@ -80,8 +80,11 @@ public final class TangoAreaDescriptionListFragment
 
         recyclerView.setAdapter(new TangoAreaDescriptionListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
 
-        getActivity().setTitle(R.string.title_tango_area_description_list);
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

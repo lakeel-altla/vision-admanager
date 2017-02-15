@@ -80,8 +80,11 @@ public final class UserAreaSelectFragment extends AbstractFragment<UserAreaSelec
 
         recyclerView.setAdapter(new UserAreaSelectAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
 
-        getActivity().setTitle(R.string.title_select_user_area);
+    @Override
+    public void onUpdateTitle(@StringRes int resId) {
+        getActivity().setTitle(resId);
     }
 
     @Override

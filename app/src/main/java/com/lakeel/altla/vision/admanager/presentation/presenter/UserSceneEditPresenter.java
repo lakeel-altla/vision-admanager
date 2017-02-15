@@ -83,6 +83,13 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

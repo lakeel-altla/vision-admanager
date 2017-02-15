@@ -30,6 +30,13 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_user_area_description_list);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

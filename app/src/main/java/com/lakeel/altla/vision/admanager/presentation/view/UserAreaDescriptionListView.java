@@ -5,6 +5,8 @@ import android.support.annotation.StringRes;
 
 public interface UserAreaDescriptionListView {
 
+    void onUpdateTitle(@StringRes int resId);
+
     void onItemsUpdated();
 
     void onItemInserted(int position);

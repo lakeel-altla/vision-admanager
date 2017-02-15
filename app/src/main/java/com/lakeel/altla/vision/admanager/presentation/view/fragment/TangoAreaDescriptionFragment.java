@@ -5,7 +5,6 @@ import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -108,9 +107,6 @@ public final class TangoAreaDescriptionFragment
         ButterKnife.bind(this, view);
 
         setHasOptionsMenu(true);
-
-        // Reset the title of the previous view.
-        getActivity().setTitle(null);
     }
 
     @Override
@@ -149,14 +145,29 @@ public final class TangoAreaDescriptionFragment
     }
 
     @Override
-    public void onModelUpdated(@NonNull TangoAreaDescriptionModel model) {
-        textViewId.setText(model.areaDescriptionId);
-        String exportedString = getString(model.exported ? R.string.field_exported : R.string.field_not_exported);
-        textViewInCloud.setText(exportedString);
-        textViewName.setText(model.name);
-        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
+    }
 
-        getActivity().setTitle(model.name);
+    @Override
+    public void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId) {
+        textViewId.setText(areaDescriptionId);
+    }
+
+    @Override
+    public void onUpdateExported(boolean exported) {
+        String text = getString(exported ? R.string.field_exported : R.string.field_not_exported);
+        textViewInCloud.setText(text);
+    }
+
+    @Override
+    public void onUpdateName(@Nullable String name) {
+        textViewName.setText(name);
+    }
+
+    @Override
+    public void onUpdateCreatedAt(long createdAt) {
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), createdAt));
     }
 
     @Override

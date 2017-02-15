@@ -4,8 +4,8 @@ import com.google.android.gms.location.places.Place;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaEditModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserArea;
@@ -48,7 +48,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     private String areaId;
 
-    private UserAreaModel model;
+    private UserAreaEditModel model;
 
     @Inject
     public UserAreaEditPresenter() {
@@ -79,6 +79,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -92,7 +99,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         if (model == null) {
             if (areaId == null) {
                 areaId = UUID.randomUUID().toString();
-                model = new UserAreaModel();
+                model = new UserAreaEditModel();
                 model.userId = currentUserResolver.getUserId();
                 model.areaId = areaId;
                 getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
@@ -102,7 +109,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
                 Disposable disposable = findUserAreaUseCase
                         .execute(areaId)
-                        .map(UserAreaModelMapper::map)
+                        .map(UserAreaEditModelMapper::map)
                         .flatMap(model -> {
                             if (model.placeId == null) {
                                 return Maybe.just(model);
@@ -120,7 +127,10 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                         .subscribe(model -> {
                             this.model = model;
                             getView().onUpdateTitle(model.name);
-                            getView().onUpdateFields(model);
+                            getView().onUpdateName(model.name);
+                            getView().onUpdatePlaceName(model.place == null ? null : model.place.name);
+                            getView().onUpdatePlaceAddress(model.place == null ? null : model.place.address);
+                            getView().onUpdateLevel(model.level);
                             getView().onUpdateViewsEnabled(true);
                             getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
                             getView().onUpdateButtonSaveEnabled(canSave());
@@ -135,7 +145,10 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
             }
         } else {
             getView().onUpdateTitle(model.name);
-            getView().onUpdateFields(model);
+            getView().onUpdateName(model.name);
+            getView().onUpdatePlaceName(model.place == null ? null : model.place.name);
+            getView().onUpdatePlaceAddress(model.place == null ? null : model.place.address);
+            getView().onUpdateLevel(model.level);
             getView().onUpdateViewsEnabled(true);
             getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
             getView().onUpdateButtonSaveEnabled(canSave());
@@ -163,7 +176,8 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         model.placeId = place.getId();
         model.place = PlaceModelMapper.map(place);
 
-        getView().onUpdateFields(model);
+        getView().onUpdatePlaceName(model.place.name);
+        getView().onUpdatePlaceAddress(model.place.address);
         getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
     }
 
@@ -171,7 +185,8 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         model.placeId = null;
         model.place = null;
 
-        getView().onUpdateFields(model);
+        getView().onUpdatePlaceName(null);
+        getView().onUpdatePlaceAddress(null);
         getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
     }
 
@@ -184,7 +199,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     public void onClickButtonSave() {
         getView().onUpdateViewsEnabled(false);
 
-        UserArea userArea = UserAreaModelMapper.map(model);
+        UserArea userArea = UserAreaEditModelMapper.map(model);
 
         Disposable disposable = saveUserAreaUseCase
                 .execute(userArea)

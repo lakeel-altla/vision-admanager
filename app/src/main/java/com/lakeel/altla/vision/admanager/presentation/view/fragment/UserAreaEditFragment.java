@@ -9,7 +9,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaEditPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
@@ -139,11 +138,6 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         interactionListener = null;
     }
 
-    @Override
-    protected void onCreateOverride(@Nullable Bundle savedInstanceState) {
-        super.onCreateOverride(savedInstanceState);
-    }
-
     @Nullable
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -171,8 +165,6 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         adapter.addAll(LEVELS);
         spinnerLevel.setAdapter(adapter);
-
-        getActivity().setTitle(null);
     }
 
     @Override
@@ -219,12 +211,23 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onUpdateFields(@NonNull UserAreaModel model) {
-        textInputEditTextName.setText(model.name);
-        textViewPlaceName.setText(model.place != null ? model.place.name : null);
-        textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
+    public void onUpdateName(@Nullable String name) {
+        textInputEditTextName.setText(name);
+    }
 
-        int position = LEVELS.indexOf(model.level);
+    @Override
+    public void onUpdatePlaceName(@Nullable String placeName) {
+        textViewPlaceName.setText(placeName);
+    }
+
+    @Override
+    public void onUpdatePlaceAddress(@Nullable String placeAddress) {
+        textViewPlaceAddress.setText(placeAddress);
+    }
+
+    @Override
+    public void onUpdateLevel(int level) {
+        int position = LEVELS.indexOf(level);
         spinnerLevel.setSelection(position);
     }
 

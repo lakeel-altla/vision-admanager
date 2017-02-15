@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoPermissionView;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -15,6 +16,7 @@ public final class TangoPermissionPresenter extends BasePresenter<TangoPermissio
     protected void onCreateViewOverride() {
         super.onCreateViewOverride();
 
+        getView().onUpdateTitle(R.string.title_tango_permission);
         onConfirmPermission();
     }
 

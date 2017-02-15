@@ -99,9 +99,6 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
         ButterKnife.bind(this, view);
 
         setHasOptionsMenu(true);
-
-        // Reset the title of the previous view.
-        getActivity().setTitle(null);
     }
 
     @Override
@@ -121,7 +118,7 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     }
 
     @Override
-    public void onUpdateTitle(@NonNull String name) {
+    public void onUpdateTitle(@Nullable String name) {
         getActivity().setTitle(name);
     }
 

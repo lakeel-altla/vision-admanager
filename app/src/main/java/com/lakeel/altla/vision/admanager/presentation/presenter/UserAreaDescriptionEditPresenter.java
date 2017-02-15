@@ -100,6 +100,9 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     protected void onStartOverride() {
         super.onStartOverride();
 
+        // Clear the previous title.
+        getView().onUpdateTitle(null);
+
         if (model == null) {
             getView().onUpdateViewsEnabled(false);
 

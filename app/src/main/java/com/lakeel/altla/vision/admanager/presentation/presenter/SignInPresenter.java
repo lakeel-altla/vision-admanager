@@ -62,6 +62,13 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_sign_in);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

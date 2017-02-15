@@ -1,10 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.android.gms.location.places.Place;
+
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.PlaceModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
+import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -15,7 +16,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -57,30 +58,53 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(null);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 
+        getView().onUpdateTitle(null);
+
         Disposable disposable = findUserAreaUseCase
                 .execute(areaId)
-                .map(UserAreaModelMapper::map)
-                .flatMapObservable(model -> {
-                    if (model.placeId != null) {
+                .map(userArea -> {
+                    Model model = new Model();
+                    model.userArea = userArea;
+                    return model;
+                })
+                .flatMap(model -> {
+                    if (model.userArea.placeId == null) {
+                        return Maybe.just(model);
+                    } else {
                         return getPlaceUseCase
-                                .execute(model.placeId)
+                                .execute(model.userArea.placeId)
                                 .map(place -> {
-                                    model.place = PlaceModelMapper.map(place);
+                                    model.place = place;
                                     return model;
                                 })
-                                .toObservable();
-                    } else {
-                        return Observable.just(model);
+                                .toMaybe();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onModelUpdated(model);
+                    getView().onUpdateTitle(model.userArea.name);
+                    getView().onUpdateAreaId(model.userArea.areaId);
+                    getView().onUpdateName(model.userArea.name);
+                    getView().onUpdatePlaceName(model.place == null ? null : model.place.getName().toString());
+                    getView().onUpdatePlaceAddress(model.place == null ? null : model.place.getAddress().toString());
+                    getView().onUpdateLevel(model.userArea.level);
+                    getView().onUpdateCreatedAt(model.userArea.createdAt);
+                    getView().onUpdateUpdatedAt(model.userArea.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                }, () -> {
+                    getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -92,5 +116,12 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
     public void onClickButtonUserAreaDescriptionsInArea() {
         getView().onShowUserAreaDescriptionsInAreaView(areaId);
+    }
+
+    private final class Model {
+
+        UserArea userArea;
+
+        Place place;
     }
 }

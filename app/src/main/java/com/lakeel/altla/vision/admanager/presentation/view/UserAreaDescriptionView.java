@@ -1,15 +1,32 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import java.io.File;
 
 public interface UserAreaDescriptionView {
 
-    void onModelUpdated(@NonNull UserAreaDescriptionModel model);
+    void onUpdateTitle(@Nullable String name);
+
+    void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId);
+
+    void onUpdateImportStatus(@NonNull ImportStatus importStatus);
+
+    void onUpdateFileUploaded(boolean fileUploaded);
+
+    void onUpdateFileCached(boolean fileCached);
+
+    void onUpdateName(@NonNull String name);
+
+    void onUpdateAreaName(@Nullable String areaName);
+
+    void onUpdateCreatedAt(long createdAt);
+
+    void onUpdateUpdatedAt(long updatedAt);
 
     void onShowImportActivity(File file);
 

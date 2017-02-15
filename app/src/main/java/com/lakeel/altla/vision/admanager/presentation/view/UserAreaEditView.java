@@ -1,8 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
-
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -16,7 +13,13 @@ public interface UserAreaEditView {
 
     void onUpdateTitle(@Nullable String title);
 
-    void onUpdateFields(@NonNull UserAreaModel model);
+    void onUpdateName(@Nullable String name);
+
+    void onUpdatePlaceName(@Nullable String placeName);
+
+    void onUpdatePlaceAddress(@Nullable String placeAddress);
+
+    void onUpdateLevel(int level);
 
     void onShowNameError(@StringRes int resId);
 

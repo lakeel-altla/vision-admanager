@@ -1,18 +1,18 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter.mapper;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaEditModel;
 import com.lakeel.altla.vision.domain.model.UserArea;
 
 import android.support.annotation.NonNull;
 
-public final class UserAreaModelMapper {
+public final class UserAreaEditModelMapper {
 
-    private UserAreaModelMapper() {
+    private UserAreaEditModelMapper() {
     }
 
     @NonNull
-    public static UserAreaModel map(@NonNull UserArea userArea) {
-        UserAreaModel model = new UserAreaModel();
+    public static UserAreaEditModel map(@NonNull UserArea userArea) {
+        UserAreaEditModel model = new UserAreaEditModel();
         model.userId = userArea.userId;
         model.areaId = userArea.areaId;
         model.name = userArea.name;
@@ -24,7 +24,7 @@ public final class UserAreaModelMapper {
     }
 
     @NonNull
-    public static UserArea map(@NonNull UserAreaModel model) {
+    public static UserArea map(@NonNull UserAreaEditModel model) {
         UserArea userArea = new UserArea(model.userId, model.areaId);
         userArea.name = model.name;
         userArea.placeId = model.placeId;

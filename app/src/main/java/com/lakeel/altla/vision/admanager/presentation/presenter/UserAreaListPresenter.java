@@ -36,6 +36,13 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
     }
 
     @Override
+    protected void onCreateViewOverride() {
+        super.onCreateViewOverride();
+
+        getView().onUpdateTitle(R.string.title_user_area_list);
+    }
+
+    @Override
     protected void onStartOverride() {
         super.onStartOverride();
 

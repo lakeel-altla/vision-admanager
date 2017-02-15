@@ -123,8 +123,6 @@ public final class UserAreaDescriptionEditFragment
             }
             return false;
         });
-
-        getActivity().setTitle(null);
     }
 
     @Override
