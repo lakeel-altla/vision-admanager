@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneModel;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneEditModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserScene;
@@ -10,6 +10,8 @@ import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
+
+import org.parceler.Parcels;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,6 +29,8 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     private static final String ARG_SCENE_ID = "sceneId";
 
+    private static final String STATE_MODEL = "model";
+
     @Inject
     FindUserSceneUseCase findUserSceneUseCase;
 
@@ -41,9 +45,9 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     private String sceneId;
 
-    private UserSceneModel model;
+    private UserSceneEditModel model;
 
-    private boolean processing;
+    private boolean areaFieldsDirty;
 
     @Inject
     public UserSceneEditPresenter() {
@@ -63,65 +67,103 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         if (arguments != null) {
             sceneId = arguments.getString(ARG_SCENE_ID, null);
         }
+
+        if (savedInstanceState == null) {
+            model = null;
+        } else {
+            model = Parcels.unwrap(savedInstanceState.getParcelable(STATE_MODEL));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(STATE_MODEL, Parcels.wrap(model));
     }
 
     @Override
     protected void onStartOverride() {
         super.onStartOverride();
 
-        if (sceneId != null) {
-            processing = true;
+        if (model == null) {
+            if (sceneId == null) {
+                sceneId = UUID.randomUUID().toString();
+                model = new UserSceneEditModel();
+                model.userId = currentUserResolver.getUserId();
+                model.sceneId = sceneId;
+                getView().onShowNameError(R.string.input_error_name_required);
+                getView().onUpdateButtonSaveEnabled(false);
+            } else {
+                getView().onUpdateViewsEnabled(false);
 
-            Disposable disposable = findUserSceneUseCase
-                    .execute(sceneId)
-                    .map(UserSceneModelMapper::map)
-                    .flatMap(model -> {
-                        if (model.areaId != null) {
-                            return findUserAreaUseCase
-                                    .execute(model.areaId)
-                                    .map(userArea -> {
-                                        model.areaName = userArea.name;
-                                        return model;
-                                    });
-                        } else {
-                            return Maybe.just(model);
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSuccess(model -> processing = false)
-                    .doOnComplete(() -> processing = false)
-                    .doOnError(e -> processing = false)
-                    .subscribe(model -> {
-                        this.model = model;
-                        getView().onUpdateTitle(model.name);
-                        getView().onModelUpdated(model);
-                    }, e -> {
-                        getLog().e("Failed.", e);
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    });
-            manageDisposable(disposable);
+                Disposable disposable = findUserSceneUseCase
+                        .execute(sceneId)
+                        .map(UserSceneEditModelMapper::map)
+                        .flatMap(model -> {
+                            if (model.areaId != null) {
+                                return findUserAreaUseCase
+                                        .execute(model.areaId)
+                                        .map(userArea -> {
+                                            model.areaName = userArea.name;
+                                            return model;
+                                        });
+                            } else {
+                                return Maybe.just(model);
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(model -> {
+                            this.model = model;
+                            getView().onUpdateTitle(model.name);
+                            getView().onUpdateName(model.name);
+                            getView().onUpdateAreaName(model.areaName);
+                            getView().onUpdateViewsEnabled(true);
+                        }, e -> {
+                            getLog().e("Failed.", e);
+                            getView().onSnackbar(R.string.snackbar_failed);
+                        }, () -> {
+                            getLog().e("Entity not found.");
+                            getView().onSnackbar(R.string.snackbar_failed);
+                        });
+                manageDisposable(disposable);
+            }
         } else {
-            sceneId = UUID.randomUUID().toString();
-            model = new UserSceneModel(currentUserResolver.getUserId(), sceneId);
+            if (areaFieldsDirty) {
+                areaFieldsDirty = false;
+                getView().onUpdateViewsEnabled(false);
 
-            getView().onModelUpdated(model);
+                Disposable disposable = findUserAreaUseCase
+                        .execute(model.areaId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(userArea -> {
+                            model.areaName = userArea.name;
+                            getView().onUpdateAreaName(model.areaName);
+                            getView().onUpdateViewsEnabled(true);
+                        }, e -> {
+                            getLog().e("Failed.", e);
+                            getView().onSnackbar(R.string.snackbar_failed);
+                        });
+                manageDisposable(disposable);
+            } else {
+                getView().onUpdateTitle(model.name);
+                getView().onUpdateName(model.name);
+                getView().onUpdateAreaName(model.areaName);
+                getView().onUpdateViewsEnabled(true);
+            }
         }
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
-        if (processing) return;
-        if (name != null && name.length() == 0) {
-            name = null;
-        }
-        if (model.name == null && name == null) return;
-        if (name != null && name.equals(model.name)) return;
-        if (model.name != null && model.name.equals(name)) return;
-
-        processing = true;
-
         model.name = name;
+        getView().onHideNameError();
 
-        save();
+        // Don't save the empty name.
+        if (name == null || name.length() == 0) {
+            getView().onShowNameError(R.string.input_error_name_required);
+        }
+
+        getView().onUpdateButtonSaveEnabled(canSave());
     }
 
     public void onClickImageButtonSelectArea() {
@@ -129,16 +171,23 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
     }
 
     public void onUserAreaSelected(@NonNull String areaId) {
+        // This method will be called before Fragment#onStart().
         model.areaId = areaId;
+        areaFieldsDirty = true;
+    }
 
-        save();
+    public void onClickButtonSave() {
+        getView().onUpdateViewsEnabled(false);
 
-        Disposable disposable = findUserAreaUseCase
-                .execute(areaId)
+        UserScene userScene = UserSceneEditModelMapper.map(model);
+
+        Disposable disposable = saveUserSceneUseCase
+                .execute(userScene)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userArea -> {
-                    model.areaName = userArea.name;
-                    getView().onAreaNameUpdated(model.areaName);
+                .subscribe(() -> {
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateViewsEnabled(true);
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -146,20 +195,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         manageDisposable(disposable);
     }
 
-    private void save() {
-        UserScene userScene = UserSceneModelMapper.map(model);
-
-        Disposable disposable = saveUserSceneUseCase
-                .execute(userScene)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() -> processing = false)
-                .subscribe(() -> {
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
-
-        getView().onUpdateTitle(model.name);
+    private boolean canSave() {
+        return model.name != null && model.name.length() != 0;
     }
 }

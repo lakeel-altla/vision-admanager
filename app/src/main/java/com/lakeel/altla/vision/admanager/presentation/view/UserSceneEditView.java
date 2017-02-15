@@ -1,18 +1,23 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneModel;
-
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 public interface UserSceneEditView {
 
-    void onModelUpdated(@NonNull UserSceneModel model);
+    void onUpdateViewsEnabled(boolean enabled);
 
-    void onAreaNameUpdated(String areaName);
+    void onUpdateButtonSaveEnabled(boolean enabled);
 
     void onUpdateTitle(@Nullable String title);
+
+    void onUpdateName(@Nullable String name);
+
+    void onUpdateAreaName(@Nullable String areaName);
+
+    void onShowNameError(@StringRes int resId);
+
+    void onHideNameError();
 
     void onShowUserAreaSelectView();
 

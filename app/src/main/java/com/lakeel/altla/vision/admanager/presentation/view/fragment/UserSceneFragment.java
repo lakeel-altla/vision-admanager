@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserScenePresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -122,14 +121,33 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     }
 
     @Override
-    public void onModelUpdated(@NonNull UserSceneModel model) {
-        textViewId.setText(model.sceneId);
-        textViewName.setText(model.name);
-        textViewAreaName.setText(model.areaName);
-        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), model.createdAt));
-        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), model.updatedAt));
+    public void onUpdateTitle(@NonNull String name) {
+        getActivity().setTitle(name);
+    }
 
-        getActivity().setTitle(model.name);
+    @Override
+    public void onUpdateSceneId(@NonNull String sceneId) {
+        textViewId.setText(sceneId);
+    }
+
+    @Override
+    public void onUpdateName(@NonNull String name) {
+        textViewName.setText(name);
+    }
+
+    @Override
+    public void onUpdateAreaName(@Nullable String areaName) {
+        textViewAreaName.setText(areaName);
+    }
+
+    @Override
+    public void onUpdateCreatedAt(long createdAt) {
+        textViewCreatedAt.setText(DateFormatHelper.format(getContext(), createdAt));
+    }
+
+    @Override
+    public void onUpdateUpdatedAt(long updatedAt) {
+        textViewUpdatedAt.setText(DateFormatHelper.format(getContext(), updatedAt));
     }
 
     @Override

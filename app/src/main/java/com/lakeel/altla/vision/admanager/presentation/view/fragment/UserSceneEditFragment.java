@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserSceneEditPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneEditView;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
@@ -14,12 +13,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -38,11 +39,17 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
     @BindView(R.id.view_top)
     View viewTop;
 
+    @BindView(R.id.text_input_layput_name)
+    TextInputLayout textInputLayoutName;
+
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
 
     @BindView(R.id.text_view_area_name)
     TextView textViewAreaName;
+
+    @BindView(R.id.button_save)
+    Button buttonSave;
 
     private InteractionListener interactionListener;
 
@@ -112,19 +119,38 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
     }
 
     @Override
-    public void onModelUpdated(@NonNull UserSceneModel model) {
-        textInputEditTextName.setText(model.name);
-        textViewAreaName.setText(model.areaName);
+    public void onShowNameError(@StringRes int resId) {
+        textInputLayoutName.setError(getString(resId));
     }
 
     @Override
-    public void onAreaNameUpdated(String areaName) {
-        textViewAreaName.setText(areaName);
+    public void onHideNameError() {
+        textInputLayoutName.setError(null);
+    }
+
+    @Override
+    public void onUpdateViewsEnabled(boolean enabled) {
+        buttonSave.setEnabled(enabled);
+    }
+
+    @Override
+    public void onUpdateButtonSaveEnabled(boolean enabled) {
+        buttonSave.setEnabled(enabled);
     }
 
     @Override
     public void onUpdateTitle(@Nullable String title) {
         getActivity().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateName(@Nullable String name) {
+        textInputEditTextName.setText(name);
+    }
+
+    @Override
+    public void onUpdateAreaName(@Nullable String areaName) {
+        textViewAreaName.setText(areaName);
     }
 
     @Override
@@ -149,6 +175,11 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
     @OnClick(R.id.image_button_select_area)
     void onClickImageButtonSelectArea() {
         presenter.onClickImageButtonSelectArea();
+    }
+
+    @OnClick(R.id.button_save)
+    void onClickButtonSave() {
+        presenter.onClickButtonSave();
     }
 
     public interface InteractionListener {

@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneModelMapper;
+import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneEditModelMapper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
@@ -47,12 +47,12 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
 
         if (arguments == null) throw new ArgumentNullException("arguments");
 
-        String areaId = arguments.getString(ARG_SCENE_ID, null);
-        if (areaId == null) {
+        String sceneId = arguments.getString(ARG_SCENE_ID, null);
+        if (sceneId == null) {
             throw new IllegalArgumentException(String.format("Argument '%s' must be not null.", ARG_SCENE_ID));
         }
 
-        this.sceneId = areaId;
+        this.sceneId = sceneId;
     }
 
     @Override
@@ -61,25 +61,32 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
 
         Disposable disposable = findUserSceneUseCase
                 .execute(sceneId)
-                .map(UserSceneModelMapper::map)
+                .map(UserSceneEditModelMapper::map)
                 .flatMap(model -> {
-                    // Resolve the area name
-                    if (model.areaId != null) {
+                    if (model.areaId == null) {
+                        return Maybe.just(model);
+                    } else {
                         return findUserAreaUseCase
                                 .execute(model.areaId)
                                 .map(userArea -> {
                                     model.areaName = userArea.name;
                                     return model;
                                 });
-                    } else {
-                        return Maybe.just(model);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onModelUpdated(model);
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateSceneId(model.sceneId);
+                    getView().onUpdateName(model.name);
+                    getView().onUpdateAreaName(model.areaName);
+                    getView().onUpdateCreatedAt(model.createdAt);
+                    getView().onUpdateUpdatedAt(model.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                }, () -> {
+                    getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
