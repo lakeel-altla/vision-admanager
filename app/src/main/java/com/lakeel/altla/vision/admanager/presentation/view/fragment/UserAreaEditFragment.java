@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -77,6 +78,9 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     @BindView(R.id.image_button_pick_place)
     ImageButton imageButtonPickPlace;
 
+    @BindView(R.id.image_button_remove_place)
+    ImageButton imageButtonRemovePlace;
+
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
 
@@ -88,6 +92,9 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
 
     @BindView(R.id.spinner_level)
     Spinner spinnerLevel;
+
+    @BindView(R.id.button_save)
+    Button buttonSave;
 
     private InteractionListener interactionListener;
 
@@ -183,7 +190,36 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onModelUpdated(@NonNull UserAreaModel model) {
+    public void onUpdateViewsEnabled(boolean enabled) {
+        textInputEditTextName.setEnabled(enabled);
+        imageButtonPickPlace.setEnabled(enabled);
+        imageButtonRemovePlace.setEnabled(enabled);
+        spinnerLevel.setEnabled(enabled);
+        buttonSave.setEnabled(enabled);
+
+        int tint = resolveImageButtonColorFilter(enabled);
+        imageButtonPickPlace.setColorFilter(tint);
+        imageButtonRemovePlace.setColorFilter(tint);
+    }
+
+    @Override
+    public void onUpdateButtonRemovePlaceEnabled(boolean enabled) {
+        imageButtonRemovePlace.setEnabled(enabled);
+        imageButtonRemovePlace.setColorFilter(resolveImageButtonColorFilter(enabled));
+    }
+
+    @Override
+    public void onUpdateButtonSaveEnabled(boolean enabled) {
+        buttonSave.setEnabled(enabled);
+    }
+
+    @Override
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateFields(@NonNull UserAreaModel model) {
         textInputEditTextName.setText(model.name);
         textViewPlaceName.setText(model.place != null ? model.place.name : null);
         textViewPlaceAddress.setText(model.place != null ? model.place.address : null);
@@ -193,8 +229,13 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onUpdateTitle(@Nullable String title) {
-        getActivity().setTitle(title);
+    public void onShowNameError(@StringRes int resId) {
+        textInputLayoutName.setError(getString(resId));
+    }
+
+    @Override
+    public void onHideNameError() {
+        textInputLayoutName.setError(null);
     }
 
     @Override
@@ -236,6 +277,17 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     void onItemSelectedSpinnerLevel(AdapterView<?> parent, View view, int position, long id) {
         int level = (Integer) spinnerLevel.getSelectedItem();
         presenter.onItemSelectedSpinnerLevel(level);
+    }
+
+    @OnClick(R.id.button_save)
+    void onClickButtonSave() {
+        presenter.onClickButtonSave();
+    }
+
+    private int resolveImageButtonColorFilter(boolean enabled) {
+        int enabledTint = getResources().getColor(R.color.tint_image_button_enabled);
+        int disabledTint = getResources().getColor(R.color.tint_image_button_disabled);
+        return enabled ? enabledTint : disabledTint;
     }
 
     public interface InteractionListener {

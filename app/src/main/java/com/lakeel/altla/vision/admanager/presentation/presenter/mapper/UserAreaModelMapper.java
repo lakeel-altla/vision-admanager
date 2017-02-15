@@ -12,7 +12,9 @@ public final class UserAreaModelMapper {
 
     @NonNull
     public static UserAreaModel map(@NonNull UserArea userArea) {
-        UserAreaModel model = new UserAreaModel(userArea.userId, userArea.areaId);
+        UserAreaModel model = new UserAreaModel();
+        model.userId = userArea.userId;
+        model.areaId = userArea.areaId;
         model.name = userArea.name;
         model.placeId = userArea.placeId;
         model.level = userArea.level;

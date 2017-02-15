@@ -8,9 +8,19 @@ import android.support.annotation.StringRes;
 
 public interface UserAreaEditView {
 
-    void onModelUpdated(@NonNull UserAreaModel model);
+    void onUpdateViewsEnabled(boolean enabled);
+
+    void onUpdateButtonRemovePlaceEnabled(boolean enabled);
+
+    void onUpdateButtonSaveEnabled(boolean enabled);
 
     void onUpdateTitle(@Nullable String title);
+
+    void onUpdateFields(@NonNull UserAreaModel model);
+
+    void onShowNameError(@StringRes int resId);
+
+    void onHideNameError();
 
     void onShowPlacePicker();
 

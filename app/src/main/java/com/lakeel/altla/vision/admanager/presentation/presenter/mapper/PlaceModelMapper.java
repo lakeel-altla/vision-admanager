@@ -13,7 +13,8 @@ public final class PlaceModelMapper {
 
     @NonNull
     public static PlaceModel map(@NonNull Place place) {
-        PlaceModel model = new PlaceModel(place.getId());
+        PlaceModel model = new PlaceModel();
+        model.placeId = place.getId();
         model.name = place.getName().toString();
         model.address = place.getAddress().toString();
         return model;

@@ -14,6 +14,8 @@ import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
+import org.parceler.Parcels;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,13 +24,15 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView> {
 
     private static final String ARG_AREA_ID = "areaId";
+
+    private static final String STATE_MODEL = "model";
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
@@ -46,8 +50,6 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     private UserAreaModel model;
 
-    private boolean processing;
-
     @Inject
     public UserAreaEditPresenter() {
     }
@@ -63,67 +65,93 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     public void onCreate(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
         super.onCreate(arguments, savedInstanceState);
 
-        if (arguments != null) {
+        if (arguments == null) {
+            areaId = null;
+        } else {
             areaId = arguments.getString(ARG_AREA_ID, null);
         }
+
+        if (savedInstanceState == null) {
+            model = null;
+        } else {
+            model = Parcels.unwrap(savedInstanceState.getParcelable(STATE_MODEL));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(STATE_MODEL, Parcels.wrap(model));
     }
 
     @Override
     protected void onStartOverride() {
         super.onStartOverride();
 
-        if (areaId != null) {
-            processing = true;
+        if (model == null) {
+            if (areaId == null) {
+                areaId = UUID.randomUUID().toString();
+                model = new UserAreaModel();
+                model.userId = currentUserResolver.getUserId();
+                model.areaId = areaId;
+                getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+                getView().onUpdateButtonSaveEnabled(canSave());
+            } else {
+                getView().onUpdateViewsEnabled(false);
 
-            Disposable disposable = findUserAreaUseCase
-                    .execute(areaId)
-                    .map(UserAreaModelMapper::map)
-                    .flatMapObservable(model -> {
-                        if (model.placeId != null) {
-                            return getPlaceUseCase
-                                    .execute(model.placeId)
-                                    .map(place -> {
-                                        model.place = PlaceModelMapper.map(place);
-                                        return model;
-                                    })
-                                    .toObservable();
-                        } else {
-                            return Observable.just(model);
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnTerminate(() -> processing = false)
-                    .subscribe(model -> {
-                        this.model = model;
-                        getView().onUpdateTitle(model.name);
-                        getView().onModelUpdated(model);
-                    }, e -> {
-                        getLog().e("Failed.", e);
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    });
-            manageDisposable(disposable);
+                Disposable disposable = findUserAreaUseCase
+                        .execute(areaId)
+                        .map(UserAreaModelMapper::map)
+                        .flatMap(model -> {
+                            if (model.placeId == null) {
+                                return Maybe.just(model);
+                            } else {
+                                return getPlaceUseCase
+                                        .execute(model.placeId)
+                                        .map(place -> {
+                                            model.place = PlaceModelMapper.map(place);
+                                            return model;
+                                        })
+                                        .toMaybe();
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(model -> {
+                            this.model = model;
+                            getView().onUpdateTitle(model.name);
+                            getView().onUpdateFields(model);
+                            getView().onUpdateViewsEnabled(true);
+                            getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+                            getView().onUpdateButtonSaveEnabled(canSave());
+                        }, e -> {
+                            getLog().e("Failed.", e);
+                            getView().onSnackbar(R.string.snackbar_failed);
+                        }, () -> {
+                            getLog().e("Entity not found.");
+                            getView().onSnackbar(R.string.snackbar_failed);
+                        });
+                manageDisposable(disposable);
+            }
         } else {
-            areaId = UUID.randomUUID().toString();
-            model = new UserAreaModel(currentUserResolver.getUserId(), areaId);
-
-            getView().onModelUpdated(model);
+            getView().onUpdateTitle(model.name);
+            getView().onUpdateFields(model);
+            getView().onUpdateViewsEnabled(true);
+            getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+            getView().onUpdateButtonSaveEnabled(canSave());
         }
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
-        if (processing) return;
-        if (name != null && name.length() == 0) {
-            name = null;
-        }
-        if (model.name == null && name == null) return;
-        if (name != null && name.equals(model.name)) return;
-        if (model.name != null && model.name.equals(name)) return;
-
-        processing = true;
-
         model.name = name;
+        getView().onHideNameError();
 
-        save();
+        // Don't save the empty name.
+        if (name == null || name.length() == 0) {
+            getView().onShowNameError(R.string.input_error_name_required);
+        }
+
+        getView().onUpdateButtonSaveEnabled(canSave());
     }
 
     public void onClickImageButtonPickPlace() {
@@ -131,60 +159,53 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     }
 
     public void onPlacePicked(@NonNull Place place) {
-        // NOTE:
-        // onPlacePicked will be invoked before onResume().
-
-        if (processing) return;
-        if (place.getId().equals(model.placeId)) return;
-
-        processing = true;
-
+        // onPlacePicked will be invoked after Fragment#onStart() because of the result of startActivityForResult.
         model.placeId = place.getId();
         model.place = PlaceModelMapper.map(place);
 
-        getView().onModelUpdated(model);
-
-        save();
+        getView().onUpdateFields(model);
+        getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
     }
 
     public void onClickImageButtonRemovePlace() {
-        if (processing) return;
-
-        processing = true;
-
         model.placeId = null;
         model.place = null;
 
-        getView().onModelUpdated(model);
-
-        save();
+        getView().onUpdateFields(model);
+        getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
-        if (processing) return;
-        if (model.level == level) return;
-
-        processing = true;
+        if (model == null) return;
 
         model.level = level;
-
-        save();
     }
 
-    private void save() {
+    public void onClickButtonSave() {
+        getView().onUpdateViewsEnabled(false);
+
         UserArea userArea = UserAreaModelMapper.map(model);
 
         Disposable disposable = saveUserAreaUseCase
                 .execute(userArea)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() -> processing = false)
                 .subscribe(() -> {
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateViewsEnabled(true);
+                    getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+                    getView().onSnackbar(R.string.snackbar_done);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
+    }
 
-        getView().onUpdateTitle(model.name);
+    private boolean canRemovePlace() {
+        return model.placeId != null;
+    }
+
+    private boolean canSave() {
+        return model.name != null && model.name.length() != 0;
     }
 }
