@@ -24,6 +24,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSele
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListInAreaFragment;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
@@ -70,6 +71,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaSelectFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
                    UserSceneListFragment.InteractionListener,
+                   UserSceneListInAreaFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
@@ -299,8 +301,13 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowUserAreaDescriptionsInAreaView(@NonNull String areaId) {
+    public void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId) {
         showUserAreaDescriptionListInAreaFragment(areaId);
+    }
+
+    @Override
+    public void onShowUserSceneListInAreaView(@NonNull String areaId) {
+        showUserScenesListInAreaView(areaId);
     }
 
     @Override
@@ -453,6 +460,13 @@ public final class MainActivity extends AppCompatActivity
         toolbar.setVisibility(View.VISIBLE);
 
         UserAreaDescriptionListInAreaFragment fragment = UserAreaDescriptionListInAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    private void showUserScenesListInAreaView(@NonNull String areaId) {
+        toolbar.setVisibility(View.VISIBLE);
+
+        UserSceneListInAreaFragment fragment = UserSceneListInAreaFragment.newInstance(areaId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 

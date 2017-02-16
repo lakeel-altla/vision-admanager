@@ -115,7 +115,11 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
     }
 
     public void onClickButtonUserAreaDescriptionsInArea() {
-        getView().onShowUserAreaDescriptionsInAreaView(areaId);
+        getView().onShowUserAreaDescriptionListInAreaView(areaId);
+    }
+
+    public void onClickButtonUserScenesInArea() {
+        getView().onShowUserSceneListInAreaView(areaId);
     }
 
     private final class Model {

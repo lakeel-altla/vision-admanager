@@ -20,6 +20,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSele
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListInAreaFragment;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
@@ -58,6 +59,8 @@ public interface ActivityComponent {
     void inject(UserAreaDescriptionListInAreaFragment fragment);
 
     void inject(UserSceneListFragment fragment);
+
+    void inject(UserSceneListInAreaFragment fragment);
 
     void inject(UserSceneFragment fragment);
 

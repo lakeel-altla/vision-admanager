@@ -3,6 +3,8 @@
     <string name="app_name">Area Description Manager</string>
 
     <string name="title_app_name">Area Description Manager</string>
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_tango_permission">Tango Permission</string>
     <string name="title_user_area_list">Areas</string>
     <string name="title_tango_area_description_list">Tango Area Descriptions</string>
     <string name="title_user_area_description_list">User Area Descriptions</string>
@@ -12,6 +14,7 @@
 
     <string name="menu_sign_out">Sign out</string>
 
+    <string name="button_save">Save</string>
     <string name="action_create">Create</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
@@ -36,6 +39,7 @@
     <string name="button_upload">Upload</string>
     <string name="button_delete">Delete</string>
     <string name="button_user_area_description_in_area">Show user area descriptions in this area</string>
+    <string name="button_user_scenes_in_area">Show user scenes in this area</string>
 
     <string name="progress_dialog_signin_in">Signing in...</string>
     <string name="progress_dialog_delete">Deleting...</string>
@@ -87,8 +91,5 @@
     <string name="field_not_exported">Not Exported</string>
 
     <string name="dummy_abc">ABCDEFG</string>
-    <string name="button_save">Save</string>
-    <string name="title_sign_in">Sign In</string>
-    <string name="title_tango_permission">Tango Permission</string>
 
 </resources>
