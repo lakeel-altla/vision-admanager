@@ -2,10 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
+import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionsByAreaIdUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -36,7 +35,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
     private static final String ARG_AREA_ID = "areaId";
 
-    private final List<UserAreaDescriptionItemModel> items = new ArrayList<>();
+    private final List<ItemModel> items = new ArrayList<>();
 
     private String areaId;
 
@@ -81,7 +80,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
         Disposable disposable1 = findUserAreaDescriptionsByAreaIdUseCase
                 .execute(areaId)
-                .map(UserAreaDescriptionItemModelMapper::map)
+                .map(this::map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
@@ -116,8 +115,16 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     }
 
     public void onClickItem(int position) {
-        UserAreaDescriptionItemModel model = items.get(position);
+        ItemModel model = items.get(position);
         getView().onItemSelected(model.areaDescriptionId);
+    }
+
+    @NonNull
+    private ItemModel map(@NonNull UserAreaDescription userAreaDescription) {
+        ItemModel model = new ItemModel();
+        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
+        model.name = userAreaDescription.name;
+        return model;
     }
 
     public final class ItemPresenter {
@@ -129,8 +136,16 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
         }
 
         public void onBind(int position) {
-            UserAreaDescriptionItemModel model = items.get(position);
-            itemView.onModelUpdated(model);
+            ItemModel model = items.get(position);
+            itemView.onUpdateAreaDescriptionId(model.areaDescriptionId);
+            itemView.onUpdateName(model.name);
         }
+    }
+
+    private final class ItemModel {
+
+        String areaDescriptionId;
+
+        String name;
     }
 }

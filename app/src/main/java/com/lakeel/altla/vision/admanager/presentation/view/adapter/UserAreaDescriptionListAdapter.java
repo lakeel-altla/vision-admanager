@@ -2,7 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
@@ -85,9 +84,13 @@ public final class UserAreaDescriptionListAdapter
         }
 
         @Override
-        public void onModelUpdated(@NonNull UserAreaDescriptionItemModel model) {
-            textViewName.setText(model.name);
-            textViewId.setText(model.areaDescriptionId);
+        public void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId) {
+            textViewId.setText(areaDescriptionId);
+        }
+
+        @Override
+        public void onUpdateName(@NonNull String name) {
+            textViewName.setText(name);
         }
     }
 }

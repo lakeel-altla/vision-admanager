@@ -2,7 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserSceneListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneItemView;
 
 import android.support.annotation.NonNull;
@@ -84,9 +83,13 @@ public final class UserSceneListAdapter extends RecyclerView.Adapter<UserSceneLi
         }
 
         @Override
-        public void onModelUpdated(@NonNull UserSceneItemModel model) {
-            textViewName.setText(model.name);
-            textViewId.setText(model.sceneId);
+        public void onUpdateSceneId(@NonNull String sceneId) {
+            textViewId.setText(sceneId);
+        }
+
+        @Override
+        public void onUpdateName(@NonNull String name) {
+            textViewName.setText(name);
         }
     }
 }

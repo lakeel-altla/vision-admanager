@@ -2,10 +2,10 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.TangoAreaDescriptionListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,9 +86,13 @@ public final class TangoAreaDescriptionListAdapter
         }
 
         @Override
-        public void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model) {
-            textViewName.setText(model.name);
-            textViewId.setText(model.areaDescriptionId);
+        public void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId) {
+            textViewId.setText(areaDescriptionId);
+        }
+
+        @Override
+        public void onUpdateName(@Nullable String name) {
+            textViewName.setText(name);
         }
     }
 }

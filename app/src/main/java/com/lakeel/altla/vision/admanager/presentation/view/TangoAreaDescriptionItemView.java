@@ -1,10 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.TangoAreaDescriptionItemModel;
-
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public interface TangoAreaDescriptionItemView {
 
-    void onModelUpdated(@NonNull TangoAreaDescriptionItemModel model);
+    void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId);
+
+    void onUpdateName(@Nullable String name);
 }

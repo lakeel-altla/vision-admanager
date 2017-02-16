@@ -1,12 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneItemModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneItemModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneListView;
-import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
+import com.lakeel.altla.vision.domain.model.UserScene;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserScenesUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -22,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 
 public final class UserSceneListPresenter extends BasePresenter<UserSceneListView> {
 
-    private final List<UserSceneItemModel> items = new ArrayList<>();
+    private final List<ItemModel> items = new ArrayList<>();
 
     @Inject
     FindAllUserScenesUseCase findAllUserScenesUseCase;
@@ -47,7 +44,7 @@ public final class UserSceneListPresenter extends BasePresenter<UserSceneListVie
 
         Disposable disposable = findAllUserScenesUseCase
                 .execute()
-                .map(UserSceneItemModelMapper::map)
+                .map(this::map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.add(model);
@@ -69,8 +66,16 @@ public final class UserSceneListPresenter extends BasePresenter<UserSceneListVie
     }
 
     public void onClickItem(int position) {
-        UserSceneItemModel model = items.get(position);
+        ItemModel model = items.get(position);
         getView().onItemSelected(model.sceneId);
+    }
+
+    @NonNull
+    private ItemModel map(@NonNull UserScene userScene) {
+        ItemModel model = new ItemModel();
+        model.sceneId = userScene.sceneId;
+        model.name = userScene.name;
+        return model;
     }
 
     public final class ItemPresenter {
@@ -82,8 +87,16 @@ public final class UserSceneListPresenter extends BasePresenter<UserSceneListVie
         }
 
         public void onBind(int position) {
-            UserSceneItemModel model = items.get(position);
-            itemView.onModelUpdated(model);
+            ItemModel model = items.get(position);
+            itemView.onUpdateSceneId(model.sceneId);
+            itemView.onUpdateName(model.name);
         }
+    }
+
+    private final class ItemModel {
+
+        String sceneId;
+
+        String name;
     }
 }
