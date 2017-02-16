@@ -1,8 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserAreaDescriptionEditModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserAreaDescriptionEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
@@ -11,6 +9,7 @@ import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
+import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import android.content.res.Resources;
@@ -47,7 +46,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
     private String areaDescriptionId;
 
-    private UserAreaDescriptionEditModel model;
+    private Model model;
 
     private boolean areaNameDirty;
 
@@ -108,7 +107,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
             Disposable disposable = findUserAreaDescriptionUseCase
                     .execute(areaDescriptionId)
-                    .map(UserAreaDescriptionEditModelMapper::map)
+                    .map(UserAreaDescriptionEditPresenter::map)
                     .flatMap(model -> {
                         if (model.areaId == null) {
                             return Maybe.just(model);
@@ -184,7 +183,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     public void onClickButtonSave() {
         getView().onUpdateViewsEnabled(false);
 
-        UserAreaDescription userAreaDescription = UserAreaDescriptionEditModelMapper.map(model);
+        UserAreaDescription userAreaDescription = map(model);
 
         Disposable disposable = saveUserAreaDescriptionUseCase
                 .execute(userAreaDescription)
@@ -198,5 +197,50 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
+    }
+
+
+    @NonNull
+    public static Model map(@NonNull UserAreaDescription userAreaDescription) {
+        Model model = new Model();
+        model.userId = userAreaDescription.userId;
+        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
+        model.name = userAreaDescription.name;
+        model.fileUploaded = userAreaDescription.fileUploaded;
+        model.areaId = userAreaDescription.areaId;
+        model.createdAt = userAreaDescription.createdAt;
+        model.updatedAt = userAreaDescription.updatedAt;
+        return model;
+    }
+
+    @NonNull
+    public static UserAreaDescription map(@NonNull Model model) {
+        UserAreaDescription userAreaDescription = new UserAreaDescription(model.userId, model.areaDescriptionId);
+        userAreaDescription.name = model.name;
+        userAreaDescription.fileUploaded = model.fileUploaded;
+        userAreaDescription.areaId = model.areaId;
+        userAreaDescription.createdAt = model.createdAt;
+        userAreaDescription.updatedAt = model.updatedAt;
+        return userAreaDescription;
+    }
+
+    @Parcel
+    public static class Model {
+
+        String userId;
+
+        String areaDescriptionId;
+
+        String name;
+
+        boolean fileUploaded;
+
+        String areaId;
+
+        String areaName;
+
+        long createdAt;
+
+        long updatedAt;
     }
 }

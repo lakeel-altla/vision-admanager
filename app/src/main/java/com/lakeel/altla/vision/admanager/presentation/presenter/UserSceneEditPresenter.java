@@ -1,8 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.mapper.UserSceneEditModelMapper;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.UserSceneEditModel;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserScene;
@@ -11,6 +9,7 @@ import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
+import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import android.os.Bundle;
@@ -45,7 +44,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     private String sceneId;
 
-    private UserSceneEditModel model;
+    private Model model;
 
     private boolean areaFieldsDirty;
 
@@ -96,7 +95,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         if (model == null) {
             if (sceneId == null) {
                 sceneId = UUID.randomUUID().toString();
-                model = new UserSceneEditModel();
+                model = new Model();
                 model.userId = currentUserResolver.getUserId();
                 model.sceneId = sceneId;
                 getView().onShowNameError(R.string.input_error_name_required);
@@ -106,7 +105,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
                 Disposable disposable = findUserSceneUseCase
                         .execute(sceneId)
-                        .map(UserSceneEditModelMapper::map)
+                        .map(UserSceneEditPresenter::map)
                         .flatMap(model -> {
                             if (model.areaId != null) {
                                 return findUserAreaUseCase
@@ -186,7 +185,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
     public void onClickButtonSave() {
         getView().onUpdateViewsEnabled(false);
 
-        UserScene userScene = UserSceneEditModelMapper.map(model);
+        UserScene userScene = map(model);
 
         Disposable disposable = saveUserSceneUseCase
                 .execute(userScene)
@@ -204,5 +203,45 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
 
     private boolean canSave() {
         return model.name != null && model.name.length() != 0;
+    }
+
+    @NonNull
+    public static Model map(@NonNull UserScene userScene) {
+        Model model = new Model();
+        model.userId = userScene.userId;
+        model.sceneId = userScene.sceneId;
+        model.name = userScene.name;
+        model.areaId = userScene.areaId;
+        model.createdAt = userScene.createdAt;
+        model.updatedAt = userScene.updatedAt;
+        return model;
+    }
+
+    @NonNull
+    public static UserScene map(@NonNull Model model) {
+        UserScene userScene = new UserScene(model.userId, model.sceneId);
+        userScene.name = model.name;
+        userScene.areaId = model.areaId;
+        userScene.createdAt = model.createdAt;
+        userScene.updatedAt = model.updatedAt;
+        return userScene;
+    }
+
+    @Parcel
+    public static final class Model {
+
+        String userId;
+
+        String sceneId;
+
+        String name;
+
+        String areaId;
+
+        String areaName;
+
+        long createdAt = -1;
+
+        long updatedAt = -1;
     }
 }
