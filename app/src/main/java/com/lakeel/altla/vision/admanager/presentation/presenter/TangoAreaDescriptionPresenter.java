@@ -99,6 +99,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
+                    getView().onUpdateTitle(model.tangoAreaDescription.name);
                     getView().onUpdateActionExport(!model.exported);
                     getView().onUpdateAreaDescriptionId(model.tangoAreaDescription.areaDescriptionId);
                     getView().onUpdateExported(model.exported);
