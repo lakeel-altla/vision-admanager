@@ -6,15 +6,14 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
-import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
+import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -24,7 +23,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -34,7 +33,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
     @Inject
-    FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
+    ObserveUserAreaDescriptionUseCase observeUserAreaDescriptionUseCase;
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
@@ -128,24 +127,21 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         tangoWrapper.addOnTangoReadyListener(this);
 
-        Disposable disposable = findUserAreaDescriptionUseCase
+        Disposable disposable = observeUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .map(userAreaDescription -> {
-                    Model model = new Model();
-                    model.userAreaDescription = userAreaDescription;
-                    return model;
-                })
+                .map(this::map)
                 .flatMap(model -> {
                     // Resolve the area name
-                    if (model.userAreaDescription.areaId != null) {
-                        return findUserAreaUseCase
-                                .execute(model.userAreaDescription.areaId)
-                                .map(userArea -> {
-                                    model.userArea = userArea;
-                                    return model;
-                                });
+                    if (model.areaId == null) {
+                        return Observable.just(model);
                     } else {
-                        return Maybe.just(model);
+                        return findUserAreaUseCase
+                                .execute(model.areaId)
+                                .map(userArea -> {
+                                    model.areaName = userArea.name;
+                                    return model;
+                                })
+                                .toObservable();
                     }
                 })
                 .flatMap(model -> {
@@ -156,20 +152,20 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                                 model.fileCached = file.exists();
                                 return model;
                             })
-                            .toMaybe();
+                            .toObservable();
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     updateActions();
-                    getView().onUpdateTitle(model.userAreaDescription.name);
+                    getView().onUpdateTitle(model.name);
                     getView().onUpdateAreaDescriptionId(areaDescriptionId);
                     getView().onUpdateImportStatus(importStatus);
-                    getView().onUpdateFileUploaded(model.userAreaDescription.fileUploaded);
+                    getView().onUpdateFileUploaded(model.fileUploaded);
                     getView().onUpdateFileCached(model.fileCached);
-                    getView().onUpdateName(model.userAreaDescription.name);
-                    getView().onUpdateAreaName(model.userArea.name);
-                    getView().onUpdateCreatedAt(model.userAreaDescription.createdAt);
-                    getView().onUpdateUpdatedAt(model.userAreaDescription.updatedAt);
+                    getView().onUpdateName(model.name);
+                    getView().onUpdateAreaName(model.areaName);
+                    getView().onUpdateCreatedAt(model.createdAt);
+                    getView().onUpdateUpdatedAt(model.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -312,12 +308,31 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
         return fileUploaded && fileCached;
     }
 
+    @NonNull
+    public Model map(@NonNull UserAreaDescription userAreaDescription) {
+        Model model = new Model();
+        model.name = userAreaDescription.name;
+        model.fileUploaded = userAreaDescription.fileUploaded;
+        model.areaId = userAreaDescription.areaId;
+        model.createdAt = userAreaDescription.createdAt;
+        model.updatedAt = userAreaDescription.updatedAt;
+        return model;
+    }
+
     private final class Model {
 
-        UserAreaDescription userAreaDescription;
+        String name;
 
-        UserArea userArea;
+        boolean fileUploaded;
 
         boolean fileCached;
+
+        String areaId;
+
+        String areaName;
+
+        long createdAt;
+
+        long updatedAt;
     }
 }

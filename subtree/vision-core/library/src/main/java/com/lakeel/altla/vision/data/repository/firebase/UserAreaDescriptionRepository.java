@@ -2,12 +2,14 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
@@ -113,6 +115,16 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                              if (onFailureListener != null) onFailureListener.onFailure(error.toException());
                          }
                      });
+    }
+
+    @NonNull
+    public ObservableData<UserAreaDescription> observe(@NonNull String userId, @NonNull String areaDescriptionId) {
+        DatabaseReference reference = getDatabase().getReference()
+                                                   .child(PATH_USER_AREA_DESCRIPTIONS)
+                                                   .child(userId)
+                                                   .child(areaDescriptionId);
+
+        return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
     }
 
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
