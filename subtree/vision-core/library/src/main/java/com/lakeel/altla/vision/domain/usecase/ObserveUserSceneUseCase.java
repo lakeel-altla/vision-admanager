@@ -1,0 +1,35 @@
+package com.lakeel.altla.vision.domain.usecase;
+
+import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
+import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
+import com.lakeel.altla.vision.domain.model.UserScene;
+
+import android.support.annotation.NonNull;
+
+import javax.inject.Inject;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+
+public final class ObserveUserSceneUseCase {
+
+    @Inject
+    UserSceneRepository userSceneRepository;
+
+    @Inject
+    CurrentUserResolver currentUserResolver;
+
+    @Inject
+    public ObserveUserSceneUseCase() {
+    }
+
+    @NonNull
+    public Observable<UserScene> execute(@NonNull String sceneId) {
+        String userId = currentUserResolver.getUserId();
+
+        return ObservableDataObservable
+                .using(() -> userSceneRepository.observe(userId, sceneId))
+                .subscribeOn(Schedulers.io());
+    }
+}

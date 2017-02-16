@@ -169,9 +169,6 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
-                }, () -> {
-                    getLog().e("Entity not found.");
-                    getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
     }

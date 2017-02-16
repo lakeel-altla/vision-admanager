@@ -3,10 +3,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
-import com.lakeel.altla.vision.domain.model.UserArea;
 import com.lakeel.altla.vision.domain.model.UserScene;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserSceneUseCase;
+import com.lakeel.altla.vision.domain.usecase.ObserveUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -24,7 +23,7 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
     private static final String ARG_SCENE_ID = "sceneId";
 
     @Inject
-    FindUserSceneUseCase findUserSceneUseCase;
+    ObserveUserSceneUseCase observeUserSceneUseCase;
 
     @Inject
     FindUserAreaUseCase findUserAreaUseCase;
@@ -67,38 +66,32 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
     protected void onStartOverride() {
         super.onStartOverride();
 
-        Disposable disposable = findUserSceneUseCase
+        Disposable disposable = observeUserSceneUseCase
                 .execute(sceneId)
-                .map(userScene -> {
-                    Model model = new Model();
-                    model.userScene = userScene;
-                    return model;
-                })
+                .map(this::map)
                 .flatMap(model -> {
-                    if (model.userScene.areaId == null) {
-                        return Maybe.just(model);
+                    if (model.areaId == null) {
+                        return Observable.just(model);
                     } else {
                         return findUserAreaUseCase
-                                .execute(model.userScene.areaId)
+                                .execute(model.areaId)
                                 .map(userArea -> {
-                                    model.userArea = userArea;
+                                    model.areaName = userArea.name;
                                     return model;
-                                });
+                                })
+                                .toObservable();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onUpdateTitle(model.userScene.name);
-                    getView().onUpdateSceneId(model.userScene.sceneId);
-                    getView().onUpdateName(model.userScene.name);
-                    getView().onUpdateAreaName(model.userArea.name);
-                    getView().onUpdateCreatedAt(model.userScene.createdAt);
-                    getView().onUpdateUpdatedAt(model.userScene.updatedAt);
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateSceneId(model.sceneId);
+                    getView().onUpdateName(model.name);
+                    getView().onUpdateAreaName(model.areaName);
+                    getView().onUpdateCreatedAt(model.createdAt);
+                    getView().onUpdateUpdatedAt(model.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                }, () -> {
-                    getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -108,10 +101,29 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
         getView().onShowUserSceneEditView(sceneId);
     }
 
+    @NonNull
+    private Model map(@NonNull UserScene userScene) {
+        Model model = new Model();
+        model.sceneId = userScene.sceneId;
+        model.name = userScene.name;
+        model.areaId = userScene.areaId;
+        model.createdAt = userScene.createdAt;
+        model.updatedAt = userScene.updatedAt;
+        return model;
+    }
+
     private final class Model {
 
-        UserScene userScene;
+        String sceneId;
 
-        UserArea userArea;
+        String name;
+
+        String areaId;
+
+        String areaName;
+
+        long createdAt;
+
+        long updatedAt;
     }
 }
