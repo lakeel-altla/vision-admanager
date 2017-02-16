@@ -1,13 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
-import com.google.android.gms.location.places.Place;
-
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.domain.model.UserArea;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
+import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
@@ -16,7 +14,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -25,7 +23,7 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
     private static final String ARG_AREA_ID = "areaId";
 
     @Inject
-    FindUserAreaUseCase findUserAreaUseCase;
+    ObserveUserAreaUseCase observeUserAreaUseCase;
 
     @Inject
     GetPlaceUseCase getPlaceUseCase;
@@ -70,41 +68,35 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
         getView().onUpdateTitle(null);
 
-        Disposable disposable = findUserAreaUseCase
+        Disposable disposable = observeUserAreaUseCase
                 .execute(areaId)
-                .map(userArea -> {
-                    Model model = new Model();
-                    model.userArea = userArea;
-                    return model;
-                })
+                .map(this::map)
                 .flatMap(model -> {
-                    if (model.userArea.placeId == null) {
-                        return Maybe.just(model);
+                    if (model.placeId == null) {
+                        return Observable.just(model);
                     } else {
                         return getPlaceUseCase
-                                .execute(model.userArea.placeId)
+                                .execute(model.placeId)
                                 .map(place -> {
-                                    model.place = place;
+                                    model.placeName = place.getName().toString();
+                                    model.placeAddress = place.getAddress().toString();
                                     return model;
                                 })
-                                .toMaybe();
+                                .toObservable();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onUpdateTitle(model.userArea.name);
-                    getView().onUpdateAreaId(model.userArea.areaId);
-                    getView().onUpdateName(model.userArea.name);
-                    getView().onUpdatePlaceName(model.place == null ? null : model.place.getName().toString());
-                    getView().onUpdatePlaceAddress(model.place == null ? null : model.place.getAddress().toString());
-                    getView().onUpdateLevel(model.userArea.level);
-                    getView().onUpdateCreatedAt(model.userArea.createdAt);
-                    getView().onUpdateUpdatedAt(model.userArea.updatedAt);
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateAreaId(model.areaId);
+                    getView().onUpdateName(model.name);
+                    getView().onUpdatePlaceName(model.placeName);
+                    getView().onUpdatePlaceAddress(model.placeAddress);
+                    getView().onUpdateLevel(model.level);
+                    getView().onUpdateCreatedAt(model.createdAt);
+                    getView().onUpdateUpdatedAt(model.updatedAt);
                 }, e -> {
                     getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                }, () -> {
-                    getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
@@ -122,10 +114,34 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
         getView().onShowUserSceneListInAreaView(areaId);
     }
 
+    @NonNull
+    private Model map(@NonNull UserArea userArea) {
+        Model model = new Model();
+        model.areaId = userArea.areaId;
+        model.name = userArea.name;
+        model.placeId = userArea.placeId;
+        model.level = userArea.level;
+        model.createdAt = userArea.createdAt;
+        model.updatedAt = userArea.updatedAt;
+        return model;
+    }
+
     private final class Model {
 
-        UserArea userArea;
+        String areaId;
 
-        Place place;
+        String name;
+
+        String placeId;
+
+        String placeName;
+
+        String placeAddress;
+
+        int level;
+
+        long createdAt;
+
+        long updatedAt;
     }
 }
