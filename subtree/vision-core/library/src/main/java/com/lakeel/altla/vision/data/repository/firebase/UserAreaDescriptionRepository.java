@@ -139,6 +139,17 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
         return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
     }
 
+    @NonNull
+    public ObservableDataList<UserAreaDescription> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
+        Query query = getDatabase().getReference()
+                                   .child(PATH_USER_AREA_DESCRIPTIONS)
+                                   .child(userId)
+                                   .orderByChild(FIELD_AREA_ID)
+                                   .equalTo(areaId);
+
+        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+    }
+
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
         getDatabase().getReference()
                      .child(PATH_USER_AREA_DESCRIPTIONS)

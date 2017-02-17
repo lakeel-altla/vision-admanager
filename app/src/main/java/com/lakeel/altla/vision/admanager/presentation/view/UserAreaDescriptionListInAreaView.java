@@ -10,7 +10,13 @@ public interface UserAreaDescriptionListInAreaView {
 
     void onItemInserted(int position);
 
-    void onItemsUpdated();
+    void onItemChanged(int position);
+
+    void onItemRemoved(int position);
+
+    void onItemMoved(int fromPosition, int toPosition);
+
+    void onDataSetChanged();
 
     void onItemSelected(@NonNull String areaDescriptionId);
 
