@@ -96,7 +96,22 @@ public final class UserSceneListInAreaFragment
     }
 
     @Override
-    public void onItemsUpdated() {
+    public void onItemChanged(int position) {
+        recyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
+        recyclerView.getAdapter().notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+        recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onDataSetChanged() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 

@@ -39,7 +39,6 @@ public final class UserSceneListPresenter extends BasePresenter<UserSceneListVie
         super.onStartOverride();
 
         items.clear();
-        getView().onDataSetChanged();
 
         Disposable disposable = observeAllUserScenesUseCase
                 .execute()
