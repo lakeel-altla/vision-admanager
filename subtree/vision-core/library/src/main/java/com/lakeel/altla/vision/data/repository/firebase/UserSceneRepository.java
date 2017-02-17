@@ -4,12 +4,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
@@ -125,6 +127,16 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                                                    .child(sceneId);
 
         return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
+    }
+
+    @NonNull
+    public ObservableDataList<UserScene> observeAll(@NonNull String userId) {
+        Query query = getDatabase().getReference()
+                                   .child(PATH_USER_SCENES)
+                                   .child(userId)
+                                   .orderByChild(FIELD_NAME);
+
+        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
     }
 
     public void delete(@NonNull String userId, @NonNull String sceneId) {
