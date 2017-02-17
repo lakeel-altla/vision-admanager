@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.model.UserProfile;
 
 import android.support.annotation.NonNull;
@@ -28,7 +28,7 @@ public final class ObserveUserProfileUseCase {
     public Observable<UserProfile> execute() {
         String userId = currentUserResolver.getUserId();
 
-        return ObservableDataObservable
+        return ObservableData
                 .using(() -> userProfileRepository.observe(userId))
                 .subscribeOn(Schedulers.io());
     }

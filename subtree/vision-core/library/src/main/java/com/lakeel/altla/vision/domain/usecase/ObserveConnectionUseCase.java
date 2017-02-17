@@ -7,7 +7,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.model.UserConnection;
 
 import android.support.annotation.NonNull;
@@ -36,7 +36,7 @@ public final class ObserveConnectionUseCase {
 
     @NonNull
     public Observable<Boolean> execute() {
-        return ObservableDataObservable
+        return ObservableData
                 .using(() -> connectionRepository.observe())
                 .doOnNext(connected -> LOG.d("The connection state changed: connected = %b", connected))
                 .flatMap(this::registerUserConnection)

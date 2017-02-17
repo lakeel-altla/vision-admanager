@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.helper.ObservableDataObservable;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.model.UserScene;
 
 import android.support.annotation.NonNull;
@@ -28,7 +28,7 @@ public final class ObserveUserSceneUseCase {
     public Observable<UserScene> execute(@NonNull String sceneId) {
         String userId = currentUserResolver.getUserId();
 
-        return ObservableDataObservable
+        return ObservableData
                 .using(() -> userSceneRepository.observe(userId, sceneId))
                 .subscribeOn(Schedulers.io());
     }
