@@ -1,28 +1,28 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.presenter.model.DataList;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
+import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.model.UserAreaDescription;
-import com.lakeel.altla.vision.domain.usecase.FindAllUserAreaDescriptionsUseCase;
+import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.support.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAreaDescriptionListView> {
+public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAreaDescriptionListView>
+        implements DataList.OnItemListener {
 
     @Inject
-    FindAllUserAreaDescriptionsUseCase findAllUserAreaDescriptionsUseCase;
+    ObserveAllUserAreaDescriptionsUseCase observeAllUserAreaDescriptionsUseCase;
 
-    private final List<ItemModel> items = new ArrayList<>();
+    private final DataList<ItemModel> items = new DataList<>(this);
 
     @Inject
     public UserAreaDescriptionListPresenter() {
@@ -40,20 +40,43 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         super.onStartOverride();
 
         items.clear();
-        getView().onItemsUpdated();
 
-        Disposable disposable = findAllUserAreaDescriptionsUseCase
+        Disposable disposable = observeAllUserAreaDescriptionsUseCase
                 .execute()
                 .map(this::map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    items.add(model);
-                    getView().onItemInserted(items.size() - 1);
+                    items.change(model.type, model.item, model.previousAreaDescriptionId);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
+    }
+
+    @Override
+    public void onItemInserted(int index) {
+        getView().onItemInserted(index);
+    }
+
+    @Override
+    public void onItemChanged(int index) {
+        getView().onItemChanged(index);
+    }
+
+    @Override
+    public void onItemRemoved(int index) {
+        getView().onItemRemoved(index);
+    }
+
+    @Override
+    public void onItemMoved(int from, int to) {
+        getView().onItemMoved(from, to);
+    }
+
+    @Override
+    public void onDataSetChanged() {
+        getView().onDataSetChanged();
     }
 
     public int getItemCount() {
@@ -67,6 +90,15 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     public void onClickItem(int position) {
         ItemModel model = items.get(position);
         getView().onItemSelected(model.areaDescriptionId);
+    }
+
+    @NonNull
+    private EventModel map(@NonNull DataListEvent<UserAreaDescription> event) {
+        EventModel model = new EventModel();
+        model.type = event.getType();
+        model.item = map(event.getData());
+        model.previousAreaDescriptionId = event.getPreviousChildName();
+        return model;
     }
 
     @NonNull
@@ -92,10 +124,24 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
     }
 
-    private final class ItemModel {
+    private final class EventModel {
+
+        DataListEvent.Type type;
+
+        String previousAreaDescriptionId;
+
+        ItemModel item;
+    }
+
+    private final class ItemModel implements DataList.Item {
 
         String areaDescriptionId;
 
         String name;
+
+        @Override
+        public String getId() {
+            return areaDescriptionId;
+        }
     }
 }

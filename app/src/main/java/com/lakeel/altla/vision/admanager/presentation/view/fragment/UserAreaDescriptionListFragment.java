@@ -88,13 +88,28 @@ public final class UserAreaDescriptionListFragment
     }
 
     @Override
-    public void onItemsUpdated() {
-        recyclerView.getAdapter().notifyDataSetChanged();
+    public void onItemInserted(int position) {
+        recyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override
-    public void onItemInserted(int position) {
-        recyclerView.getAdapter().notifyItemInserted(position);
+    public void onItemChanged(int position) {
+        recyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
+        recyclerView.getAdapter().notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+        recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onDataSetChanged() {
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
