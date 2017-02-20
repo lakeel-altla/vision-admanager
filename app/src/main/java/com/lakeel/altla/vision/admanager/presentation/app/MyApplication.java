@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.app;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.BuildConfig;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ApplicationComponent;
@@ -30,6 +32,9 @@ public final class MyApplication extends Application {
 
         // Altla Log
         LogFactory.setDebug(BuildConfig.DEBUG);
+
+        // Enable the offline feature of Firebase Database.
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
