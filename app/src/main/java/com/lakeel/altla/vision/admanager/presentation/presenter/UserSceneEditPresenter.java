@@ -92,6 +92,11 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
     protected void onStartOverride() {
         super.onStartOverride();
 
+        getView().onUpdateHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
+        getView().onUpdateTitle(null);
+
         if (model == null) {
             if (sceneId == null) {
                 sceneId = UUID.randomUUID().toString();
@@ -99,7 +104,8 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                 model.userId = currentUserResolver.getUserId();
                 model.sceneId = sceneId;
                 getView().onShowNameError(R.string.input_error_name_required);
-                getView().onUpdateButtonSaveEnabled(false);
+                getView().onUpdateViewsEnabled(true);
+                getView().onUpdateActionSave(canSave());
             } else {
                 getView().onUpdateViewsEnabled(false);
 
@@ -125,6 +131,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                             getView().onUpdateName(model.name);
                             getView().onUpdateAreaName(model.areaName);
                             getView().onUpdateViewsEnabled(true);
+                            getView().onUpdateActionSave(canSave());
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -146,6 +153,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                             model.areaName = userArea.name;
                             getView().onUpdateAreaName(model.areaName);
                             getView().onUpdateViewsEnabled(true);
+                            getView().onUpdateActionSave(canSave());
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -156,8 +164,16 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                 getView().onUpdateName(model.name);
                 getView().onUpdateAreaName(model.areaName);
                 getView().onUpdateViewsEnabled(true);
+                getView().onUpdateActionSave(canSave());
             }
         }
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        getView().onUpdateHomeAsUpIndicator(null);
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
@@ -169,7 +185,7 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
             getView().onShowNameError(R.string.input_error_name_required);
         }
 
-        getView().onUpdateButtonSaveEnabled(canSave());
+        getView().onUpdateActionSave(canSave());
     }
 
     public void onClickImageButtonSelectArea() {
@@ -182,8 +198,13 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
         areaFieldsDirty = true;
     }
 
-    public void onClickButtonSave() {
+    private boolean canSave() {
+        return model.name != null && model.name.length() != 0;
+    }
+
+    public void onActionSave() {
         getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
 
         UserScene userScene = map(model);
 
@@ -191,18 +212,13 @@ public class UserSceneEditPresenter extends BasePresenter<UserSceneEditView> {
                 .execute(userScene)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateViewsEnabled(true);
                     getView().onSnackbar(R.string.snackbar_done);
+                    getView().onBackView();
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
-    }
-
-    private boolean canSave() {
-        return model.name != null && model.name.length() != 0;
     }
 
     @NonNull
