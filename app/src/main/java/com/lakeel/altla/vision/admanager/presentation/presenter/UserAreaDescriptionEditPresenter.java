@@ -99,12 +99,13 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     protected void onStartOverride() {
         super.onStartOverride();
 
+        getView().onUpdateHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
         // Clear the previous title.
         getView().onUpdateTitle(null);
+        getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
 
         if (model == null) {
-            getView().onUpdateViewsEnabled(false);
-
             Disposable disposable = findUserAreaDescriptionUseCase
                     .execute(areaDescriptionId)
                     .map(UserAreaDescriptionEditPresenter::map)
@@ -128,6 +129,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                         getView().onUpdateName(model.name);
                         getView().onUpdateAreaName(model.areaName);
                         getView().onUpdateViewsEnabled(true);
+                        getView().onUpdateActionSave(canSave());
                     }, e -> {
                         getLog().e("Failed.", e);
                         getView().onSnackbar(R.string.snackbar_failed);
@@ -142,9 +144,6 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
             if (areaNameDirty) {
                 areaNameDirty = false;
-
-                getView().onUpdateViewsEnabled(false);
-
                 Disposable disposable = findUserAreaUseCase
                         .execute(model.areaId)
                         .observeOn(AndroidSchedulers.mainThread())
@@ -152,12 +151,22 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                             model.areaName = userArea.name;
                             getView().onUpdateAreaName(model.areaName);
                             getView().onUpdateViewsEnabled(true);
+                            getView().onUpdateActionSave(canSave());
                         });
                 manageDisposable(disposable);
             } else {
                 getView().onUpdateAreaName(model.areaName);
+                getView().onUpdateViewsEnabled(true);
+                getView().onUpdateActionSave(canSave());
             }
         }
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        getView().onUpdateHomeAsUpIndicator(null);
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
@@ -168,6 +177,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         if (name == null || name.length() == 0) {
             getView().onShowNameError(R.string.input_error_name_required);
         }
+
+        getView().onUpdateActionSave(canSave());
     }
 
     public void onClickImageButtonSelectArea() {
@@ -179,26 +190,6 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         model.areaId = areaId;
         areaNameDirty = true;
     }
-
-    public void onClickButtonSave() {
-        getView().onUpdateViewsEnabled(false);
-
-        UserAreaDescription userAreaDescription = map(model);
-
-        Disposable disposable = saveUserAreaDescriptionUseCase
-                .execute(userAreaDescription)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateViewsEnabled(true);
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
-    }
-
 
     @NonNull
     public static Model map(@NonNull UserAreaDescription userAreaDescription) {
@@ -222,6 +213,32 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         userAreaDescription.createdAt = model.createdAt;
         userAreaDescription.updatedAt = model.updatedAt;
         return userAreaDescription;
+    }
+
+    public void onActionSave() {
+        getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
+
+        UserAreaDescription userAreaDescription = map(model);
+
+        Disposable disposable = saveUserAreaDescriptionUseCase
+                .execute(userAreaDescription)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    getView().onUpdateTitle(model.name);
+                    getView().onUpdateViewsEnabled(true);
+                    getView().onUpdateActionSave(true);
+                    getView().onSnackbar(R.string.snackbar_done);
+                    getView().onCloseUserAreaDescriptionEditView();
+                }, e -> {
+                    getLog().e("Failed.", e);
+                    getView().onSnackbar(R.string.snackbar_failed);
+                });
+        manageDisposable(disposable);
+    }
+
+    public boolean canSave() {
+        return model.name != null && model.name.length() != 0;
     }
 
     @Parcel

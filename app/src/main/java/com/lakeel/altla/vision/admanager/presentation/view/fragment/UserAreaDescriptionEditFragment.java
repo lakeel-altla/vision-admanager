@@ -10,17 +10,23 @@ import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -66,6 +72,8 @@ public final class UserAreaDescriptionEditFragment
     TextView textViewAreaName;
 
     private InteractionListener interactionListener;
+
+    private boolean actionSaveEnabled;
 
     @NonNull
     public static UserAreaDescriptionEditFragment newInstance(String areaDescriptionId) {
@@ -123,11 +131,52 @@ public final class UserAreaDescriptionEditFragment
             }
             return false;
         });
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_user_area_description_edit, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_save).setVisible(actionSaveEnabled);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                presenter.onActionSave();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onUpdateTitle(@Nullable String title) {
         getActivity().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateHomeAsUpIndicator(@DrawableRes int resId) {
+        ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(resId);
+        }
+    }
+
+    @Override
+    public void onUpdateHomeAsUpIndicator(@Nullable Drawable drawable) {
+        ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(null);
+        }
     }
 
     @Override
@@ -153,8 +202,9 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onSnackbar(@StringRes int resId) {
-        Snackbar.make(view, resId, Snackbar.LENGTH_SHORT).show();
+    public void onUpdateActionSave(boolean enabled) {
+        actionSaveEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
@@ -172,6 +222,16 @@ public final class UserAreaDescriptionEditFragment
         interactionListener.onShowUserAreaSelectView();
     }
 
+    @Override
+    public void onCloseUserAreaDescriptionEditView() {
+        interactionListener.onCloseUserAreaDescriptionEditView();
+    }
+
+    @Override
+    public void onSnackbar(@StringRes int resId) {
+        Snackbar.make(view, resId, Snackbar.LENGTH_SHORT).show();
+    }
+
     public void onUserAreaSelected(@NonNull String areaId) {
         presenter.onUserAreaSelected(areaId);
     }
@@ -186,13 +246,12 @@ public final class UserAreaDescriptionEditFragment
         presenter.onClickImageButtonSelectArea();
     }
 
-    @OnClick(R.id.button_save)
-    void onClickButtonSave() {
-        presenter.onClickButtonSave();
-    }
-
     public interface InteractionListener {
 
+        void onInvalidateOptionsMenu();
+
         void onShowUserAreaSelectView();
+
+        void onCloseUserAreaDescriptionEditView();
     }
 }

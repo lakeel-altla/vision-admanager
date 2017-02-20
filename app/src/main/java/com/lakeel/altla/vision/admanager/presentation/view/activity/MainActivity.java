@@ -257,7 +257,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onCloseTangoAreaDescriptionView() {
-        getSupportFragmentManager().popBackStack();
+        onBackPressed();
     }
 
     @Override
@@ -272,7 +272,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onCloseUserAreaDescriptionView() {
-        getSupportFragmentManager().popBackStack();
+        onBackPressed();
     }
 
     @Override
@@ -283,6 +283,11 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onShowUserAreaSelectView() {
         showUserAreaSelectFragment();
+    }
+
+    @Override
+    public void onCloseUserAreaDescriptionEditView() {
+        getSupportFragmentManager().popBackStack();
     }
 
     @Override
