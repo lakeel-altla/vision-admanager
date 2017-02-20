@@ -94,17 +94,21 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     protected void onStartOverride() {
         super.onStartOverride();
 
+        getView().onUpdateHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getView().onUpdateTitle(null);
+        getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
+
         if (model == null) {
             if (areaId == null) {
                 areaId = UUID.randomUUID().toString();
                 model = new Model();
                 model.userId = currentUserResolver.getUserId();
                 model.areaId = areaId;
+                getView().onUpdateViewsEnabled(true);
+                getView().onUpdateActionSave(canSave());
                 getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
-                getView().onUpdateButtonSaveEnabled(canSave());
             } else {
-                getView().onUpdateViewsEnabled(false);
-
                 Disposable disposable = findUserAreaUseCase
                         .execute(areaId)
                         .map(UserAreaEditPresenter::map)
@@ -131,8 +135,8 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                             getView().onUpdatePlaceAddress(model.placeAddress);
                             getView().onUpdateLevel(model.level);
                             getView().onUpdateViewsEnabled(true);
+                            getView().onUpdateActionSave(canSave());
                             getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
-                            getView().onUpdateButtonSaveEnabled(canSave());
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -149,9 +153,16 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
             getView().onUpdatePlaceAddress(model.placeAddress);
             getView().onUpdateLevel(model.level);
             getView().onUpdateViewsEnabled(true);
+            getView().onUpdateActionSave(canSave());
             getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
-            getView().onUpdateButtonSaveEnabled(canSave());
         }
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        getView().onUpdateHomeAsUpIndicator(null);
     }
 
     public void onEditTextNameAfterTextChanged(String name) {
@@ -163,7 +174,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
             getView().onShowNameError(R.string.input_error_name_required);
         }
 
-        getView().onUpdateButtonSaveEnabled(canSave());
+        getView().onUpdateActionSave(canSave());
     }
 
     public void onClickImageButtonPickPlace() {
@@ -197,8 +208,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         model.level = level;
     }
 
-    public void onClickButtonSave() {
+    private boolean canRemovePlace() {
+        return model.placeId != null;
+    }
+
+    public void onActionSave() {
         getView().onUpdateViewsEnabled(false);
+        getView().onUpdateActionSave(false);
 
         UserArea userArea = map(model);
 
@@ -206,19 +222,13 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                 .execute(userArea)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateViewsEnabled(true);
-                    getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
                     getView().onSnackbar(R.string.snackbar_done);
+                    getView().onBackView();
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
         manageDisposable(disposable);
-    }
-
-    private boolean canRemovePlace() {
-        return model.placeId != null;
     }
 
     private boolean canSave() {

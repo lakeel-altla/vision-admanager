@@ -225,11 +225,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                 .execute(userAreaDescription)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateViewsEnabled(true);
-                    getView().onUpdateActionSave(true);
                     getView().onSnackbar(R.string.snackbar_done);
-                    getView().onCloseUserAreaDescriptionEditView();
+                    getView().onBackView();
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);

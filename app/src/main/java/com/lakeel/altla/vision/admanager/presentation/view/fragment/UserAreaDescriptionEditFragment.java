@@ -159,11 +159,6 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onUpdateTitle(@Nullable String title) {
-        getActivity().setTitle(title);
-    }
-
-    @Override
     public void onUpdateHomeAsUpIndicator(@DrawableRes int resId) {
         ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
         if (actionBar != null) {
@@ -177,16 +172,6 @@ public final class UserAreaDescriptionEditFragment
         if (actionBar != null) {
             actionBar.setHomeAsUpIndicator(null);
         }
-    }
-
-    @Override
-    public void onUpdateName(String name) {
-        textInputEditTextName.setText(name);
-    }
-
-    @Override
-    public void onUpdateAreaName(String areaName) {
-        textViewAreaName.setText(areaName);
     }
 
     @Override
@@ -208,6 +193,21 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateName(String name) {
+        textInputEditTextName.setText(name);
+    }
+
+    @Override
+    public void onUpdateAreaName(String areaName) {
+        textViewAreaName.setText(areaName);
+    }
+
+    @Override
     public void onShowNameError(@StringRes int resId) {
         textInputLayoutName.setError(getString(resId));
     }
@@ -223,8 +223,8 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onCloseUserAreaDescriptionEditView() {
-        interactionListener.onCloseUserAreaDescriptionEditView();
+    public void onBackView() {
+        interactionListener.onBackView();
     }
 
     @Override
@@ -252,6 +252,6 @@ public final class UserAreaDescriptionEditFragment
 
         void onShowUserAreaSelectView();
 
-        void onCloseUserAreaDescriptionEditView();
+        void onBackView();
     }
 }

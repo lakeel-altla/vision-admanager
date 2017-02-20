@@ -11,11 +11,11 @@ public interface UserAreaDescriptionEditView {
 
     void onUpdateActionSave(boolean enabled);
 
-    void onUpdateTitle(@Nullable String title);
-
     void onUpdateHomeAsUpIndicator(@DrawableRes int resId);
 
     void onUpdateHomeAsUpIndicator(@Nullable Drawable drawable);
+
+    void onUpdateTitle(@Nullable String title);
 
     void onUpdateName(String name);
 
@@ -27,7 +27,7 @@ public interface UserAreaDescriptionEditView {
 
     void onShowUserAreaSelectView();
 
-    void onCloseUserAreaDescriptionEditView();
+    void onBackView();
 
     void onSnackbar(@StringRes int resId);
 }

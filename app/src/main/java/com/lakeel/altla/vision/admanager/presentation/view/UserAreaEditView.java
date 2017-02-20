@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -7,9 +9,13 @@ public interface UserAreaEditView {
 
     void onUpdateViewsEnabled(boolean enabled);
 
-    void onUpdateButtonRemovePlaceEnabled(boolean enabled);
+    void onUpdateActionSave(boolean enabled);
 
-    void onUpdateButtonSaveEnabled(boolean enabled);
+    void onUpdateHomeAsUpIndicator(@DrawableRes int resId);
+
+    void onUpdateHomeAsUpIndicator(@Nullable Drawable drawable);
+
+    void onUpdateButtonRemovePlaceEnabled(boolean enabled);
 
     void onUpdateTitle(@Nullable String title);
 
@@ -26,6 +32,8 @@ public interface UserAreaEditView {
     void onHideNameError();
 
     void onShowPlacePicker();
+
+    void onBackView();
 
     void onSnackbar(@StringRes int resId);
 }

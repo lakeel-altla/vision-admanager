@@ -15,23 +15,28 @@ import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -58,6 +63,14 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     private static final int LEVEL_MAX = 100;
 
     private static final List<Integer> LEVELS;
+
+    static {
+        List<Integer> levelValues = new ArrayList<>();
+        for (int i = LEVEL_MIN; i <= LEVEL_MAX; i++) {
+            levelValues.add(i);
+        }
+        LEVELS = Collections.unmodifiableList(levelValues);
+    }
 
     @Inject
     UserAreaEditPresenter presenter;
@@ -92,18 +105,9 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     @BindView(R.id.spinner_level)
     Spinner spinnerLevel;
 
-    @BindView(R.id.button_save)
-    Button buttonSave;
-
     private InteractionListener interactionListener;
 
-    static {
-        List<Integer> levelValues = new ArrayList<>();
-        for (int i = LEVEL_MIN; i <= LEVEL_MAX; i++) {
-            levelValues.add(i);
-        }
-        LEVELS = Collections.unmodifiableList(levelValues);
-    }
+    private boolean actionSaveEnabled;
 
     @NonNull
     public static UserAreaEditFragment newInstance(@Nullable String areaId) {
@@ -165,6 +169,31 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         adapter.addAll(LEVELS);
         spinnerLevel.setAdapter(adapter);
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_user_area_edit, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_save).setVisible(actionSaveEnabled);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                presenter.onActionSave();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -187,7 +216,6 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         imageButtonPickPlace.setEnabled(enabled);
         imageButtonRemovePlace.setEnabled(enabled);
         spinnerLevel.setEnabled(enabled);
-        buttonSave.setEnabled(enabled);
 
         int tint = resolveImageButtonColorFilter(enabled);
         imageButtonPickPlace.setColorFilter(tint);
@@ -201,8 +229,25 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
-    public void onUpdateButtonSaveEnabled(boolean enabled) {
-        buttonSave.setEnabled(enabled);
+    public void onUpdateHomeAsUpIndicator(@DrawableRes int resId) {
+        ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(resId);
+        }
+    }
+
+    @Override
+    public void onUpdateHomeAsUpIndicator(@Nullable Drawable drawable) {
+        ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(null);
+        }
+    }
+
+    @Override
+    public void onUpdateActionSave(boolean enabled) {
+        actionSaveEnabled = enabled;
+        interactionListener.onInvalidateOptionsMenu();
     }
 
     @Override
@@ -257,6 +302,11 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     }
 
     @Override
+    public void onBackView() {
+        interactionListener.onBackView();
+    }
+
+    @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
@@ -282,11 +332,6 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
         presenter.onItemSelectedSpinnerLevel(level);
     }
 
-    @OnClick(R.id.button_save)
-    void onClickButtonSave() {
-        presenter.onClickButtonSave();
-    }
-
     private int resolveImageButtonColorFilter(boolean enabled) {
         int enabledTint = getResources().getColor(R.color.tint_image_button_enabled);
         int disabledTint = getResources().getColor(R.color.tint_image_button_disabled);
@@ -295,5 +340,8 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
 
     public interface InteractionListener {
 
+        void onInvalidateOptionsMenu();
+
+        void onBackView();
     }
 }

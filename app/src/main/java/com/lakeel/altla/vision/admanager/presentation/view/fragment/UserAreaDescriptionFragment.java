@@ -321,7 +321,7 @@ public final class UserAreaDescriptionFragment
 
     @Override
     public void onDeleted() {
-        interactionListener.onCloseUserAreaDescriptionView();
+        interactionListener.onBackView();
     }
 
     @Override
@@ -333,7 +333,7 @@ public final class UserAreaDescriptionFragment
 
         void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId);
 
-        void onCloseUserAreaDescriptionView();
+        void onBackView();
 
         void onInvalidateOptionsMenu();
     }

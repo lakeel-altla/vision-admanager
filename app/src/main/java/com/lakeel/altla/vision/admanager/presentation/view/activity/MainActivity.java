@@ -271,7 +271,7 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCloseUserAreaDescriptionView() {
+    public void onBackView() {
         onBackPressed();
     }
 
@@ -283,11 +283,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onShowUserAreaSelectView() {
         showUserAreaSelectFragment();
-    }
-
-    @Override
-    public void onCloseUserAreaDescriptionEditView() {
-        getSupportFragmentManager().popBackStack();
     }
 
     @Override
