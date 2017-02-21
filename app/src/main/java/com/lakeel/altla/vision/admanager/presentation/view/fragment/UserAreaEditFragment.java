@@ -84,7 +84,7 @@ public final class UserAreaEditFragment extends AbstractFragment<UserAreaEditVie
     @BindView(R.id.view_top)
     View viewTop;
 
-    @BindView(R.id.text_input_layput_name)
+    @BindView(R.id.text_input_layout_name)
     TextInputLayout textInputLayoutName;
 
     @BindView(R.id.image_button_pick_place)

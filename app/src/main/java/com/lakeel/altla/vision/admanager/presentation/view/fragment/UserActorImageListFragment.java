@@ -149,7 +149,7 @@ public final class UserActorImageListFragment
 
     public interface InteractionListener {
 
-        void onShowUserActorImageView(String imageId);
+        void onShowUserActorImageView(@NonNull String imageId);
 
         void onShowUserActorImageCreateView();
     }

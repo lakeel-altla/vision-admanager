@@ -13,6 +13,8 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
@@ -34,7 +36,6 @@ import com.squareup.picasso.Picasso;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -63,19 +64,20 @@ public final class MainActivity extends AppCompatActivity
                    TangoPermissionFragment.InteractionListener,
                    TangoAreaDescriptionListFragment.InteractionListener,
                    TangoAreaDescriptionFragment.InteractionListener,
-                   UserAreaDescriptionListFragment.InteractionListener,
-                   UserAreaDescriptionFragment.InteractionListener,
-                   UserAreaDescriptionEditFragment.InteractionListener,
                    UserAreaListFragment.InteractionListener,
                    UserAreaFragment.InteractionListener,
                    UserAreaEditFragment.InteractionListener,
-                   UserAreaSelectFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
-                   UserSceneListFragment.InteractionListener,
                    UserSceneListInAreaFragment.InteractionListener,
+                   UserAreaDescriptionListFragment.InteractionListener,
+                   UserAreaDescriptionFragment.InteractionListener,
+                   UserAreaDescriptionEditFragment.InteractionListener,
+                   UserAreaSelectFragment.InteractionListener,
+                   UserSceneListFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
                    UserActorImageListFragment.InteractionListener,
+                   UserActorImageEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
@@ -139,7 +141,7 @@ public final class MainActivity extends AppCompatActivity
         navigationViewHeader = new NavigationViewHeader(navigationView);
 
         if (savedInstanceState == null) {
-            showSignInFragment();
+            showSignInView();
         }
     }
 
@@ -211,21 +213,46 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_user_area_list:
-                showUserAreaListFragment();
+            case R.id.nav_user_area_list: {
+                Fragment fragment = findFragment(UserAreaListFragment.class);
+                if (fragment == null) {
+                    fragment = UserAreaListFragment.newInstance();
+                    replaceFragment(fragment);
+                }
                 break;
-            case R.id.nav_tango_area_description_list:
-                showTangoAreaDescriptionListFragment();
+            }
+            case R.id.nav_tango_area_description_list: {
+                Fragment fragment = findFragment(TangoAreaDescriptionListFragment.class);
+                if (fragment == null) {
+                    fragment = TangoAreaDescriptionListFragment.newInstance();
+                    replaceFragment(fragment);
+                }
                 break;
-            case R.id.nav_user_area_description_list:
-                showUserAreaDescriptionListFragment();
+            }
+            case R.id.nav_user_area_description_list: {
+                Fragment fragment = findFragment(UserAreaDescriptionListFragment.class);
+                if (fragment == null) {
+                    fragment = UserAreaDescriptionListFragment.newInstance();
+                    replaceFragment(fragment);
+                }
                 break;
-            case R.id.nav_user_scene_list:
-                showUserSceneListFragment();
+            }
+            case R.id.nav_user_scene_list: {
+                Fragment fragment = findFragment(UserSceneListFragment.class);
+                if (fragment == null) {
+                    fragment = UserSceneListFragment.newInstance();
+                    replaceFragment(fragment);
+                }
                 break;
-            case R.id.nav_user_actor_image_list:
-                showUserActorImageListFragment();
+            }
+            case R.id.nav_user_actor_image_list: {
+                Fragment fragment = findFragment(UserActorImageListFragment.class);
+                if (fragment == null) {
+                    fragment = UserActorImageListFragment.newInstance();
+                    replaceFragment(fragment);
+                }
                 break;
+            }
             case R.id.nav_sign_out:
                 onSignOut();
                 break;
@@ -246,36 +273,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCloseSignInView() {
-        showTangoPermissionFragment();
-    }
-
-    @Override
-    public void onCloseTangoPermissionView() {
-        showTangoAreaDescriptionListFragment();
-    }
-
-    @Override
-    public void onShowTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
-        showTangoAreaDescriptionView(areaDescriptionId);
-    }
-
-    @Override
-    public void onCloseTangoAreaDescriptionView() {
-        onBackPressed();
-    }
-
-    @Override
-    public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
-        showUserAreaDescriptionFragment(areaDescriptionId);
-    }
-
-    @Override
-    public void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId) {
-        showUserAreaDescriptionEditFragment(areaDescriptionId);
-    }
-
-    @Override
     public void onBackView() {
         onBackPressed();
     }
@@ -286,48 +283,93 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onCloseSignInView() {
+        TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
+        replaceFragment(fragment);
+    }
+
+    @Override
+    public void onCloseTangoPermissionView() {
+        toolbar.setVisibility(View.VISIBLE);
+        TangoAreaDescriptionListFragment fragment = TangoAreaDescriptionListFragment.newInstance();
+        replaceFragment(fragment);
+    }
+
+    @Override
+    public void onShowTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
+        TangoAreaDescriptionFragment fragment = TangoAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    @Override
+    public void onCloseTangoAreaDescriptionView() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onShowUserAreaDescriptionView(@NonNull String areaDescriptionId) {
+        UserAreaDescriptionFragment fragment = UserAreaDescriptionFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    @Override
+    public void onShowUserAreaDescriptionEditView(@NonNull String areaDescriptionId) {
+        UserAreaDescriptionEditFragment fragment = UserAreaDescriptionEditFragment.newInstance(areaDescriptionId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
+    @Override
     public void onShowUserAreaSelectView() {
-        showUserAreaSelectFragment();
+        UserAreaSelectFragment fragment = UserAreaSelectFragment.newInstance();
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserAreaCreateView() {
-        showUserAreaEditFragment(null);
+        UserAreaEditFragment fragment = UserAreaEditFragment.newInstance(null);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserAreaView(@NonNull String areaId) {
-        showUserAreaFragment(areaId);
+        UserAreaFragment fragment = UserAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserAreaEditView(@NonNull String areaId) {
-        showUserAreaEditFragment(areaId);
+        UserAreaEditFragment fragment = UserAreaEditFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId) {
-        showUserAreaDescriptionListInAreaFragment(areaId);
+        UserAreaDescriptionListInAreaFragment fragment = UserAreaDescriptionListInAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserSceneListInAreaView(@NonNull String areaId) {
-        showUserScenesListInAreaView(areaId);
+        UserSceneListInAreaFragment fragment = UserSceneListInAreaFragment.newInstance(areaId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserSceneCreateView() {
-        showUserSceneEditView(null);
+        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(null);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserSceneView(@NonNull String sceneId) {
-        showUserSceneFragment(sceneId);
+        UserSceneFragment fragment = UserSceneFragment.newInstance(sceneId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserSceneEditView(@NonNull String sceneId) {
-        showUserSceneEditView(sceneId);
+        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(sceneId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
@@ -349,13 +391,15 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowUserActorImageView(String imageId) {
-        // TODO
+    public void onShowUserActorImageCreateView() {
+        UserActorImageEditFragment fragment = UserActorImageEditFragment.newInstance(null);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
-    public void onShowUserActorImageCreateView() {
-        // TODO
+    public void onShowUserActorImageView(@NonNull String imageId) {
+        UserActorImageFragment fragment = UserActorImageFragment.newInstance(imageId);
+        replaceFragmentAndAddToBackStack(fragment);
     }
 
     private void updateActionBarHome() {
@@ -369,142 +413,15 @@ public final class MainActivity extends AppCompatActivity
         Disposable disposable = signOutUseCase
                 .execute()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::showSignInFragment);
+                .subscribe(this::showSignInView);
         compositeDisposable.add(disposable);
     }
 
-    private void showSignInFragment() {
+    private void showSignInView() {
         toolbar.setVisibility(View.INVISIBLE);
 
         SignInFragment fragment = SignInFragment.newInstance();
         replaceFragment(fragment);
-    }
-
-    private void showTangoPermissionFragment() {
-        toolbar.setVisibility(View.INVISIBLE);
-
-        TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
-        replaceFragment(fragment);
-    }
-
-    private void showUserAreaListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        Fragment fragment = findFragment(UserAreaListFragment.class);
-        if (fragment == null) {
-            fragment = UserAreaListFragment.newInstance();
-            replaceFragment(fragment);
-        }
-    }
-
-    private void showTangoAreaDescriptionListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        Fragment fragment = findFragment(TangoAreaDescriptionListFragment.class);
-        if (fragment == null) {
-            fragment = TangoAreaDescriptionListFragment.newInstance();
-            replaceFragment(fragment);
-        }
-    }
-
-    private void showUserAreaDescriptionListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        Fragment fragment = findFragment(UserAreaDescriptionListFragment.class);
-        if (fragment == null) {
-            fragment = UserAreaDescriptionListFragment.newInstance();
-            replaceFragment(fragment);
-        }
-    }
-
-    private void showUserSceneListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        Fragment fragment = findFragment(UserSceneListFragment.class);
-        if (fragment == null) {
-            fragment = UserSceneListFragment.newInstance();
-            replaceFragment(fragment);
-        }
-    }
-
-    private void showUserActorImageListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        Fragment fragment = findFragment(UserActorImageListFragment.class);
-        if (fragment == null) {
-            fragment = UserActorImageListFragment.newInstance();
-            replaceFragment(fragment);
-        }
-    }
-
-    private void showTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        TangoAreaDescriptionFragment fragment = TangoAreaDescriptionFragment.newInstance(areaDescriptionId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaDescriptionFragment(@NonNull String areaDescriptionId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaDescriptionFragment fragment = UserAreaDescriptionFragment.newInstance(areaDescriptionId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaDescriptionEditFragment(String areaDescriptionId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaDescriptionEditFragment fragment = UserAreaDescriptionEditFragment.newInstance(areaDescriptionId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaFragment(@NonNull String areaId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaFragment fragment = UserAreaFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaEditFragment(@Nullable String areaId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaEditFragment fragment = UserAreaEditFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaSelectFragment() {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaSelectFragment fragment = UserAreaSelectFragment.newInstance();
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserAreaDescriptionListInAreaFragment(@NonNull String areaId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserAreaDescriptionListInAreaFragment fragment = UserAreaDescriptionListInAreaFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserScenesListInAreaView(@NonNull String areaId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserSceneListInAreaFragment fragment = UserSceneListInAreaFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserSceneFragment(@NonNull String sceneId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserSceneFragment fragment = UserSceneFragment.newInstance(sceneId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    private void showUserSceneEditView(@Nullable String sceneId) {
-        toolbar.setVisibility(View.VISIBLE);
-
-        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(sceneId);
-        replaceFragmentAndAddToBackStack(fragment);
     }
 
     private Fragment findFragment(Class<?> clazz) {

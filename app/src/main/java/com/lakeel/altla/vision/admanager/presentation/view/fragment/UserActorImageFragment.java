@@ -50,10 +50,6 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
     private InteractionListener interactionListener;
 
-    @Inject
-    public UserActorImageFragment() {
-    }
-
     @NonNull
     public static UserActorImageFragment newInstance(@NonNull String imageId) {
         UserActorImageFragment fragment = new UserActorImageFragment();

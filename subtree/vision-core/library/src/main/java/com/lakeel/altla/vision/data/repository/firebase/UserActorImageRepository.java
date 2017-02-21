@@ -1,15 +1,19 @@
 package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
+import com.lakeel.altla.vision.domain.helper.OnFailureListener;
+import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
 import com.lakeel.altla.vision.domain.model.UserActorImage;
 
@@ -35,6 +39,29 @@ public final class UserActorImageRepository extends BaseDatabaseRepository {
                      .setValue(map(userActorImage), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                         }
+                     });
+    }
+
+    public void find(@NonNull String userId, @NonNull String imageId,
+                     OnSuccessListener<UserActorImage> onSuccessListener, OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(BASE_PATH)
+                     .child(userId)
+                     .child(imageId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             UserActorImage userActorImage = null;
+                             if (snapshot.exists()) {
+                                 userActorImage = map(userId, snapshot);
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(userActorImage);
+                         }
+
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
                          }
                      });
     }

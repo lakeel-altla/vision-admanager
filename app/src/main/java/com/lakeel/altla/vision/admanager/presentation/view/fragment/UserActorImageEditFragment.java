@@ -1,16 +1,17 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionEditPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
-import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageEditPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageEditView;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -30,8 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
@@ -40,24 +42,26 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public final class UserAreaDescriptionEditFragment
-        extends AbstractFragment<UserAreaDescriptionEditView, UserAreaDescriptionEditPresenter>
-        implements UserAreaDescriptionEditView {
+public final class UserActorImageEditFragment
+        extends AbstractFragment<UserActorImageEditView, UserActorImageEditPresenter>
+        implements UserActorImageEditView {
+
+    private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
-    UserAreaDescriptionEditPresenter presenter;
-
-    @Inject
-    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
-
-    @Inject
-    AppCompatActivity activity;
-
-    @Inject
-    GoogleApiClient googleApiClient;
+    UserActorImageEditPresenter presenter;
 
     @BindView(R.id.view_top)
-    View view;
+    View viewTop;
+
+    @BindView(R.id.button_select_image)
+    Button buttonSelectImage;
+
+    @BindView(R.id.image_view_thumbnail)
+    ImageView imageViewThumbnail;
+
+    @BindView(R.id.progress_bar_thumbnail)
+    ProgressBar progressBarThumbnail;
 
     @BindView(R.id.text_input_layout_name)
     TextInputLayout textInputLayoutName;
@@ -65,31 +69,25 @@ public final class UserAreaDescriptionEditFragment
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
 
-    @BindView(R.id.image_button_select_area)
-    ImageButton imageButtonSelectArea;
-
-    @BindView(R.id.text_view_area_name)
-    TextView textViewAreaName;
-
     private InteractionListener interactionListener;
 
     private boolean actionSaveEnabled;
 
     @NonNull
-    public static UserAreaDescriptionEditFragment newInstance(String areaDescriptionId) {
-        UserAreaDescriptionEditFragment fragment = new UserAreaDescriptionEditFragment();
-        Bundle bundle = UserAreaDescriptionEditPresenter.createArguments(areaDescriptionId);
+    public static UserActorImageEditFragment newInstance(@Nullable String imageId) {
+        UserActorImageEditFragment fragment = new UserActorImageEditFragment();
+        Bundle bundle = UserActorImageEditPresenter.createArguments(imageId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    public UserAreaDescriptionEditPresenter getPresenter() {
+    protected UserActorImageEditPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserAreaDescriptionEditView getViewInterface() {
+    protected UserActorImageEditView getViewInterface() {
         return this;
     }
 
@@ -97,8 +95,8 @@ public final class UserAreaDescriptionEditFragment
     protected void onAttachOverride(@NonNull Context context) {
         super.onAttachOverride(context);
 
-        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
         interactionListener = InteractionListener.class.cast(context);
+        ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
     }
 
     @Override
@@ -112,7 +110,7 @@ public final class UserAreaDescriptionEditFragment
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user_area_description_edit, container, false);
+        return inflater.inflate(R.layout.fragment_user_actor_image_edit, container, false);
     }
 
     @Override
@@ -137,7 +135,7 @@ public final class UserAreaDescriptionEditFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_user_area_description_edit, menu);
+        inflater.inflate(R.menu.fragment_user_actor_image_edit, menu);
     }
 
     @Override
@@ -159,6 +157,26 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (REQUEST_CODE_ACTION_OPEN_DOCUMENT == requestCode) {
+            if (Activity.RESULT_OK == resultCode) {
+                Uri uri = (data != null) ? data.getData() : null;
+                if (uri != null) {
+                    presenter.onImageSelected(uri);
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onUpdateViewsEnabled(boolean enabled) {
+        buttonSelectImage.setEnabled(enabled);
+        textInputEditTextName.setEnabled(enabled);
+    }
+
+    @Override
     public void onUpdateHomeAsUpIndicator(@DrawableRes int resId) {
         ActionBar actionBar = AppCompatActivity.class.cast(getActivity()).getSupportActionBar();
         if (actionBar != null) {
@@ -175,36 +193,9 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onUpdateViewsEnabled(boolean enabled) {
-        textInputEditTextName.setEnabled(enabled);
-        imageButtonSelectArea.setEnabled(enabled);
-
-        int enabledTint = getResources().getColor(R.color.tint_image_button_enabled);
-        int disabledTint = getResources().getColor(R.color.tint_image_button_disabled);
-        int tint = enabled ? enabledTint : disabledTint;
-
-        imageButtonSelectArea.setColorFilter(tint);
-    }
-
-    @Override
     public void onUpdateActionSave(boolean enabled) {
         actionSaveEnabled = enabled;
         interactionListener.onInvalidateOptionsMenu();
-    }
-
-    @Override
-    public void onUpdateTitle(@Nullable String title) {
-        getActivity().setTitle(title);
-    }
-
-    @Override
-    public void onUpdateName(String name) {
-        textInputEditTextName.setText(name);
-    }
-
-    @Override
-    public void onUpdateAreaName(String areaName) {
-        textViewAreaName.setText(areaName);
     }
 
     @Override
@@ -218,8 +209,32 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onShowUserAreaSelectView() {
-        interactionListener.onShowUserAreaSelectView();
+    public void onUpdateProgressBarThumbnailVisible(boolean visible) {
+        progressBarThumbnail.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public void onShowImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("image/*");
+
+        startActivityForResult(intent, REQUEST_CODE_ACTION_OPEN_DOCUMENT);
+    }
+
+    @Override
+    public void onUpdateTitle(@Nullable String title) {
+        getActivity().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateThumbnail(@Nullable Bitmap bitmap) {
+        imageViewThumbnail.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void onUpdateName(@Nullable String name) {
+        textInputEditTextName.setText(name);
     }
 
     @Override
@@ -229,11 +244,12 @@ public final class UserAreaDescriptionEditFragment
 
     @Override
     public void onSnackbar(@StringRes int resId) {
-        Snackbar.make(view, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
-    public void onUserAreaSelected(@NonNull String areaId) {
-        presenter.onUserAreaSelected(areaId);
+    @OnClick(R.id.button_select_image)
+    void onClickButtonSelectImage() {
+        presenter.onClickButtonSelectImage();
     }
 
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -241,16 +257,9 @@ public final class UserAreaDescriptionEditFragment
         presenter.onEditTextNameAfterTextChanged(editable.toString());
     }
 
-    @OnClick(R.id.image_button_select_area)
-    void onClickImageButtonSelectArea() {
-        presenter.onClickImageButtonSelectArea();
-    }
-
     public interface InteractionListener {
 
         void onInvalidateOptionsMenu();
-
-        void onShowUserAreaSelectView();
 
         void onBackView();
     }

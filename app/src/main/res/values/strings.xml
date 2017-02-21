@@ -94,5 +94,6 @@
     <string name="field_not_cached">Not Cached</string>
     <string name="field_exported">Exported</string>
     <string name="field_not_exported">Not Exported</string>
+    <string name="button_select_image">Select Image</string>
 
 </resources>

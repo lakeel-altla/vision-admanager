@@ -3,10 +3,13 @@ package com.lakeel.altla.vision.admanager.presentation.di.module;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepository;
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
+
+import android.content.ContentResolver;
 
 import java.io.File;
 
@@ -41,5 +44,11 @@ public final class AndroidRepositoryModule {
     @Provides
     public PlaceRepository providePlaceRepository(GoogleApiClient googleApiClient) {
         return new PlaceRepository(googleApiClient);
+    }
+
+    @ActivityScope
+    @Provides
+    public DocumentBitmapRepository provideDocumentBitmapRepository(ContentResolver contentResolver) {
+        return new DocumentBitmapRepository(contentResolver);
     }
 }

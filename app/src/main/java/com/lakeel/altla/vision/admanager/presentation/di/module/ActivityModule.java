@@ -5,6 +5,7 @@ import com.google.atap.tangoservice.TangoConfig;
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.di.ActivityScope;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,12 @@ public final class ActivityModule {
     @Provides
     public Context provideContext() {
         return activity;
+    }
+
+    @ActivityScope
+    @Provides
+    public ContentResolver provideContentResolver() {
+        return activity.getContentResolver();
     }
 
     @ActivityScope

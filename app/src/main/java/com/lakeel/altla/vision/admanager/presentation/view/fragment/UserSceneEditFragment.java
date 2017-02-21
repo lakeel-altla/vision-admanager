@@ -46,7 +46,7 @@ public final class UserSceneEditFragment extends AbstractFragment<UserSceneEditV
     @BindView(R.id.view_top)
     View viewTop;
 
-    @BindView(R.id.text_input_layput_name)
+    @BindView(R.id.text_input_layout_name)
     TextInputLayout textInputLayoutName;
 
     @BindView(R.id.text_input_edit_text_name)
