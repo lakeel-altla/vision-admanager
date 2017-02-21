@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.DataList;
+import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneListInAreaView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;

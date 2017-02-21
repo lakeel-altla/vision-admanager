@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.presenter.model;
+package com.lakeel.altla.vision.presentation.presenter.model;
 
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 
