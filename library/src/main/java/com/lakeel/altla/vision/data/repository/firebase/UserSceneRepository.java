@@ -2,13 +2,19 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
 import com.lakeel.altla.vision.domain.model.UserScene;
 
 import android.support.annotation.NonNull;
@@ -35,7 +41,7 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      .child(PATH_USER_SCENES)
                      .child(userScene.userId)
                      .child(userScene.sceneId)
-                     .setValue(userScene, (error, reference) -> {
+                     .setValue(map(userScene), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
@@ -113,6 +119,37 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
+    @NonNull
+    public ObservableData<UserScene> observe(@NonNull String userId, @NonNull String sceneId) {
+        DatabaseReference reference = getDatabase().getReference()
+                                                   .child(PATH_USER_SCENES)
+                                                   .child(userId)
+                                                   .child(sceneId);
+
+        return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
+    }
+
+    @NonNull
+    public ObservableDataList<UserScene> observeAll(@NonNull String userId) {
+        Query query = getDatabase().getReference()
+                                   .child(PATH_USER_SCENES)
+                                   .child(userId)
+                                   .orderByChild(FIELD_NAME);
+
+        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+    }
+
+    @NonNull
+    public ObservableDataList<UserScene> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
+        Query query = getDatabase().getReference()
+                                   .child(PATH_USER_SCENES)
+                                   .child(userId)
+                                   .orderByChild(FIELD_AREA_ID)
+                                   .equalTo(areaId);
+
+        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+    }
+
     public void delete(@NonNull String userId, @NonNull String sceneId) {
         getDatabase().getReference()
                      .child(PATH_USER_SCENES)
@@ -125,10 +162,35 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
-    private UserScene map(String userId, DataSnapshot snapshot) {
-        UserScene userScene = snapshot.getValue(UserScene.class);
-        userScene.userId = userId;
-        userScene.sceneId = snapshot.getKey();
+    @NonNull
+    public static Value map(@NonNull UserScene userScene) {
+        Value value = new Value();
+        value.name = userScene.name;
+        value.areaId = userScene.areaId;
+        value.createdAt = ServerTimestampMapper.map(userScene.createdAt);
+        value.updatedAt = ServerValue.TIMESTAMP;
+        return value;
+    }
+
+    @NonNull
+    private static UserScene map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserScene userScene = new UserScene(userId, snapshot.getKey());
+        userScene.name = value.name;
+        userScene.areaId = value.areaId;
+        userScene.createdAt = ServerTimestampMapper.map(value.createdAt);
+        userScene.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userScene;
+    }
+
+    public static final class Value {
+
+        public String name;
+
+        public String areaId;
+
+        public Object createdAt;
+
+        public Object updatedAt;
     }
 }

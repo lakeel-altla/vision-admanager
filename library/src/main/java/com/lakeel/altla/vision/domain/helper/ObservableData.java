@@ -5,11 +5,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
+
 import android.support.annotation.NonNull;
 
 import java.io.Closeable;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
 
 public final class ObservableData<TData> implements Closeable {
+
+    private static final Log LOG = LogFactory.getLog(ObservableData.class);
 
     private final Query query;
 
@@ -22,6 +30,15 @@ public final class ObservableData<TData> implements Closeable {
     public ObservableData(@NonNull Query query, @NonNull DataSnapshotConverter<TData> dataSnapshotConverter) {
         this.query = query;
         this.dataSnapshotConverter = dataSnapshotConverter;
+    }
+
+    @NonNull
+    public static <TData> Observable<TData> using(@NonNull Callable<ObservableData<TData>> observableDataFactory) {
+        return Observable.using(observableDataFactory,
+                                observableData -> Observable.<TData>create(subscriber -> {
+                                    observableData.observe(subscriber::onNext, subscriber::onError);
+                                }),
+                                ObservableData::close);
     }
 
     public void observe(OnDataChangeListener<TData> onDataChangeListener, OnFailureListener onFailureListener) {
@@ -60,6 +77,8 @@ public final class ObservableData<TData> implements Closeable {
         }
 
         closed = true;
+
+        LOG.v("Closed.");
     }
 
     public interface DataSnapshotConverter<TData> {

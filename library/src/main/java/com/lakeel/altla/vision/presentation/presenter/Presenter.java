@@ -8,6 +8,8 @@ public interface Presenter<TView> {
 
     void onCreate(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState);
 
+    void onSaveInstanceState(Bundle outState);
+
     void onCreateView(@NonNull TView view);
 
     void onStart();

@@ -1,17 +1,14 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.google.firebase.database.Exclude;
+import android.support.annotation.NonNull;
 
 public final class UserAreaDescriptionScene {
 
-    @Exclude
-    public String userId;
+    public final String userId;
 
-    @Exclude
-    public String areaDescriptionId;
+    public final String areaDescriptionId;
 
-    @Exclude
-    public String sceneId;
+    public final String sceneId;
 
     public float translationX;
 
@@ -26,4 +23,11 @@ public final class UserAreaDescriptionScene {
     public float orientationZ;
 
     public float orientationW;
+
+    public UserAreaDescriptionScene(@NonNull String userId, @NonNull String areaDescriptionId,
+                                    @NonNull String sceneId) {
+        this.userId = userId;
+        this.areaDescriptionId = areaDescriptionId;
+        this.sceneId = sceneId;
+    }
 }

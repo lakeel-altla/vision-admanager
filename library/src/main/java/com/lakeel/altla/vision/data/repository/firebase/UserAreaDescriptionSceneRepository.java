@@ -32,7 +32,7 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
                      .child(userAreaDescriptionScene.userId)
                      .child(userAreaDescriptionScene.areaDescriptionId)
                      .child(userAreaDescriptionScene.sceneId)
-                     .setValue(userAreaDescriptionScene, (error, reference) -> {
+                     .setValue(map(userAreaDescriptionScene), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
@@ -102,11 +102,49 @@ public final class UserAreaDescriptionSceneRepository extends BaseDatabaseReposi
                      });
     }
 
-    private UserAreaDescriptionScene map(String userId, String areaDescriptionId, DataSnapshot snapshot) {
-        UserAreaDescriptionScene userAreaDescriptionScene = snapshot.getValue(UserAreaDescriptionScene.class);
-        userAreaDescriptionScene.userId = userId;
-        userAreaDescriptionScene.areaDescriptionId = areaDescriptionId;
-        userAreaDescriptionScene.sceneId = snapshot.getKey();
+    @NonNull
+    private static Value map(@NonNull UserAreaDescriptionScene userAreaDescriptionScene) {
+        Value value = new Value();
+        value.translationX = userAreaDescriptionScene.translationX;
+        value.translationY = userAreaDescriptionScene.translationY;
+        value.translationZ = userAreaDescriptionScene.translationZ;
+        value.orientationX = userAreaDescriptionScene.orientationX;
+        value.orientationY = userAreaDescriptionScene.orientationY;
+        value.orientationZ = userAreaDescriptionScene.orientationZ;
+        value.orientationW = userAreaDescriptionScene.orientationW;
+        return value;
+    }
+
+    @NonNull
+    private static UserAreaDescriptionScene map(@NonNull String userId, @NonNull String areaDescriptionId,
+                                                @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserAreaDescriptionScene userAreaDescriptionScene = new UserAreaDescriptionScene(
+                userId, areaDescriptionId, snapshot.getKey());
+        userAreaDescriptionScene.translationX = value.translationX;
+        userAreaDescriptionScene.translationY = value.translationY;
+        userAreaDescriptionScene.translationZ = value.translationZ;
+        userAreaDescriptionScene.orientationX = value.orientationX;
+        userAreaDescriptionScene.orientationY = value.orientationY;
+        userAreaDescriptionScene.orientationZ = value.orientationZ;
+        userAreaDescriptionScene.orientationW = value.orientationW;
         return userAreaDescriptionScene;
+    }
+
+    public static final class Value {
+
+        public float translationX;
+
+        public float translationY;
+
+        public float translationZ;
+
+        public float orientationX;
+
+        public float orientationY;
+
+        public float orientationZ;
+
+        public float orientationW;
     }
 }

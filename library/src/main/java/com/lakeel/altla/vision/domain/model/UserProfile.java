@@ -1,15 +1,22 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.google.firebase.database.Exclude;
+import android.support.annotation.NonNull;
 
 public final class UserProfile {
 
-    @Exclude
-    public String userId;
+    public final String userId;
 
     public String displayName;
 
     public String email;
 
     public String photoUri;
+
+    public long createdAt;
+
+    public long updatedAt;
+
+    public UserProfile(@NonNull String userId) {
+        this.userId = userId;
+    }
 }

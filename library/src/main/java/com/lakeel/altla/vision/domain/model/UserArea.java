@@ -1,20 +1,25 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.google.firebase.database.Exclude;
+import android.support.annotation.NonNull;
 
 public final class UserArea {
 
-    @Exclude
-    public String userId;
+    public final String userId;
 
-    @Exclude
-    public String areaId;
+    public final String areaId;
 
     public String name;
-
-    public long createdAt;
 
     public String placeId;
 
     public int level;
+
+    public long createdAt;
+
+    public long updatedAt;
+
+    public UserArea(@NonNull String userId, @NonNull String areaId) {
+        this.userId = userId;
+        this.areaId = areaId;
+    }
 }

@@ -46,11 +46,9 @@ public final class ExportUserAreaDescriptionUseCase {
             if (areaDescriptionIds.contains(areaDescriptionId)) {
                 TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.get(
                         tango, areaDescriptionId);
-                UserAreaDescription userAreaDescription = new UserAreaDescription();
-                userAreaDescription.userId = userId;
-                userAreaDescription.areaDescriptionId = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
+                UserAreaDescription userAreaDescription = new UserAreaDescription(
+                        userId, TangoAreaDescriptionMetaDataHelper.getUuid(metaData));
                 userAreaDescription.name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
-                userAreaDescription.createdAt = TangoAreaDescriptionMetaDataHelper.getMsSinceEpoch(metaData);
 
                 // Save the user area description to Firebase Database.
                 userAreaDescriptionRepository.save(userAreaDescription);

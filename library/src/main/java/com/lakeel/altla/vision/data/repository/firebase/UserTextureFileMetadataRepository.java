@@ -24,9 +24,9 @@ public final class UserTextureFileMetadataRepository extends BaseStorageReposito
                     .child(textureId)
                     .getMetadata()
                     .addOnSuccessListener(storageMetadata -> {
-                        TextureFileMetadata fileMetadata = new TextureFileMetadata();
-                        fileMetadata.createTimeMillis = storageMetadata.getCreationTimeMillis();
-                        fileMetadata.updateTimeMillis = storageMetadata.getUpdatedTimeMillis();
+                        TextureFileMetadata fileMetadata = new TextureFileMetadata(userId, textureId);
+                        fileMetadata.createdAt = storageMetadata.getCreationTimeMillis();
+                        fileMetadata.updatedAt = storageMetadata.getUpdatedTimeMillis();
                         if (onSuccessListener != null) onSuccessListener.onSuccess(fileMetadata);
                     })
                     .addOnFailureListener(e -> {

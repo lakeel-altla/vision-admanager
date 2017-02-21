@@ -2,13 +2,19 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
 import com.lakeel.altla.vision.domain.model.UserArea;
 
 import android.support.annotation.NonNull;
@@ -33,7 +39,7 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
                      .child(BASE_PATH)
                      .child(userArea.userId)
                      .child(userArea.areaId)
-                     .setValue(userArea, (error, reference) -> {
+                     .setValue(map(userArea), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
@@ -86,6 +92,26 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
                      });
     }
 
+    @NonNull
+    public ObservableData<UserArea> observe(@NonNull String userId, @NonNull String areaId) {
+        DatabaseReference reference = getDatabase().getReference()
+                                                   .child(BASE_PATH)
+                                                   .child(userId)
+                                                   .child(areaId);
+
+        return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
+    }
+
+    @NonNull
+    public ObservableDataList<UserArea> observeAll(@NonNull String userId) {
+        Query query = getDatabase().getReference()
+                                   .child(BASE_PATH)
+                                   .child(userId)
+                                   .orderByChild(FIELD_NAME);
+
+        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+    }
+
     public void delete(@NonNull String userId, @NonNull String areaId) {
         getDatabase().getReference()
                      .child(BASE_PATH)
@@ -98,10 +124,39 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
                      });
     }
 
-    private UserArea map(String userId, DataSnapshot snapshot) {
-        UserArea userArea = snapshot.getValue(UserArea.class);
-        userArea.userId = userId;
-        userArea.areaId = snapshot.getKey();
+    @NonNull
+    private static Value map(@NonNull UserArea userArea) {
+        Value value = new Value();
+        value.name = userArea.name;
+        value.placeId = userArea.placeId;
+        value.level = userArea.level;
+        value.createdAt = ServerTimestampMapper.map(userArea.createdAt);
+        value.updatedAt = ServerValue.TIMESTAMP;
+        return value;
+    }
+
+    @NonNull
+    private static UserArea map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+        Value value = snapshot.getValue(Value.class);
+        UserArea userArea = new UserArea(userId, snapshot.getKey());
+        userArea.name = value.name;
+        userArea.placeId = value.placeId;
+        userArea.level = value.level;
+        userArea.createdAt = ServerTimestampMapper.map(value.createdAt);
+        userArea.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userArea;
+    }
+
+    public static final class Value {
+
+        public String name;
+
+        public String placeId;
+
+        public int level;
+
+        public Object createdAt;
+
+        public Object updatedAt;
     }
 }
