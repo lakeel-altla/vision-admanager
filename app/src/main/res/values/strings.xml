@@ -15,7 +15,6 @@
 
     <string name="menu_sign_out">Sign out</string>
 
-    <string name="button_save">Save</string>
     <string name="action_create">Create</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
@@ -25,6 +24,7 @@
     <string name="action_download">Download</string>
     <string name="action_delete_cache">Delete cache</string>
     <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
 
     <string name="nav_user_area_list">Areas</string>
     <string name="nav_tango_area_description_list">Tango area descriptions</string>
@@ -36,6 +36,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="button_save">Save</string>
     <string name="button_export">Export</string>
     <string name="button_import">Import</string>
     <string name="button_upload">Upload</string>
@@ -76,9 +77,11 @@
     <string name="label_in_tango">In Tango</string>
     <string name="label_in_cloud">In Cloud</string>
     <string name="label_in_cache">In Cache</string>
+    <string name="label_image">Image</string>
 
     <string name="hint_edit_name">Type the name</string>
     <string name="hint_edit_place">Place</string>
+    <string name="hint_edit_text_image_name">Input an image name.</string>
 
     <string name="input_error_name_required">Name is required.</string>
 
@@ -91,8 +94,5 @@
     <string name="field_not_cached">Not Cached</string>
     <string name="field_exported">Exported</string>
     <string name="field_not_exported">Not Exported</string>
-
-    <string name="dummy_abc">ABCDEFG</string>
-    <string name="action_save">Save</string>
 
 </resources>

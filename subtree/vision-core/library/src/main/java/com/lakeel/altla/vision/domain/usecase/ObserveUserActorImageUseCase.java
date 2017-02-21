@@ -25,11 +25,11 @@ public final class ObserveUserActorImageUseCase {
     }
 
     @NonNull
-    public Observable<UserActorImage> execute(@NonNull String areaId) {
+    public Observable<UserActorImage> execute(@NonNull String imageId) {
         String userId = currentUserResolver.getUserId();
 
         return ObservableData
-                .using(() -> userActorImageRepository.observe(userId, areaId))
+                .using(() -> userActorImageRepository.observe(userId, imageId))
                 .subscribeOn(Schedulers.io());
     }
 }

@@ -19,4 +19,7 @@
     <dimen name="touch_target_width">48dp</dimen>
     <dimen name="touch_target_height">48dp</dimen>
 
+    <dimen name="user_actor_image_width">96dp</dimen>
+    <dimen name="user_actor_image_height">96dp</dimen>
+
 </resources>

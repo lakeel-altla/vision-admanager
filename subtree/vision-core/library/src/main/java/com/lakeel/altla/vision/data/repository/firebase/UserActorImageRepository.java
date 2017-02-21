@@ -40,11 +40,11 @@ public final class UserActorImageRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
-    public ObservableData<UserActorImage> observe(@NonNull String userId, @NonNull String areaId) {
+    public ObservableData<UserActorImage> observe(@NonNull String userId, @NonNull String imageId) {
         DatabaseReference reference = getDatabase().getReference()
                                                    .child(BASE_PATH)
                                                    .child(userId)
-                                                   .child(areaId);
+                                                   .child(imageId);
 
         return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
     }
