@@ -13,6 +13,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -74,6 +75,7 @@ public final class MainActivity extends AppCompatActivity
                    UserSceneListInAreaFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
+                   UserActorImageListFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
@@ -221,6 +223,9 @@ public final class MainActivity extends AppCompatActivity
             case R.id.nav_user_scene_list:
                 showUserSceneListFragment();
                 break;
+            case R.id.nav_user_actor_image_list:
+                showUserActorImageListFragment();
+                break;
             case R.id.nav_sign_out:
                 onSignOut();
                 break;
@@ -343,6 +348,16 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onShowUserActorImageView(String imageId) {
+        // TODO
+    }
+
+    @Override
+    public void onShowUserActorImageCreateView() {
+        // TODO
+    }
+
     private void updateActionBarHome() {
         if (getSupportActionBar() != null) {
             boolean isHome = (getSupportFragmentManager().getBackStackEntryCount() == 0);
@@ -402,7 +417,6 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
-
     private void showUserSceneListFragment() {
         toolbar.setVisibility(View.VISIBLE);
 
@@ -413,6 +427,15 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
+    private void showUserActorImageListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
+
+        Fragment fragment = findFragment(UserActorImageListFragment.class);
+        if (fragment == null) {
+            fragment = UserActorImageListFragment.newInstance();
+            replaceFragment(fragment);
+        }
+    }
 
     private void showTangoAreaDescriptionView(@NonNull String areaDescriptionId) {
         toolbar.setVisibility(View.VISIBLE);

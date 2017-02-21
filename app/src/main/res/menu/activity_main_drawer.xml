@@ -17,8 +17,12 @@
               android:title="@string/nav_user_area_description_list"/>
 
         <item android:id="@+id/nav_user_scene_list"
-              android:icon="@drawable/ic_image_black_24dp"
+              android:icon="@drawable/ic_public_black_24dp"
               android:title="@string/nav_user_scene_list"/>
+
+        <item android:id="@+id/nav_user_actor_image_list"
+              android:icon="@drawable/ic_image_black_24dp"
+              android:title="@string/nav_user_actor_image_list"/>
 
     </group>
 

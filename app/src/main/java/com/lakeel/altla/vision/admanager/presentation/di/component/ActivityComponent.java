@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -65,4 +66,6 @@ public interface ActivityComponent {
     void inject(UserSceneFragment fragment);
 
     void inject(UserSceneEditFragment fragment);
+
+    void inject(UserActorImageListFragment fragment);
 }

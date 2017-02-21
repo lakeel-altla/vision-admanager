@@ -11,6 +11,7 @@
     <string name="title_user_scene_list">Scenes</string>
     <string name="title_select_user_area">Select Area</string>
     <string name="title_format_user_area_description_list_in_area">User area descriptions - %s</string>
+    <string name="title_user_actor_image_list">User Actor Images</string>
 
     <string name="menu_sign_out">Sign out</string>
 
@@ -29,6 +30,7 @@
     <string name="nav_tango_area_description_list">Tango area descriptions</string>
     <string name="nav_user_area_description_list">User area descriptions</string>
     <string name="nav_user_scene_list">User scenes</string>
+    <string name="nav_user_actor_image_list">User actor images</string>
     <string name="nav_sign_out">Sign out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
