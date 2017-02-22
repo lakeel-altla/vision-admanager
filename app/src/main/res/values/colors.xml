@@ -15,5 +15,7 @@
     <color name="tint_image_button_enabled">#4169e1</color>
     <!-- white (75%)  -->
     <color name="tint_image_button_disabled">#ccffffff</color>
+    <!-- white (75%)  -->
+    <color name="tint_progress">#ccffffff</color>
 
 </resources>
