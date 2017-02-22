@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.domain.usecase.ObserveAllUserActorImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
@@ -120,7 +121,9 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
 
         public void onBind(int position) {
             ItemModel model = items.get(position);
-            // TODO
+            itemView.onUpdateName(model.name);
+
+            // TODO: load the bitmap.
         }
     }
 
@@ -138,6 +141,8 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
         String imageId;
 
         String name;
+
+        Bitmap bitmap;
 
         @Override
         public String getId() {

@@ -4,11 +4,14 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageItemView;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -68,8 +71,11 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         @BindView(R.id.text_view_name)
         TextView textViewName;
 
-        @BindView(R.id.text_view_id)
-        TextView textViewId;
+        @BindView(R.id.image_view_thumbnail)
+        ImageView imageViewThumbnail;
+
+        @BindView(R.id.progress_bar_thumbnail)
+        ProgressBar progressBarThumbnail;
 
         private UserActorImageListPresenter.ItemPresenter itemPresenter;
 
@@ -80,6 +86,21 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
 
             itemPresenter = presenter.createItemPresenter();
             itemPresenter.onCreateItemView(this);
+        }
+
+        @Override
+        public void onUpdateName(@NonNull String name) {
+            textViewName.setText(name);
+        }
+
+        @Override
+        public void onUpdateThumbnail(@NonNull Bitmap bitmap) {
+            imageViewThumbnail.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void onUpdateProgressRingThumbnailVisible(boolean visible) {
+            progressBarThumbnail.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 }

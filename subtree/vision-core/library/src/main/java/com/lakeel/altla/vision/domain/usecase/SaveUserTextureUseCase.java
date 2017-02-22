@@ -74,7 +74,7 @@ public final class SaveUserTextureUseCase {
 
     private Single<Model> openStream(Model model) {
         return Single.create(e -> {
-            model.stream = documentRepository.openStream(model.localUri);
+            model.stream = documentRepository.openInputStream(model.localUri);
             e.onSuccess(model);
         });
     }

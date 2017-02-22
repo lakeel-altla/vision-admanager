@@ -90,6 +90,7 @@ public final class UserActorImageRepository extends BaseDatabaseRepository {
     private static Value map(@NonNull UserActorImage userActorImage) {
         Value value = new Value();
         value.name = userActorImage.name;
+        value.fileUploaded = userActorImage.fileUploaded;
         value.createdAt = ServerTimestampMapper.map(userActorImage.createdAt);
         value.updatedAt = ServerValue.TIMESTAMP;
         return value;
@@ -100,6 +101,7 @@ public final class UserActorImageRepository extends BaseDatabaseRepository {
         Value value = snapshot.getValue(Value.class);
         UserActorImage userActorImage = new UserActorImage(userId, snapshot.getKey());
         userActorImage.name = value.name;
+        userActorImage.fileUploaded = value.fileUploaded;
         userActorImage.createdAt = ServerTimestampMapper.map(value.createdAt);
         userActorImage.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userActorImage;
@@ -108,6 +110,8 @@ public final class UserActorImageRepository extends BaseDatabaseRepository {
     public static final class Value {
 
         public String name;
+
+        public boolean fileUploaded;
 
         public Object createdAt;
 

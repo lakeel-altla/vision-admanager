@@ -16,7 +16,7 @@ public final class AndroidModule {
     @Named(Names.EXTERNAL_STORAGE_ROOT)
     @Singleton
     @Provides
-    public File provideExternalStorageRoot() {
+    File provideExternalStorageRoot() {
         return Environment.getExternalStorageDirectory();
     }
 }

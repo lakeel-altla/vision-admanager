@@ -14,7 +14,7 @@ public final class ConfigModule {
     @Named(Names.GOOGLE_API_WEB_CLIENT_ID)
     @Singleton
     @Provides
-    public int provideGoogleApiWebClientId() {
+    int provideGoogleApiWebClientId() {
         return R.string.default_web_client_id;
     }
 }

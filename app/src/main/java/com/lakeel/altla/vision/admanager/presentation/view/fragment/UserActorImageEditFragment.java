@@ -209,7 +209,7 @@ public final class UserActorImageEditFragment
     }
 
     @Override
-    public void onUpdateProgressBarThumbnailVisible(boolean visible) {
+    public void onUpdateProgressRingThumbnailVisible(boolean visible) {
         progressBarThumbnail.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 

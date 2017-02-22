@@ -94,7 +94,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
         getView().onUpdateTitle(null);
-        getView().onUpdateProgressBarThumbnailVisible(false);
+        getView().onUpdateProgressRingThumbnailVisible(false);
 
         if (model == null) {
             if (imageId == null) {
@@ -133,12 +133,12 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
             getView().onUpdateViewsEnabled(true);
             getView().onUpdateActionSave(canSave());
 
-            getView().onUpdateProgressBarThumbnailVisible(true);
+            getView().onUpdateProgressRingThumbnailVisible(true);
             Disposable disposable = findDocumentBitmapUseCase
                     .execute(model.imageUri)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSuccess(bitmap -> getView().onUpdateProgressBarThumbnailVisible(false))
-                    .doOnError(e -> getView().onUpdateProgressBarThumbnailVisible(false))
+                    .doOnSuccess(bitmap -> getView().onUpdateProgressRingThumbnailVisible(false))
+                    .doOnError(e -> getView().onUpdateProgressRingThumbnailVisible(false))
                     .subscribe(bitmap -> {
                         getView().onUpdateThumbnail(bitmap);
                     }, e -> {
@@ -187,7 +187,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         UserActorImage userActorImage = map(model);
 
         Disposable disposable = saveUserActorImageUseCase
-                .execute(userActorImage)
+                .execute(userActorImage, model.imageUri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     getView().onSnackbar(R.string.snackbar_done);

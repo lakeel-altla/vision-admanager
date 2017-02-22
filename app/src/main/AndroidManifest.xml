@@ -26,6 +26,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".presentation.service.UploadActorImageFileTaskService"/>
+
     </application>
 
 </manifest>

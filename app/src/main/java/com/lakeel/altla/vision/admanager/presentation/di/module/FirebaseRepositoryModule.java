@@ -4,6 +4,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UploadUserActorImageFileTaskRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserActorImageFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
@@ -22,55 +24,67 @@ public final class FirebaseRepositoryModule {
 
     @ActivityScope
     @Provides
-    public ConnectionRepository provideConnectionRepository(FirebaseDatabase database) {
+    ConnectionRepository provideConnectionRepository(FirebaseDatabase database) {
         return new ConnectionRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserConnectionRepository provideUserConnectionRepository(FirebaseDatabase database) {
+    UserConnectionRepository provideUserConnectionRepository(FirebaseDatabase database) {
         return new UserConnectionRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserProfileRepository provideUserProfileRepository(FirebaseDatabase database) {
+    UserProfileRepository provideUserProfileRepository(FirebaseDatabase database) {
         return new UserProfileRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserDeviceRepository provideUserDeviceRepository(FirebaseDatabase database) {
+    UserDeviceRepository provideUserDeviceRepository(FirebaseDatabase database) {
         return new UserDeviceRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserAreaDescriptionRepository provideUserAreaDescriptionRepository(FirebaseDatabase database) {
+    UserAreaDescriptionRepository provideUserAreaDescriptionRepository(FirebaseDatabase database) {
         return new UserAreaDescriptionRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserAreaDescriptionFileRepository provideUserAreaDescriptionFileRepository(FirebaseStorage storage) {
+    UserAreaDescriptionFileRepository provideUserAreaDescriptionFileRepository(FirebaseStorage storage) {
         return new UserAreaDescriptionFileRepository(storage);
     }
 
     @ActivityScope
     @Provides
-    public UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
+    UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
         return new UserAreaRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserSceneRepository provideUserSceneRepository(FirebaseDatabase database) {
+    UserSceneRepository provideUserSceneRepository(FirebaseDatabase database) {
         return new UserSceneRepository(database);
     }
 
     @ActivityScope
     @Provides
-    public UserActorImageRepository provideUserActorImageRepository(FirebaseDatabase database) {
+    UserActorImageRepository provideUserActorImageRepository(FirebaseDatabase database) {
         return new UserActorImageRepository(database);
+    }
+
+    @ActivityScope
+    @Provides
+    UserActorImageFileRepository provideUserActorImageFileRepository(FirebaseStorage storage) {
+        return new UserActorImageFileRepository(storage);
+    }
+
+    @ActivityScope
+    @Provides
+    UploadUserActorImageFileTaskRepository provideUploadUserActorImageFileTaskRepository(FirebaseDatabase database) {
+        return new UploadUserActorImageFileTaskRepository(database);
     }
 }

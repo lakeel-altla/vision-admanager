@@ -12,20 +12,20 @@ import android.support.annotation.NonNull;
 import java.io.File;
 import java.io.InputStream;
 
-public final class UserAreaDescriptionFileRepository extends BaseStorageRepository {
+public final class UserActorImageFileRepository extends BaseStorageRepository {
 
-    private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
+    private static final String BASE_PATH = "userActorImages";
 
-    public UserAreaDescriptionFileRepository(@NonNull FirebaseStorage storage) {
+    public UserActorImageFileRepository(@NonNull FirebaseStorage storage) {
         super(storage);
     }
 
-    public void exists(@NonNull String userId, @NonNull String areaDescriptionId,
+    public void exists(@NonNull String userId, @NonNull String imageId,
                        OnSuccessListener<Boolean> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
-                    .child(areaDescriptionId)
+                    .child(imageId)
                     .getMetadata()
                     .addOnSuccessListener(metadata -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(Boolean.TRUE);
@@ -42,13 +42,13 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void upload(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull InputStream stream,
-                       OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
-                       OnProgressListener onProgressListener) {
+    public void upload(@NonNull String userId, @NonNull String imageId,
+                       @NonNull InputStream stream, OnSuccessListener<Void> onSuccessListener,
+                       OnFailureListener onFailureListener, OnProgressListener onProgressListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
-                    .child(areaDescriptionId)
+                    .child(imageId)
                     .putStream(stream)
                     .addOnSuccessListener(snapshot -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);
@@ -64,13 +64,13 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void download(@NonNull String userId, @NonNull String areaDescriptionId, @NonNull File destination,
+    public void download(@NonNull String userId, @NonNull String imageId, @NonNull File destination,
                          OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                          OnProgressListener onProgressListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
-                    .child(areaDescriptionId)
+                    .child(imageId)
                     .getFile(destination)
                     .addOnSuccessListener(snapshot -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);
@@ -86,12 +86,12 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                     });
     }
 
-    public void delete(@NonNull String userId, @NonNull String areaDescriptionId,
+    public void delete(@NonNull String userId, @NonNull String imageId,
                        OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
-                    .child(areaDescriptionId)
+                    .child(imageId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);

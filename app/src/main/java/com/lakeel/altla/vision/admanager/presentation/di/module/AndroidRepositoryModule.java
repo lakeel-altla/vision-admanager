@@ -4,12 +4,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.data.repository.android.UserActorImageCacheRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.ContentResolver;
+import android.content.Context;
 
 import java.io.File;
 
@@ -23,32 +26,45 @@ public final class AndroidRepositoryModule {
 
     @ActivityScope
     @Provides
-    public TangoAreaDescriptionMetadataRepository provideTangoAreaDescriptionMetadataRepository() {
+    TangoAreaDescriptionMetadataRepository provideTangoAreaDescriptionMetadataRepository() {
         return new TangoAreaDescriptionMetadataRepository();
     }
 
     @ActivityScope
     @Provides
-    public TangoAreaDescriptionIdRepository provideTangoAreaDescriptionIdRepository() {
+    TangoAreaDescriptionIdRepository provideTangoAreaDescriptionIdRepository() {
         return new TangoAreaDescriptionIdRepository();
     }
 
     @ActivityScope
     @Provides
-    public AreaDescriptionCacheRepository provideAreaDescriptionCacheRepository(
+    AreaDescriptionCacheRepository provideAreaDescriptionCacheRepository(
             @Named(Names.EXTERNAL_STORAGE_ROOT) File rootDirectory) {
         return new AreaDescriptionCacheRepository(rootDirectory);
     }
 
     @ActivityScope
     @Provides
-    public PlaceRepository providePlaceRepository(GoogleApiClient googleApiClient) {
+    PlaceRepository providePlaceRepository(GoogleApiClient googleApiClient) {
         return new PlaceRepository(googleApiClient);
     }
 
     @ActivityScope
     @Provides
-    public DocumentBitmapRepository provideDocumentBitmapRepository(ContentResolver contentResolver) {
+    DocumentRepository provideDocumentRepository(ContentResolver contentResolver) {
+        return new DocumentRepository(contentResolver);
+    }
+
+    @ActivityScope
+    @Provides
+    DocumentBitmapRepository provideDocumentBitmapRepository(ContentResolver contentResolver) {
         return new DocumentBitmapRepository(contentResolver);
+    }
+
+    @ActivityScope
+    @Provides
+    UserActorImageCacheRepository provideUserActorImageCacheRepository(
+            @Named(Names.ACTIVITY_CONTEXT) Context context) {
+        return new UserActorImageCacheRepository(context);
     }
 }

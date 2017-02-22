@@ -3,12 +3,15 @@ package com.lakeel.altla.vision.admanager.presentation.view.activity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
+import com.lakeel.altla.vision.admanager.presentation.service.UploadActorImageFileTaskService;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
@@ -28,11 +31,19 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEdi
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListInAreaFragment;
+import com.lakeel.altla.vision.domain.helper.CurrentApplicationResolver;
+import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
+import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
+import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.domain.model.UploadUserActorImageFileTask;
+import com.lakeel.altla.vision.domain.usecase.ObserveAllUploadActorImageFileTasksUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
 import com.squareup.picasso.Picasso;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -77,8 +88,11 @@ public final class MainActivity extends AppCompatActivity
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
                    UserActorImageListFragment.InteractionListener,
+                   UserActorImageFragment.InteractionListener,
                    UserActorImageEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
+
+    private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
     @Inject
     TangoWrapper tangoWrapper;
@@ -90,7 +104,19 @@ public final class MainActivity extends AppCompatActivity
     ObserveConnectionUseCase observeConnectionUseCase;
 
     @Inject
+    ObserveAllUploadActorImageFileTasksUseCase observeAllUploadActorImageFileTasksUseCase;
+
+    @Inject
     SignOutUseCase signOutUseCase;
+
+    @Inject
+    CurrentApplicationResolver currentApplicationResolver;
+
+    @Inject
+    CurrentDeviceResolver currentDeviceResolver;
+
+    @Inject
+    CurrentUserResolver currentUserResolver;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -112,6 +138,13 @@ public final class MainActivity extends AppCompatActivity
     private Disposable observeUserProfileDisposable;
 
     private Disposable observeConnectionDisposable;
+
+    private Disposable observeAllPendingStorageTasksDisposable;
+
+    @NonNull
+    public static Intent createStartIntent(@NonNull Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +198,12 @@ public final class MainActivity extends AppCompatActivity
         if (observeUserProfileDisposable != null) {
             observeUserProfileDisposable.dispose();
             observeUserProfileDisposable = null;
+        }
+
+        // Unsubscribe pending storage tasks.
+        if (observeAllPendingStorageTasksDisposable != null) {
+            observeAllPendingStorageTasksDisposable.dispose();
+            observeAllPendingStorageTasksDisposable = null;
         }
 
         compositeDisposable.clear();
@@ -484,6 +523,27 @@ public final class MainActivity extends AppCompatActivity
                                 textViewUserEmail.setText(userProfile.email);
                             });
                 }
+
+                // Observe all pending storage tasks.
+                if (observeAllPendingStorageTasksDisposable == null) {
+                    observeAllPendingStorageTasksDisposable = observeAllUploadActorImageFileTasksUseCase
+                            .execute()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(event -> {
+                                if (event.getType() == DataListEvent.Type.ADDED) {
+                                    UploadUserActorImageFileTask task = event.getData();
+
+                                    if (!currentDeviceResolver.getInstanceId().equals(task.instanceId)) return;
+
+                                    Intent intent =
+                                            UploadActorImageFileTaskService.createIntent(getApplicationContext(), task);
+                                    startService(intent);
+                                }
+                            }, e -> {
+                                LOG.e("Failed.", e);
+                            });
+                }
+
             } else {
                 // Unsubscribe the connection.
                 if (observeConnectionDisposable != null) {
@@ -495,6 +555,12 @@ public final class MainActivity extends AppCompatActivity
                 if (observeUserProfileDisposable != null) {
                     observeUserProfileDisposable.dispose();
                     observeUserProfileDisposable = null;
+                }
+
+                // Unsubscribe pending storage tasks.
+                if (observeAllPendingStorageTasksDisposable != null) {
+                    observeAllPendingStorageTasksDisposable.dispose();
+                    observeAllPendingStorageTasksDisposable = null;
                 }
 
                 // Clear UI.

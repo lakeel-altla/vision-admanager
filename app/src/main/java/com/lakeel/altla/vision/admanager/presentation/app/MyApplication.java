@@ -11,6 +11,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
 import android.support.annotation.NonNull;
 
 public final class MyApplication extends Application {
@@ -37,7 +38,13 @@ public final class MyApplication extends Application {
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
+    @NonNull
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
         return ((MyApplication) activity.getApplication()).applicationComponent;
+    }
+
+    @NonNull
+    public static ApplicationComponent getApplicationComponent(@NonNull Service service) {
+        return ((MyApplication) service.getApplication()).applicationComponent;
     }
 }

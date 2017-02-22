@@ -26,7 +26,7 @@ public interface UserActorImageEditView {
 
     void onHideNameError();
 
-    void onUpdateProgressBarThumbnailVisible(boolean visible);
+    void onUpdateProgressRingThumbnailVisible(boolean visible);
 
     void onShowImagePicker();
 

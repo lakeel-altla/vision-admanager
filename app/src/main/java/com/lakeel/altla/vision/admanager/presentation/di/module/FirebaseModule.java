@@ -13,13 +13,13 @@ public final class FirebaseModule {
 
     @Singleton
     @Provides
-    public FirebaseDatabase provideFirebaseDatabase() {
+    FirebaseDatabase provideFirebaseDatabase() {
         return FirebaseDatabase.getInstance();
     }
 
     @Singleton
     @Provides
-    public FirebaseStorage provideFirebaseStorage() {
+    FirebaseStorage provideFirebaseStorage() {
         return FirebaseStorage.getInstance();
     }
 }

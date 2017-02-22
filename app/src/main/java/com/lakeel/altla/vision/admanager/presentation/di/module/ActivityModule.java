@@ -26,26 +26,26 @@ public final class ActivityModule {
 
     @ActivityScope
     @Provides
-    public AppCompatActivity provideActivity() {
+    AppCompatActivity provideActivity() {
         return activity;
     }
 
     @Named(Names.ACTIVITY_CONTEXT)
     @ActivityScope
     @Provides
-    public Context provideContext() {
+    Context provideContext() {
         return activity;
     }
 
     @ActivityScope
     @Provides
-    public ContentResolver provideContentResolver() {
+    ContentResolver provideContentResolver() {
         return activity.getContentResolver();
     }
 
     @ActivityScope
     @Provides
-    public TangoWrapper provideTangoWrapper(@Named(Names.ACTIVITY_CONTEXT) Context context) {
+    TangoWrapper provideTangoWrapper(@Named(Names.ACTIVITY_CONTEXT) Context context) {
         TangoWrapper tangoWrapper = new TangoWrapper(context);
         tangoWrapper.setTangoConfigFactory(tango -> tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT));
         return tangoWrapper;

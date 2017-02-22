@@ -25,7 +25,7 @@ public final class GoogleApiModule {
 
     @ActivityScope
     @Provides
-    public GoogleApiClient provideGoogleApiClient(AppCompatActivity activity, GoogleSignInOptions googleSignInOptions) {
+    GoogleApiClient provideGoogleApiClient(AppCompatActivity activity, GoogleSignInOptions googleSignInOptions) {
         return new GoogleApiClient.Builder(activity)
                 .enableAutoManage(activity, connectionResult -> {
                     LOG.e("Google API client connection error occured: %s", connectionResult);

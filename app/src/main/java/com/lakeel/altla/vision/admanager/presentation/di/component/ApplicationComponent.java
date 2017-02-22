@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.module.ApplicationModul
 import com.lakeel.altla.vision.admanager.presentation.di.module.ConfigModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.FirebaseModule;
 import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleSignInModule;
+import com.lakeel.altla.vision.admanager.presentation.di.module.ServiceModule;
 
 import android.content.res.Resources;
 
@@ -22,6 +23,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     ActivityComponent activityComponent(ActivityModule module);
+
+    ServiceComponent serviceComponent(ServiceModule module);
 
     Resources resources();
 }

@@ -4,9 +4,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public final class DocumentRepository {
@@ -17,11 +16,28 @@ public final class DocumentRepository {
         this.contentResolver = contentResolver;
     }
 
-    @Nullable
-    public InputStream openStream(@NonNull String uriString) throws FileNotFoundException {
+    @NonNull
+    public InputStream openInputStream(@NonNull Uri uri) throws IOException {
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        InputStream inputStream = contentResolver.openInputStream(uri);
+        if (inputStream == null) {
+            throw new IOException(String.format("Failed to open the stream: uri = %s", uri));
+        }
+
+        return inputStream;
+    }
+
+    @NonNull
+    public InputStream openInputStream(@NonNull String uriString) throws IOException {
         Uri uri = Uri.parse(uriString);
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        return contentResolver.openInputStream(uri);
+        InputStream inputStream = contentResolver.openInputStream(uri);
+        if (inputStream == null) {
+            throw new IOException(String.format("Failed to open the stream: uri = %s", uriString));
+        }
+
+        return inputStream;
     }
 }

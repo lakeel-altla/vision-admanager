@@ -10,6 +10,8 @@ public final class UserActorImage {
 
     public String name;
 
+    public boolean fileUploaded;
+
     public long createdAt;
 
     public long updatedAt;
