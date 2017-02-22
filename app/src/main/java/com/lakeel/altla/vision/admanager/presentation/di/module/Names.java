@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.di.module;
 
-final class Names {
+public final class Names {
 
     public static final String APPLICATION_CONTEXT = "applicationContext";
 

@@ -1,13 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 public interface UserActorImageItemView {
 
     void onUpdateName(@NonNull String name);
 
-    void onUpdateThumbnail(@NonNull Bitmap bitmap);
+    void onUpdateThumbnail(@NonNull Uri uri);
 
     void onUpdateProgressRingThumbnailVisible(boolean visible);
 }

@@ -1,18 +1,22 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.di.module.Names;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageListView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.usecase.GetUserActorImageFileUriUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveAllUserActorImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -24,6 +28,13 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
 
     @Inject
     ObserveAllUserActorImageUseCase observeAllUserActorImageUseCase;
+
+    @Inject
+    GetUserActorImageFileUriUseCase getUserActorImageFileUriUseCase;
+
+    @Named(Names.ACTIVITY_CONTEXT)
+    @Inject
+    Context context;
 
     @Inject
     public UserActorImageListPresenter() {
@@ -117,13 +128,23 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
 
         public void onCreateItemView(@NonNull UserActorImageItemView itemView) {
             this.itemView = itemView;
+            itemView.onUpdateProgressRingThumbnailVisible(false);
         }
 
         public void onBind(int position) {
             ItemModel model = items.get(position);
             itemView.onUpdateName(model.name);
 
-            // TODO: load the bitmap.
+            Disposable disposable = getUserActorImageFileUriUseCase
+                    .execute(model.imageId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(uri -> {
+                        getLog().v("UserActorImageFile: uri = %s", uri);
+                        itemView.onUpdateThumbnail(uri);
+                    }, e -> {
+                        getLog().e("Failed.", e);
+                    });
+            manageDisposable(disposable);
         }
     }
 

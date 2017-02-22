@@ -7,6 +7,7 @@ import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnProgressListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.io.File;
@@ -83,6 +84,21 @@ public final class UserActorImageFileRepository extends BaseStorageRepository {
                             onProgressListener.onProgress(snapshot.getTotalByteCount(),
                                                           snapshot.getBytesTransferred());
                         }
+                    });
+    }
+
+    public void getDownloadUri(@NonNull String userId, @NonNull String imageId,
+                               OnSuccessListener<Uri> onSuccessListener, OnFailureListener onFailureListener) {
+        getStorage().getReference()
+                    .child(BASE_PATH)
+                    .child(userId)
+                    .child(imageId)
+                    .getDownloadUrl()
+                    .addOnSuccessListener(uri -> {
+                        if (onSuccessListener != null) onSuccessListener.onSuccess(uri);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (onFailureListener != null) onFailureListener.onFailure(e);
                     });
     }
 

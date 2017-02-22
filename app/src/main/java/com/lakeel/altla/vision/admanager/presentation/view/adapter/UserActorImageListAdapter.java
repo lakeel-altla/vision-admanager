@@ -3,8 +3,10 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageItemView;
+import com.squareup.picasso.Picasso;
 
-import android.graphics.Bitmap;
+import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +23,15 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
 
     private final UserActorImageListPresenter presenter;
 
+    private final Context context;
+
     private RecyclerView recyclerView;
 
     private LayoutInflater inflater;
 
-    public UserActorImageListAdapter(@NonNull UserActorImageListPresenter presenter) {
+    public UserActorImageListAdapter(@NonNull UserActorImageListPresenter presenter, @NonNull Context context) {
         this.presenter = presenter;
+        this.context = context;
     }
 
     @Override
@@ -94,8 +99,15 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         }
 
         @Override
-        public void onUpdateThumbnail(@NonNull Bitmap bitmap) {
-            imageViewThumbnail.setImageBitmap(bitmap);
+        public void onUpdateThumbnail(@NonNull Uri uri) {
+            Picasso picasso = Picasso.with(context);
+            picasso.setIndicatorsEnabled(true);
+            picasso.setLoggingEnabled(true);
+
+            picasso.load(uri)
+                   .placeholder(R.drawable.progress_animation)
+                   .error(R.drawable.ic_clear_black_24dp)
+                   .into(imageViewThumbnail);
         }
 
         @Override
