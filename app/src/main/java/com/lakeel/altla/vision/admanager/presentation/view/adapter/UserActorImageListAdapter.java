@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -81,9 +80,6 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         @BindView(R.id.image_view_thumbnail)
         ImageView imageViewThumbnail;
 
-        @BindView(R.id.progress_bar_thumbnail)
-        ProgressBar progressBarThumbnail;
-
         private UserActorImageListPresenter.ItemPresenter itemPresenter;
 
         ViewHolder(@NonNull View itemView) {
@@ -114,11 +110,6 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
                    .placeholder(placeholderDrawable)
                    .error(R.drawable.ic_clear_black_24dp)
                    .into(imageViewThumbnail);
-        }
-
-        @Override
-        public void onUpdateProgressRingThumbnailVisible(boolean visible) {
-            progressBarThumbnail.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 }

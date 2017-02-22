@@ -6,8 +6,12 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImagePr
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
+import com.squareup.picasso.Picasso;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -98,14 +102,6 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
     }
 
     @Override
-    protected void onStartOverride() {
-        super.onStartOverride();
-
-        // TODO
-        // load the image.
-    }
-
-    @Override
     public void onUpdateTitle(@Nullable String name) {
         getActivity().setTitle(name);
     }
@@ -113,6 +109,22 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
     @Override
     public void onUpdateImageId(@NonNull String imageId) {
         textViewId.setText(imageId);
+    }
+
+    @Override
+    public void onUpdateThumbnail(@NonNull Uri uri) {
+        Drawable placeholderDrawable = getContext().getResources().getDrawable(R.drawable.progress_animation);
+        int placeholderTint = getContext().getResources().getColor(R.color.tint_progress);
+        placeholderDrawable.setColorFilter(placeholderTint, PorterDuff.Mode.SRC_ATOP);
+
+        Picasso picasso = Picasso.with(getContext());
+        picasso.setIndicatorsEnabled(true);
+        picasso.setLoggingEnabled(true);
+
+        picasso.load(uri)
+               .placeholder(placeholderDrawable)
+               .error(R.drawable.ic_clear_black_24dp)
+               .into(imageViewThumbnail);
     }
 
     @Override

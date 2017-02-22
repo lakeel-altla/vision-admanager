@@ -8,6 +8,4 @@ public interface UserActorImageItemView {
     void onUpdateName(@NonNull String name);
 
     void onUpdateThumbnail(@NonNull Uri uri);
-
-    void onUpdateProgressRingThumbnailVisible(boolean visible);
 }

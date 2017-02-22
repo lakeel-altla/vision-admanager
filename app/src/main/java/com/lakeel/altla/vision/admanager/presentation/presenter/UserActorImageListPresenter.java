@@ -12,7 +12,6 @@ import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
@@ -128,7 +127,6 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
 
         public void onCreateItemView(@NonNull UserActorImageItemView itemView) {
             this.itemView = itemView;
-            itemView.onUpdateProgressRingThumbnailVisible(false);
         }
 
         public void onBind(int position) {
@@ -162,8 +160,6 @@ public final class UserActorImageListPresenter extends BasePresenter<UserActorIm
         String imageId;
 
         String name;
-
-        Bitmap bitmap;
 
         @Override
         public String getId() {

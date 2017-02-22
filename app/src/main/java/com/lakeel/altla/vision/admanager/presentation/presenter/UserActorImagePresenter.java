@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageView;
+import com.lakeel.altla.vision.domain.usecase.GetUserActorImageFileUriUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserActorImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -21,6 +22,9 @@ public final class UserActorImagePresenter extends BasePresenter<UserActorImageV
 
     @Inject
     ObserveUserActorImageUseCase observeUserActorImageUseCase;
+
+    @Inject
+    GetUserActorImageFileUriUseCase getUserActorImageFileUriUseCase;
 
     private String imageId;
 
@@ -69,6 +73,17 @@ public final class UserActorImagePresenter extends BasePresenter<UserActorImageV
                     getView().onUpdateName(userActorImage.name);
                     getView().onUpdateCreatedAt(userActorImage.createdAt);
                     getView().onUpdateUpdatedAt(userActorImage.updatedAt);
+
+                    Disposable disposable1 = getUserActorImageFileUriUseCase
+                            .execute(userActorImage.imageId)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(uri -> {
+                                getLog().v("UserActorImageFile: uri = %s", uri);
+                                getView().onUpdateThumbnail(uri);
+                            }, e -> {
+                                getLog().e("Failed.", e);
+                            });
+                    manageDisposable(disposable1);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
