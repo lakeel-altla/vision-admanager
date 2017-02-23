@@ -441,6 +441,12 @@ public final class MainActivity extends AppCompatActivity
         replaceFragmentAndAddToBackStack(fragment);
     }
 
+    @Override
+    public void onShowUserActorImageEditView(@NonNull String imageId) {
+        UserActorImageEditFragment fragment = UserActorImageEditFragment.newInstance(imageId);
+        replaceFragmentAndAddToBackStack(fragment);
+    }
+
     private void updateActionBarHome() {
         if (getSupportActionBar() != null) {
             boolean isHome = (getSupportFragmentManager().getBackStackEntryCount() == 0);

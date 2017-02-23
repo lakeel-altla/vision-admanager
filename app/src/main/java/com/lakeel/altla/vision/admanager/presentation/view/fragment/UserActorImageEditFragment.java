@@ -4,12 +4,12 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageEditPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageEditView;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
@@ -60,9 +59,6 @@ public final class UserActorImageEditFragment
     @BindView(R.id.image_view_thumbnail)
     ImageView imageViewThumbnail;
 
-    @BindView(R.id.progress_bar_thumbnail)
-    ProgressBar progressBarThumbnail;
-
     @BindView(R.id.text_input_layout_name)
     TextInputLayout textInputLayoutName;
 
@@ -70,6 +66,8 @@ public final class UserActorImageEditFragment
     TextInputEditText textInputEditTextName;
 
     private InteractionListener interactionListener;
+
+    private ThumbnailLoader thumbnailLoader;
 
     private boolean actionSaveEnabled;
 
@@ -97,6 +95,7 @@ public final class UserActorImageEditFragment
 
         interactionListener = InteractionListener.class.cast(context);
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+        thumbnailLoader = new ThumbnailLoader(context);
     }
 
     @Override
@@ -209,11 +208,6 @@ public final class UserActorImageEditFragment
     }
 
     @Override
-    public void onUpdateProgressRingThumbnailVisible(boolean visible) {
-        progressBarThumbnail.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    @Override
     public void onShowImagePicker() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
@@ -228,8 +222,8 @@ public final class UserActorImageEditFragment
     }
 
     @Override
-    public void onUpdateThumbnail(@Nullable Bitmap bitmap) {
-        imageViewThumbnail.setImageBitmap(bitmap);
+    public void onUpdateThumbnail(@NonNull Uri uri) {
+        thumbnailLoader.load(uri, imageViewThumbnail);
     }
 
     @Override

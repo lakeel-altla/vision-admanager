@@ -78,7 +78,6 @@ public final class UserActorImagePresenter extends BasePresenter<UserActorImageV
                             .execute(userActorImage.imageId)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(uri -> {
-                                getLog().v("UserActorImageFile: uri = %s", uri);
                                 getView().onUpdateThumbnail(uri);
                             }, e -> {
                                 getLog().e("Failed.", e);

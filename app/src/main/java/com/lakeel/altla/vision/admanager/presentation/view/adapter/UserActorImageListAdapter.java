@@ -3,11 +3,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageItemView;
-import com.squareup.picasso.Picasso;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +24,8 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
 
     private final Context context;
 
+    private final ThumbnailLoader thumbnailLoader;
+
     private RecyclerView recyclerView;
 
     private LayoutInflater inflater;
@@ -33,6 +33,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
     public UserActorImageListAdapter(@NonNull UserActorImageListPresenter presenter, @NonNull Context context) {
         this.presenter = presenter;
         this.context = context;
+        thumbnailLoader = new ThumbnailLoader(context);
     }
 
     @Override
@@ -98,18 +99,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
 
         @Override
         public void onUpdateThumbnail(@NonNull Uri uri) {
-            Drawable placeholderDrawable = context.getResources().getDrawable(R.drawable.progress_animation);
-            int placeholderTint = context.getResources().getColor(R.color.tint_progress);
-            placeholderDrawable.setColorFilter(placeholderTint, PorterDuff.Mode.SRC_ATOP);
-
-            Picasso picasso = Picasso.with(context);
-            picasso.setIndicatorsEnabled(true);
-            picasso.setLoggingEnabled(true);
-
-            picasso.load(uri)
-                   .placeholder(placeholderDrawable)
-                   .error(R.drawable.ic_clear_black_24dp)
-                   .into(imageViewThumbnail);
+            thumbnailLoader.load(uri, imageViewThumbnail);
         }
     }
 }

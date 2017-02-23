@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.UserActorImage;
 import com.lakeel.altla.vision.domain.usecase.FindDocumentBitmapUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserActorImageUseCase;
+import com.lakeel.altla.vision.domain.usecase.GetUserActorImageFileUriUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserActorImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -38,6 +39,9 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
 
     @Inject
     FindDocumentBitmapUseCase findDocumentBitmapUseCase;
+
+    @Inject
+    GetUserActorImageFileUriUseCase getUserActorImageFileUriUseCase;
 
     @Inject
     CurrentUserResolver currentUserResolver;
@@ -94,7 +98,6 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
         getView().onUpdateTitle(null);
-        getView().onUpdateProgressRingThumbnailVisible(false);
 
         if (model == null) {
             if (imageId == null) {
@@ -118,6 +121,16 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
                             getView().onUpdateName(model.name);
                             getView().onUpdateViewsEnabled(true);
                             getView().onUpdateActionSave(canSave());
+
+                            Disposable disposable1 = getUserActorImageFileUriUseCase
+                                    .execute(model.imageId)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(uri -> {
+                                        getView().onUpdateThumbnail(uri);
+                                    }, e -> {
+                                        getLog().e("Failed.", e);
+                                    });
+                            manageDisposable(disposable1);
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -130,21 +143,9 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         } else {
             getView().onUpdateTitle(model.name);
             getView().onUpdateName(model.name);
+            getView().onUpdateThumbnail(model.imageUri);
             getView().onUpdateViewsEnabled(true);
             getView().onUpdateActionSave(canSave());
-
-            getView().onUpdateProgressRingThumbnailVisible(true);
-            Disposable disposable = findDocumentBitmapUseCase
-                    .execute(model.imageUri)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSuccess(bitmap -> getView().onUpdateProgressRingThumbnailVisible(false))
-                    .doOnError(e -> getView().onUpdateProgressRingThumbnailVisible(false))
-                    .subscribe(bitmap -> {
-                        getView().onUpdateThumbnail(bitmap);
-                    }, e -> {
-                        getLog().e("Failed.", e);
-                    });
-            manageDisposable(disposable);
         }
     }
 
@@ -170,6 +171,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
     public void onImageSelected(@NonNull Uri imageUri) {
         // This method will be called before Fragment#onStart().
         model.imageUri = imageUri;
+        model.fileUploaded = false;
     }
 
     private boolean canSave() {
@@ -204,6 +206,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         Model model = new Model();
         model.userId = userActorImage.userId;
         model.imageId = userActorImage.imageId;
+        model.fileUploaded = userActorImage.fileUploaded;
         model.name = userActorImage.name;
         model.createdAt = userActorImage.createdAt;
         model.updatedAt = userActorImage.updatedAt;
@@ -213,6 +216,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
     @NonNull
     public static UserActorImage map(@NonNull Model model) {
         UserActorImage userActorImage = new UserActorImage(model.userId, model.imageId);
+        userActorImage.fileUploaded = model.fileUploaded;
         userActorImage.name = model.name;
         userActorImage.createdAt = model.createdAt;
         userActorImage.updatedAt = model.updatedAt;
@@ -225,6 +229,8 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         String userId;
 
         String imageId;
+
+        boolean fileUploaded;
 
         Uri imageUri;
 

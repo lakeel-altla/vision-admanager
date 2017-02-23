@@ -5,12 +5,10 @@ import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImagePresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
+import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
-import com.squareup.picasso.Picasso;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +16,9 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -54,6 +55,8 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
     private InteractionListener interactionListener;
 
+    private ThumbnailLoader thumbnailLoader;
+
     @NonNull
     public static UserActorImageFragment newInstance(@NonNull String imageId) {
         UserActorImageFragment fragment = new UserActorImageFragment();
@@ -78,6 +81,7 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
         interactionListener = InteractionListener.class.cast(context);
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+        thumbnailLoader = new ThumbnailLoader(context);
     }
 
     @Override
@@ -99,6 +103,24 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
         super.onBindView(view);
 
         ButterKnife.bind(this, view);
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_user_actor_image, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                presenter.onEdit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -113,18 +135,7 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
     @Override
     public void onUpdateThumbnail(@NonNull Uri uri) {
-        Drawable placeholderDrawable = getContext().getResources().getDrawable(R.drawable.progress_animation);
-        int placeholderTint = getContext().getResources().getColor(R.color.tint_progress);
-        placeholderDrawable.setColorFilter(placeholderTint, PorterDuff.Mode.SRC_ATOP);
-
-        Picasso picasso = Picasso.with(getContext());
-        picasso.setIndicatorsEnabled(true);
-        picasso.setLoggingEnabled(true);
-
-        picasso.load(uri)
-               .placeholder(placeholderDrawable)
-               .error(R.drawable.ic_clear_black_24dp)
-               .into(imageViewThumbnail);
+        thumbnailLoader.load(uri, imageViewThumbnail);
     }
 
     @Override
@@ -144,7 +155,7 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
     @Override
     public void onShowUserActorImageEditView(String imageId) {
-        // TODO
+        interactionListener.onShowUserActorImageEditView(imageId);
     }
 
     @Override
@@ -154,5 +165,6 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
 
     public interface InteractionListener {
 
+        void onShowUserActorImageEditView(@NonNull String imageId);
     }
 }

@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.domain.model.UserActorImage;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
@@ -34,17 +35,20 @@ public final class SaveUserActorImageUseCase {
     }
 
     @NonNull
-    public Completable execute(@NonNull UserActorImage userActorImage, @NonNull Uri imageUri) {
+    public Completable execute(@NonNull UserActorImage userActorImage, @Nullable Uri imageUri) {
         String userId = currentUserResolver.getUserId();
         String instanceId = currentDeviceResolver.getInstanceId();
 
         return Completable.create(e -> {
             userActorImageRepository.save(userActorImage);
 
-            UploadUserActorImageFileTask task = new UploadUserActorImageFileTask(userId, userActorImage.imageId);
-            task.instanceId = instanceId;
-            task.sourceUriString = imageUri.toString();
-            uploadUserActorImageFileTaskRepository.save(task);
+            // If the image is changed, upload it.
+            if (imageUri != null) {
+                UploadUserActorImageFileTask task = new UploadUserActorImageFileTask(userId, userActorImage.imageId);
+                task.instanceId = instanceId;
+                task.sourceUriString = imageUri.toString();
+                uploadUserActorImageFileTaskRepository.save(task);
+            }
 
             e.onComplete();
         }).subscribeOn(Schedulers.io());
