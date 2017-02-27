@@ -2,8 +2,8 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageEditPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageEditView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAssetImageEditPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageEditView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
@@ -41,14 +41,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public final class UserActorImageEditFragment
-        extends AbstractFragment<UserActorImageEditView, UserActorImageEditPresenter>
-        implements UserActorImageEditView {
+public final class UserAssetImageEditFragment
+        extends AbstractFragment<UserAssetImageEditView, UserAssetImageEditPresenter>
+        implements UserAssetImageEditView {
 
     private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
-    UserActorImageEditPresenter presenter;
+    UserAssetImageEditPresenter presenter;
 
     @BindView(R.id.view_top)
     View viewTop;
@@ -72,20 +72,20 @@ public final class UserActorImageEditFragment
     private boolean actionSaveEnabled;
 
     @NonNull
-    public static UserActorImageEditFragment newInstance(@Nullable String imageId) {
-        UserActorImageEditFragment fragment = new UserActorImageEditFragment();
-        Bundle bundle = UserActorImageEditPresenter.createArguments(imageId);
+    public static UserAssetImageEditFragment newInstance(@Nullable String imageId) {
+        UserAssetImageEditFragment fragment = new UserAssetImageEditFragment();
+        Bundle bundle = UserAssetImageEditPresenter.createArguments(imageId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    protected UserActorImageEditPresenter getPresenter() {
+    protected UserAssetImageEditPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserActorImageEditView getViewInterface() {
+    protected UserAssetImageEditView getViewInterface() {
         return this;
     }
 
@@ -109,7 +109,7 @@ public final class UserActorImageEditFragment
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user_actor_image_edit, container, false);
+        return inflater.inflate(R.layout.fragment_user_asset_image_edit, container, false);
     }
 
     @Override

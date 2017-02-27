@@ -1,13 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageEditView;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.model.UserAssetImage;
 import com.lakeel.altla.vision.domain.usecase.FindDocumentBitmapUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserActorImageUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetUserActorImageFileUriUseCase;
-import com.lakeel.altla.vision.domain.usecase.SaveUserActorImageUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindUserAssetImageUseCase;
+import com.lakeel.altla.vision.domain.usecase.GetUserAssetImageFileUriUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveUserAssetImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import org.parceler.Parcel;
@@ -25,23 +25,23 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class UserActorImageEditPresenter extends BasePresenter<UserActorImageEditView> {
+public final class UserAssetImageEditPresenter extends BasePresenter<UserAssetImageEditView> {
 
     private static final String ARG_IMAGE_ID = "imageId";
 
     private static final String STATE_MODEL = "model";
 
     @Inject
-    FindUserActorImageUseCase findUserActorImageUseCase;
+    FindUserAssetImageUseCase findUserAssetImageUseCase;
 
     @Inject
-    SaveUserActorImageUseCase saveUserActorImageUseCase;
+    SaveUserAssetImageUseCase saveUserAssetImageUseCase;
 
     @Inject
     FindDocumentBitmapUseCase findDocumentBitmapUseCase;
 
     @Inject
-    GetUserActorImageFileUriUseCase getUserActorImageFileUriUseCase;
+    GetUserAssetImageFileUriUseCase getUserAssetImageFileUriUseCase;
 
     @Inject
     CurrentUserResolver currentUserResolver;
@@ -51,7 +51,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
     private Model model;
 
     @Inject
-    public UserActorImageEditPresenter() {
+    public UserAssetImageEditPresenter() {
     }
 
     @NonNull
@@ -111,9 +111,9 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
             } else {
                 getView().onUpdateViewsEnabled(false);
 
-                Disposable disposable = findUserActorImageUseCase
+                Disposable disposable = findUserAssetImageUseCase
                         .execute(imageId)
-                        .map(UserActorImageEditPresenter::map)
+                        .map(UserAssetImageEditPresenter::map)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(model -> {
                             this.model = model;
@@ -122,7 +122,7 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
                             getView().onUpdateViewsEnabled(true);
                             getView().onUpdateActionSave(canSave());
 
-                            Disposable disposable1 = getUserActorImageFileUriUseCase
+                            Disposable disposable1 = getUserAssetImageFileUriUseCase
                                     .execute(model.imageId)
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(uri -> {
@@ -186,10 +186,10 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
 
-        UserActorImage userActorImage = map(model);
+        UserAssetImage userAssetImage = map(model);
 
-        Disposable disposable = saveUserActorImageUseCase
-                .execute(userActorImage, model.imageUri)
+        Disposable disposable = saveUserAssetImageUseCase
+                .execute(userAssetImage, model.imageUri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     getView().onSnackbar(R.string.snackbar_done);
@@ -202,25 +202,25 @@ public final class UserActorImageEditPresenter extends BasePresenter<UserActorIm
     }
 
     @NonNull
-    public static Model map(@NonNull UserActorImage userActorImage) {
+    public static Model map(@NonNull UserAssetImage userAssetImage) {
         Model model = new Model();
-        model.userId = userActorImage.userId;
-        model.imageId = userActorImage.imageId;
-        model.fileUploaded = userActorImage.fileUploaded;
-        model.name = userActorImage.name;
-        model.createdAt = userActorImage.createdAt;
-        model.updatedAt = userActorImage.updatedAt;
+        model.userId = userAssetImage.userId;
+        model.imageId = userAssetImage.assetId;
+        model.fileUploaded = userAssetImage.fileUploaded;
+        model.name = userAssetImage.name;
+        model.createdAt = userAssetImage.createdAt;
+        model.updatedAt = userAssetImage.updatedAt;
         return model;
     }
 
     @NonNull
-    public static UserActorImage map(@NonNull Model model) {
-        UserActorImage userActorImage = new UserActorImage(model.userId, model.imageId);
-        userActorImage.fileUploaded = model.fileUploaded;
-        userActorImage.name = model.name;
-        userActorImage.createdAt = model.createdAt;
-        userActorImage.updatedAt = model.updatedAt;
-        return userActorImage;
+    public static UserAssetImage map(@NonNull Model model) {
+        UserAssetImage userAssetImage = new UserAssetImage(model.userId, model.imageId);
+        userAssetImage.fileUploaded = model.fileUploaded;
+        userAssetImage.name = model.name;
+        userAssetImage.createdAt = model.createdAt;
+        userAssetImage.updatedAt = model.updatedAt;
+        return userAssetImage;
     }
 
     @Parcel

@@ -8,7 +8,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageEditFragment">
+              tools:context="com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment">
 
     <TextView android:text="@string/label_image"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"

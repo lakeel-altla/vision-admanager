@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageView;
-import com.lakeel.altla.vision.domain.usecase.GetUserActorImageFileUriUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveUserActorImageUseCase;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageView;
+import com.lakeel.altla.vision.domain.usecase.GetUserAssetImageFileUriUseCase;
+import com.lakeel.altla.vision.domain.usecase.ObserveUserAssetImageUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
@@ -16,20 +16,20 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public final class UserActorImagePresenter extends BasePresenter<UserActorImageView> {
+public final class UserAssetImagePresenter extends BasePresenter<UserAssetImageView> {
 
     private static final String ARG_IMAGE_ID = "imageId";
 
     @Inject
-    ObserveUserActorImageUseCase observeUserActorImageUseCase;
+    ObserveUserAssetImageUseCase observeUserAssetImageUseCase;
 
     @Inject
-    GetUserActorImageFileUriUseCase getUserActorImageFileUriUseCase;
+    GetUserAssetImageFileUriUseCase getUserAssetImageFileUriUseCase;
 
     private String imageId;
 
     @Inject
-    public UserActorImagePresenter() {
+    public UserAssetImagePresenter() {
     }
 
     @NonNull
@@ -64,18 +64,18 @@ public final class UserActorImagePresenter extends BasePresenter<UserActorImageV
     protected void onStartOverride() {
         super.onStartOverride();
 
-        Disposable disposable = observeUserActorImageUseCase
+        Disposable disposable = observeUserAssetImageUseCase
                 .execute(imageId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userActorImage -> {
                     getView().onUpdateTitle(userActorImage.name);
-                    getView().onUpdateImageId(userActorImage.imageId);
+                    getView().onUpdateImageId(userActorImage.assetId);
                     getView().onUpdateName(userActorImage.name);
                     getView().onUpdateCreatedAt(userActorImage.createdAt);
                     getView().onUpdateUpdatedAt(userActorImage.updatedAt);
 
-                    Disposable disposable1 = getUserActorImageFileUriUseCase
-                            .execute(userActorImage.imageId)
+                    Disposable disposable1 = getUserAssetImageFileUriUseCase
+                            .execute(userActorImage.assetId)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(uri -> {
                                 getView().onUpdateThumbnail(uri);

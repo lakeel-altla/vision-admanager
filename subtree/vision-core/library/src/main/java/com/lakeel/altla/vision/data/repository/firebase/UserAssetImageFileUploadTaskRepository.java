@@ -8,28 +8,28 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
-import com.lakeel.altla.vision.domain.model.UploadUserActorImageFileTask;
+import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
 
 import android.support.annotation.NonNull;
 
-public final class UploadUserActorImageFileTaskRepository extends BaseDatabaseRepository {
+public final class UserAssetImageFileUploadTaskRepository extends BaseDatabaseRepository {
 
-    private static final Log LOG = LogFactory.getLog(UploadUserActorImageFileTaskRepository.class);
+    private static final Log LOG = LogFactory.getLog(UserAssetImageFileUploadTaskRepository.class);
 
-    private static final String BASE_PATH = "uploadActorImageFileTasks";
+    private static final String BASE_PATH = "userAssetImageFileUploadTasks";
 
     private static final String FIELD_ORDER = "order";
 
-    public UploadUserActorImageFileTaskRepository(@NonNull FirebaseDatabase database) {
+    public UserAssetImageFileUploadTaskRepository(@NonNull FirebaseDatabase database) {
         super(database);
     }
 
-    public void save(@NonNull UploadUserActorImageFileTask uploadUserActorImageFileTask) {
+    public void save(@NonNull UserAssetImageFileUploadTask userAssetImageFileUploadTask) {
         getDatabase().getReference()
                      .child(BASE_PATH)
-                     .child(uploadUserActorImageFileTask.userId)
-                     .child(uploadUserActorImageFileTask.imageId)
-                     .setValue(map(uploadUserActorImageFileTask), (error, reference) -> {
+                     .child(userAssetImageFileUploadTask.userId)
+                     .child(userAssetImageFileUploadTask.assetId)
+                     .setValue(map(userAssetImageFileUploadTask), (error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
@@ -37,7 +37,7 @@ public final class UploadUserActorImageFileTaskRepository extends BaseDatabaseRe
     }
 
     @NonNull
-    public ObservableDataList<UploadUserActorImageFileTask> observeAll(@NonNull String userId) {
+    public ObservableDataList<UserAssetImageFileUploadTask> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
@@ -46,11 +46,11 @@ public final class UploadUserActorImageFileTaskRepository extends BaseDatabaseRe
         return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
     }
 
-    public void delete(@NonNull String userId, @NonNull String imageId) {
+    public void delete(@NonNull String userId, @NonNull String assetId) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
-                     .child(imageId)
+                     .child(assetId)
                      .removeValue((error, reference) -> {
                          if (error != null) {
                              LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
@@ -59,23 +59,23 @@ public final class UploadUserActorImageFileTaskRepository extends BaseDatabaseRe
     }
 
     @NonNull
-    private static Value map(@NonNull UploadUserActorImageFileTask uploadUserActorImageFileTask) {
+    private static Value map(@NonNull UserAssetImageFileUploadTask userAssetImageFileUploadTask) {
         Value value = new Value();
-        value.instanceId = uploadUserActorImageFileTask.instanceId;
-        value.sourceUri = uploadUserActorImageFileTask.sourceUriString;
-        value.createdAt = ServerTimestampMapper.map(uploadUserActorImageFileTask.createdAt);
+        value.instanceId = userAssetImageFileUploadTask.instanceId;
+        value.sourceUri = userAssetImageFileUploadTask.sourceUriString;
+        value.createdAt = ServerTimestampMapper.map(userAssetImageFileUploadTask.createdAt);
         value.order = -System.currentTimeMillis();
         return value;
     }
 
     @NonNull
-    private static UploadUserActorImageFileTask map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
+    private static UserAssetImageFileUploadTask map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
         Value value = snapshot.getValue(Value.class);
-        UploadUserActorImageFileTask uploadUserActorImageFileTask = new UploadUserActorImageFileTask(userId, snapshot.getKey());
-        uploadUserActorImageFileTask.instanceId = value.instanceId;
-        uploadUserActorImageFileTask.sourceUriString = value.sourceUri;
-        uploadUserActorImageFileTask.createdAt = ServerTimestampMapper.map(value.createdAt);
-        return uploadUserActorImageFileTask;
+        UserAssetImageFileUploadTask task = new UserAssetImageFileUploadTask(userId, snapshot.getKey());
+        task.instanceId = value.instanceId;
+        task.sourceUriString = value.sourceUri;
+        task.createdAt = ServerTimestampMapper.map(value.createdAt);
+        return task;
     }
 
     public static final class Value {

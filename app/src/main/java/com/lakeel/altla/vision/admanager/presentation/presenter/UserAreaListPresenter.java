@@ -65,7 +65,7 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    items.change(model.type, model.item, model.previousAreaId);
+                    items.change(model.type, model.item, model.previousId);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -117,7 +117,7 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         EventModel model = new EventModel();
         model.type = event.getType();
         model.item = map(event.getData());
-        model.previousAreaId = event.getPreviousChildName();
+        model.previousId = event.getPreviousChildName();
         return model;
     }
 
@@ -153,7 +153,7 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         DataListEvent.Type type;
 
-        String previousAreaId;
+        String previousId;
 
         ItemModel item;
     }

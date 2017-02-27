@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageListView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserActorImageListAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAssetImageListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageListView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAssetImageListAdapter;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -27,12 +27,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserActorImageListFragment
-        extends AbstractFragment<UserActorImageListView, UserActorImageListPresenter>
-        implements UserActorImageListView {
+public final class UserAssetImageListFragment
+        extends AbstractFragment<UserAssetImageListView, UserAssetImageListPresenter>
+        implements UserAssetImageListView {
 
     @Inject
-    UserActorImageListPresenter presenter;
+    UserAssetImageListPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -40,20 +40,20 @@ public final class UserActorImageListFragment
     private InteractionListener interactionListener;
 
     @Inject
-    public UserActorImageListFragment() {
+    public UserAssetImageListFragment() {
     }
 
-    public static UserActorImageListFragment newInstance() {
-        return new UserActorImageListFragment();
+    public static UserAssetImageListFragment newInstance() {
+        return new UserAssetImageListFragment();
     }
 
     @Override
-    protected UserActorImageListPresenter getPresenter() {
+    protected UserAssetImageListPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserActorImageListView getViewInterface() {
+    protected UserAssetImageListView getViewInterface() {
         return this;
     }
 
@@ -85,7 +85,7 @@ public final class UserActorImageListFragment
 
         ButterKnife.bind(this, view);
 
-        recyclerView.setAdapter(new UserActorImageListAdapter(presenter, getContext()));
+        recyclerView.setAdapter(new UserAssetImageListAdapter(presenter, getContext()));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
         setHasOptionsMenu(true);
@@ -93,7 +93,7 @@ public final class UserActorImageListFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_user_actor_image_list, menu);
+        inflater.inflate(R.menu.fragment_user_asset_image_list, menu);
     }
 
     @Override

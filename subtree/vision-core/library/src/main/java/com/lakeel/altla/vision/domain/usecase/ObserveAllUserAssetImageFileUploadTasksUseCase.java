@@ -1,10 +1,10 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileUploadTaskRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
 
 import android.support.annotation.NonNull;
 
@@ -13,23 +13,23 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class ObserveAllUserActorImageUseCase {
+public final class ObserveAllUserAssetImageFileUploadTasksUseCase {
 
     @Inject
-    UserActorImageRepository userActorImageRepository;
+    UserAssetImageFileUploadTaskRepository userAssetImageFileUploadTaskRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public ObserveAllUserActorImageUseCase() {
+    public ObserveAllUserAssetImageFileUploadTasksUseCase() {
     }
 
     @NonNull
-    public Observable<DataListEvent<UserActorImage>> execute() {
+    public Observable<DataListEvent<UserAssetImageFileUploadTask>> execute() {
         String userId = currentUserResolver.getUserId();
 
-        return ObservableDataList.using(() -> userActorImageRepository.observeAll(userId))
+        return ObservableDataList.using(() -> userAssetImageFileUploadTaskRepository.observeAll(userId))
                                  .subscribeOn(Schedulers.io());
     }
 }

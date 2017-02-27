@@ -2,9 +2,7 @@ package com.lakeel.altla.vision.domain.model;
 
 import android.support.annotation.NonNull;
 
-public final class UserActor {
-
-    public final String userId;
+public final class UserActor extends UserObject {
 
     public final String sceneId;
 
@@ -33,7 +31,7 @@ public final class UserActor {
     public long updatedAt = -1;
 
     public UserActor(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
-        this.userId = userId;
+        super(userId);
         this.sceneId = sceneId;
         this.actorId = actorId;
     }

@@ -7,9 +7,9 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ServiceComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ServiceModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
-import com.lakeel.altla.vision.domain.model.UploadUserActorImageFileTask;
-import com.lakeel.altla.vision.domain.usecase.DeleteUploadUserActorImageFileTaskUseCase;
-import com.lakeel.altla.vision.domain.usecase.UploadUserActorImageFileUseCase;
+import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
+import com.lakeel.altla.vision.domain.usecase.DeleteUserAssetImageFileUploadTaskUseCase;
+import com.lakeel.altla.vision.domain.usecase.UploadUserAssetImageFileUseCase;
 
 import org.parceler.Parcel;
 import org.parceler.Parcels;
@@ -30,19 +30,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public final class UploadActorImageFileTaskService extends Service {
+public final class UserAssetImageFileUploadTaskService extends Service {
 
-    private static final Log LOG = LogFactory.getLog(UploadActorImageFileTaskService.class);
+    private static final Log LOG = LogFactory.getLog(UserAssetImageFileUploadTaskService.class);
 
     private static final int NOTIFICATION_ID = 1;
 
     private static final String EXTRA_MODEL = "model";
 
     @Inject
-    UploadUserActorImageFileUseCase uploadUserActorImageFileUseCase;
+    UploadUserAssetImageFileUseCase uploadUserAssetImageFileUseCase;
 
     @Inject
-    DeleteUploadUserActorImageFileTaskUseCase deleteUploadUserActorImageFileTaskUseCase;
+    DeleteUserAssetImageFileUploadTaskUseCase deleteUserAssetImageFileUploadTaskUseCase;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -53,12 +53,12 @@ public final class UploadActorImageFileTaskService extends Service {
     private NotificationManager notificationManager;
 
     @NonNull
-    public static Intent createIntent(@NonNull Context context, @NonNull UploadUserActorImageFileTask task) {
+    public static Intent createIntent(@NonNull Context context, @NonNull UserAssetImageFileUploadTask task) {
         Model model = new Model();
-        model.imageId = task.imageId;
+        model.imageId = task.assetId;
         model.sourceUriString = task.sourceUriString;
 
-        Intent intent = new Intent(context, UploadActorImageFileTaskService.class);
+        Intent intent = new Intent(context, UserAssetImageFileUploadTaskService.class);
         intent.putExtra(EXTRA_MODEL, Parcels.wrap(model));
 
         return intent;
@@ -90,7 +90,7 @@ public final class UploadActorImageFileTaskService extends Service {
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
 
-        Disposable disposable = uploadUserActorImageFileUseCase
+        Disposable disposable = uploadUserAssetImageFileUseCase
                 .execute(model.imageId, model.sourceUriString)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(progress -> {

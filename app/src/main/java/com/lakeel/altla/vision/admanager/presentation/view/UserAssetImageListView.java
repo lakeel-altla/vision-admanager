@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.view;
 
 import android.support.annotation.StringRes;
 
-public interface UserActorImageListView {
+public interface UserAssetImageListView {
 
     void onUpdateTitle(@StringRes int resId);
 

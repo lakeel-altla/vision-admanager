@@ -1,11 +1,11 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UploadUserActorImageFileTaskRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileUploadTaskRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UploadUserActorImageFileTask;
-import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
+import com.lakeel.altla.vision.domain.model.UserAssetImage;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -16,13 +16,13 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class SaveUserActorImageUseCase {
+public final class SaveUserAssetImageUseCase {
 
     @Inject
-    UserActorImageRepository userActorImageRepository;
+    UserAssetImageRepository userAssetImageRepository;
 
     @Inject
-    UploadUserActorImageFileTaskRepository uploadUserActorImageFileTaskRepository;
+    UserAssetImageFileUploadTaskRepository userAssetImageFileUploadTaskRepository;
 
     @Inject
     CurrentDeviceResolver currentDeviceResolver;
@@ -31,23 +31,23 @@ public final class SaveUserActorImageUseCase {
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public SaveUserActorImageUseCase() {
+    public SaveUserAssetImageUseCase() {
     }
 
     @NonNull
-    public Completable execute(@NonNull UserActorImage userActorImage, @Nullable Uri imageUri) {
+    public Completable execute(@NonNull UserAssetImage userAssetImage, @Nullable Uri imageUri) {
         String userId = currentUserResolver.getUserId();
         String instanceId = currentDeviceResolver.getInstanceId();
 
         return Completable.create(e -> {
-            userActorImageRepository.save(userActorImage);
+            userAssetImageRepository.save(userAssetImage);
 
             // If the image is changed, upload it.
             if (imageUri != null) {
-                UploadUserActorImageFileTask task = new UploadUserActorImageFileTask(userId, userActorImage.imageId);
+                UserAssetImageFileUploadTask task = new UserAssetImageFileUploadTask(userId, userAssetImage.assetId);
                 task.instanceId = instanceId;
                 task.sourceUriString = imageUri.toString();
-                uploadUserActorImageFileTaskRepository.save(task);
+                userAssetImageFileUploadTaskRepository.save(task);
             }
 
             e.onComplete();

@@ -2,9 +2,7 @@ package com.lakeel.altla.vision.domain.model;
 
 import android.support.annotation.NonNull;
 
-public final class UserDevice {
-
-    public final String userId;
+public final class UserDevice extends UserObject {
 
     public final String instanceId;
 
@@ -14,12 +12,8 @@ public final class UserDevice {
 
     public String osVersion;
 
-    public long createdAt;
-
-    public long updatedAt;
-
     public UserDevice(@NonNull String userId, @NonNull String instanceId) {
-        this.userId = userId;
+        super(userId);
         this.instanceId = instanceId;
     }
 }

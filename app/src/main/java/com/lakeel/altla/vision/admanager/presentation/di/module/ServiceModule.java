@@ -5,9 +5,9 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.vision.admanager.presentation.di.ServiceScope;
 import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UploadUserActorImageFileTaskRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageFileRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileUploadTaskRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageRepository;
 
 import android.app.Service;
 import android.content.ContentResolver;
@@ -39,19 +39,19 @@ public final class ServiceModule {
 
     @ServiceScope
     @Provides
-    UserActorImageFileRepository provideUserActorImageFileRepository(FirebaseStorage storage) {
-        return new UserActorImageFileRepository(storage);
+    UserAssetImageFileRepository provideUserAssetImageFileRepository(FirebaseStorage storage) {
+        return new UserAssetImageFileRepository(storage);
     }
 
     @ServiceScope
     @Provides
-    UploadUserActorImageFileTaskRepository provideUploadUserActorImageFileTaskRepository(FirebaseDatabase database) {
-        return new UploadUserActorImageFileTaskRepository(database);
+    UserAssetImageFileUploadTaskRepository provideUserAssetImageFileUploadTaskRepository(FirebaseDatabase database) {
+        return new UserAssetImageFileUploadTaskRepository(database);
     }
 
     @ServiceScope
     @Provides
-    UserActorImageRepository provideUserActorImageRepository(FirebaseDatabase database) {
-        return new UserActorImageRepository(database);
+    UserAssetImageRepository provideUserAssetImageRepository(FirebaseDatabase database) {
+        return new UserAssetImageRepository(database);
     }
 }

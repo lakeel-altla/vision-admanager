@@ -2,9 +2,7 @@ package com.lakeel.altla.vision.domain.model;
 
 import android.support.annotation.NonNull;
 
-public final class UserProfile {
-
-    public final String userId;
+public final class UserProfile extends UserObject {
 
     public String displayName;
 
@@ -12,11 +10,7 @@ public final class UserProfile {
 
     public String photoUri;
 
-    public long createdAt;
-
-    public long updatedAt;
-
     public UserProfile(@NonNull String userId) {
-        this.userId = userId;
+        super(userId);
     }
 }

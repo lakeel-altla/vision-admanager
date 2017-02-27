@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.model.UserAssetImage;
 
 import android.support.annotation.NonNull;
 
@@ -11,24 +11,24 @@ import javax.inject.Inject;
 import io.reactivex.Maybe;
 import io.reactivex.schedulers.Schedulers;
 
-public final class FindUserActorImageUseCase {
+public final class FindUserAssetImageUseCase {
 
     @Inject
-    UserActorImageRepository userActorImageRepository;
+    UserAssetImageRepository userAssetImageRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public FindUserActorImageUseCase() {
+    public FindUserAssetImageUseCase() {
     }
 
     @NonNull
-    public Maybe<UserActorImage> execute(@NonNull String imageId) {
+    public Maybe<UserAssetImage> execute(@NonNull String assetId) {
         String userId = currentUserResolver.getUserId();
 
-        return Maybe.<UserActorImage>create(e -> {
-            userActorImageRepository.find(userId, imageId, userActorImage -> {
+        return Maybe.<UserAssetImage>create(e -> {
+            userAssetImageRepository.find(userId, assetId, userActorImage -> {
                 if (userActorImage == null) {
                     e.onComplete();
                 } else {

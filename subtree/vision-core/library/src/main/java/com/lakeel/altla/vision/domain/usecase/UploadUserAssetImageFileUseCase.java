@@ -3,9 +3,9 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UploadUserActorImageFileTaskRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageFileRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileUploadTaskRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.Progress;
 
@@ -20,37 +20,37 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class UploadUserActorImageFileUseCase {
+public final class UploadUserAssetImageFileUseCase {
 
-    private static final Log LOG = LogFactory.getLog(UploadUserActorImageFileUseCase.class);
+    private static final Log LOG = LogFactory.getLog(UploadUserAssetImageFileUseCase.class);
 
     @Inject
-    UserActorImageRepository userActorImageRepository;
+    UserAssetImageRepository userAssetImageRepository;
 
     @Inject
     DocumentRepository documentRepository;
 
     @Inject
-    UserActorImageFileRepository userActorImageFileRepository;
+    UserAssetImageFileRepository userAssetImageFileRepository;
 
     @Inject
-    UploadUserActorImageFileTaskRepository uploadUserActorImageFileTaskRepository;
+    UserAssetImageFileUploadTaskRepository userAssetImageFileUploadTaskRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public UploadUserActorImageFileUseCase() {
+    public UploadUserAssetImageFileUseCase() {
     }
 
     @NonNull
-    public Observable<Progress> execute(@NonNull String imageId, @NonNull String sourceUriString) {
+    public Observable<Progress> execute(@NonNull String assetId, @NonNull String sourceUriString) {
         String userId = currentUserResolver.getUserId();
 
         return Observable.<Progress>create(e -> {
-            userActorImageRepository.find(userId, imageId, userActorImage -> {
+            userAssetImageRepository.find(userId, assetId, userActorImage -> {
                 if (userActorImage == null) {
-                    throw new IllegalStateException(String.format("Entity not found: imageId = %s", imageId));
+                    throw new IllegalStateException(String.format("Entity not found: assetId = %s", assetId));
                 }
 
                 try {
@@ -58,15 +58,15 @@ public final class UploadUserActorImageFileUseCase {
                             new BufferedInputStream(documentRepository.openInputStream(sourceUriString));
                     long totalBytes = inputStream.available();
 
-                    userActorImageFileRepository.upload(userId, imageId, inputStream, aVoid -> {
+                    userAssetImageFileRepository.upload(userId, assetId, inputStream, aVoid -> {
                         // Uploaded.
 
                         // Update the status.
                         userActorImage.fileUploaded = true;
-                        userActorImageRepository.save(userActorImage);
+                        userAssetImageRepository.save(userActorImage);
 
                         // Delete the task.
-                        uploadUserActorImageFileTaskRepository.delete(userId, imageId);
+                        userAssetImageFileUploadTaskRepository.delete(userId, assetId);
 
                         close(inputStream);
                         e.onComplete();

@@ -13,20 +13,20 @@ import android.support.annotation.NonNull;
 import java.io.File;
 import java.io.InputStream;
 
-public final class UserActorImageFileRepository extends BaseStorageRepository {
+public final class UserAssetImageFileRepository extends BaseStorageRepository {
 
-    private static final String BASE_PATH = "userActorImages";
+    private static final String BASE_PATH = "userAssetImages";
 
-    public UserActorImageFileRepository(@NonNull FirebaseStorage storage) {
+    public UserAssetImageFileRepository(@NonNull FirebaseStorage storage) {
         super(storage);
     }
 
-    public void exists(@NonNull String userId, @NonNull String imageId,
+    public void exists(@NonNull String userId, @NonNull String assetId,
                        OnSuccessListener<Boolean> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
-                    .child(imageId)
+                    .child(assetId)
                     .getMetadata()
                     .addOnSuccessListener(metadata -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(Boolean.TRUE);
@@ -43,13 +43,13 @@ public final class UserActorImageFileRepository extends BaseStorageRepository {
                     });
     }
 
-    public void upload(@NonNull String userId, @NonNull String imageId,
+    public void upload(@NonNull String userId, @NonNull String assetId,
                        @NonNull InputStream stream, OnSuccessListener<Void> onSuccessListener,
                        OnFailureListener onFailureListener, OnProgressListener onProgressListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
-                    .child(imageId)
+                    .child(assetId)
                     .putStream(stream)
                     .addOnSuccessListener(snapshot -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);
@@ -65,13 +65,13 @@ public final class UserActorImageFileRepository extends BaseStorageRepository {
                     });
     }
 
-    public void download(@NonNull String userId, @NonNull String imageId, @NonNull File destination,
+    public void download(@NonNull String userId, @NonNull String assetId, @NonNull File destination,
                          OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                          OnProgressListener onProgressListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
-                    .child(imageId)
+                    .child(assetId)
                     .getFile(destination)
                     .addOnSuccessListener(snapshot -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);
@@ -87,12 +87,12 @@ public final class UserActorImageFileRepository extends BaseStorageRepository {
                     });
     }
 
-    public void getDownloadUri(@NonNull String userId, @NonNull String imageId,
+    public void getDownloadUri(@NonNull String userId, @NonNull String assetId,
                                OnSuccessListener<Uri> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
-                    .child(imageId)
+                    .child(assetId)
                     .getDownloadUrl()
                     .addOnSuccessListener(uri -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(uri);
@@ -102,12 +102,12 @@ public final class UserActorImageFileRepository extends BaseStorageRepository {
                     });
     }
 
-    public void delete(@NonNull String userId, @NonNull String imageId,
+    public void delete(@NonNull String userId, @NonNull String assetId,
                        OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
-                    .child(imageId)
+                    .child(assetId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         if (onSuccessListener != null) onSuccessListener.onSuccess(null);

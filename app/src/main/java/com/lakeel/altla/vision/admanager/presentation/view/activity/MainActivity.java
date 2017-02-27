@@ -11,14 +11,14 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.service.UploadActorImageFileTaskService;
+import com.lakeel.altla.vision.admanager.presentation.service.UserAssetImageFileUploadTaskService;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserActorImageListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -35,8 +35,8 @@ import com.lakeel.altla.vision.domain.helper.CurrentApplicationResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.model.UploadUserActorImageFileTask;
-import com.lakeel.altla.vision.domain.usecase.ObserveAllUploadActorImageFileTasksUseCase;
+import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
+import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAssetImageFileUploadTasksUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
@@ -87,9 +87,9 @@ public final class MainActivity extends AppCompatActivity
                    UserSceneListFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
-                   UserActorImageListFragment.InteractionListener,
-                   UserActorImageFragment.InteractionListener,
-                   UserActorImageEditFragment.InteractionListener,
+                   UserAssetImageListFragment.InteractionListener,
+                   UserAssetImageFragment.InteractionListener,
+                   UserAssetImageEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
@@ -104,7 +104,7 @@ public final class MainActivity extends AppCompatActivity
     ObserveConnectionUseCase observeConnectionUseCase;
 
     @Inject
-    ObserveAllUploadActorImageFileTasksUseCase observeAllUploadActorImageFileTasksUseCase;
+    ObserveAllUserAssetImageFileUploadTasksUseCase observeAllUserAssetImageFileUploadTasksUseCase;
 
     @Inject
     SignOutUseCase signOutUseCase;
@@ -285,9 +285,9 @@ public final class MainActivity extends AppCompatActivity
                 break;
             }
             case R.id.nav_user_actor_image_list: {
-                Fragment fragment = findFragment(UserActorImageListFragment.class);
+                Fragment fragment = findFragment(UserAssetImageListFragment.class);
                 if (fragment == null) {
-                    fragment = UserActorImageListFragment.newInstance();
+                    fragment = UserAssetImageListFragment.newInstance();
                     replaceFragment(fragment);
                 }
                 break;
@@ -431,19 +431,19 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserActorImageCreateView() {
-        UserActorImageEditFragment fragment = UserActorImageEditFragment.newInstance(null);
+        UserAssetImageEditFragment fragment = UserAssetImageEditFragment.newInstance(null);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserActorImageView(@NonNull String imageId) {
-        UserActorImageFragment fragment = UserActorImageFragment.newInstance(imageId);
+        UserAssetImageFragment fragment = UserAssetImageFragment.newInstance(imageId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserActorImageEditView(@NonNull String imageId) {
-        UserActorImageEditFragment fragment = UserActorImageEditFragment.newInstance(imageId);
+        UserAssetImageEditFragment fragment = UserAssetImageEditFragment.newInstance(imageId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
@@ -532,17 +532,18 @@ public final class MainActivity extends AppCompatActivity
 
                 // Observe all pending storage tasks.
                 if (observeAllPendingStorageTasksDisposable == null) {
-                    observeAllPendingStorageTasksDisposable = observeAllUploadActorImageFileTasksUseCase
+                    observeAllPendingStorageTasksDisposable = observeAllUserAssetImageFileUploadTasksUseCase
                             .execute()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(event -> {
                                 if (event.getType() == DataListEvent.Type.ADDED) {
-                                    UploadUserActorImageFileTask task = event.getData();
+                                    UserAssetImageFileUploadTask task = event.getData();
 
                                     if (!currentDeviceResolver.getInstanceId().equals(task.instanceId)) return;
 
                                     Intent intent =
-                                            UploadActorImageFileTaskService.createIntent(getApplicationContext(), task);
+                                            UserAssetImageFileUploadTaskService
+                                                    .createIntent(getApplicationContext(), task);
                                     startService(intent);
                                 }
                             }, e -> {

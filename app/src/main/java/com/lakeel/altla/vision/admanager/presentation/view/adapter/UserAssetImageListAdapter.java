@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImageListPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageItemView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAssetImageListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 
 import android.content.Context;
@@ -18,9 +18,9 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserActorImageListAdapter.ViewHolder> {
+public final class UserAssetImageListAdapter extends RecyclerView.Adapter<UserAssetImageListAdapter.ViewHolder> {
 
-    private final UserActorImageListPresenter presenter;
+    private final UserAssetImageListPresenter presenter;
 
     private final Context context;
 
@@ -30,7 +30,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
 
     private LayoutInflater inflater;
 
-    public UserActorImageListAdapter(@NonNull UserActorImageListPresenter presenter, @NonNull Context context) {
+    public UserAssetImageListAdapter(@NonNull UserAssetImageListPresenter presenter, @NonNull Context context) {
         this.presenter = presenter;
         this.context = context;
         thumbnailLoader = new ThumbnailLoader(context);
@@ -53,7 +53,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = inflater.inflate(R.layout.item_user_actor_image, parent, false);
+        View itemView = inflater.inflate(R.layout.item_user_asset_image, parent, false);
         itemView.setOnClickListener(v -> {
             if (recyclerView != null) {
                 int position = recyclerView.getChildAdapterPosition(v);
@@ -73,7 +73,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         return presenter.getItemCount();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements UserActorImageItemView {
+    class ViewHolder extends RecyclerView.ViewHolder implements UserAssetImageItemView {
 
         @BindView(R.id.text_view_name)
         TextView textViewName;
@@ -81,7 +81,7 @@ public final class UserActorImageListAdapter extends RecyclerView.Adapter<UserAc
         @BindView(R.id.image_view_thumbnail)
         ImageView imageViewThumbnail;
 
-        private UserActorImageListPresenter.ItemPresenter itemPresenter;
+        private UserAssetImageListPresenter.ItemPresenter itemPresenter;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

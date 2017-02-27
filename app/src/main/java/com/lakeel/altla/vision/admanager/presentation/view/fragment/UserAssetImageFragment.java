@@ -2,8 +2,8 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserActorImagePresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserActorImageView;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAssetImagePresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAssetImageView;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
@@ -29,11 +29,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserActorImageFragment extends AbstractFragment<UserActorImageView, UserActorImagePresenter>
-        implements UserActorImageView {
+public final class UserAssetImageFragment extends AbstractFragment<UserAssetImageView, UserAssetImagePresenter>
+        implements UserAssetImageView {
 
     @Inject
-    UserActorImagePresenter presenter;
+    UserAssetImagePresenter presenter;
 
     @BindView(R.id.view_top)
     View viewTop;
@@ -58,20 +58,20 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
     private ThumbnailLoader thumbnailLoader;
 
     @NonNull
-    public static UserActorImageFragment newInstance(@NonNull String imageId) {
-        UserActorImageFragment fragment = new UserActorImageFragment();
-        Bundle bundle = UserActorImagePresenter.createArguments(imageId);
+    public static UserAssetImageFragment newInstance(@NonNull String imageId) {
+        UserAssetImageFragment fragment = new UserAssetImageFragment();
+        Bundle bundle = UserAssetImagePresenter.createArguments(imageId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    protected UserActorImagePresenter getPresenter() {
+    protected UserAssetImagePresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserActorImageView getViewInterface() {
+    protected UserAssetImageView getViewInterface() {
         return this;
     }
 
@@ -95,7 +95,7 @@ public final class UserActorImageFragment extends AbstractFragment<UserActorImag
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user_actor_image, container, false);
+        return inflater.inflate(R.layout.fragment_user_asset_image, container, false);
     }
 
     @Override

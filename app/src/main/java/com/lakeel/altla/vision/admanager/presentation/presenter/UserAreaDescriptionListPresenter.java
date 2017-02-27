@@ -46,7 +46,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                 .map(this::map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    items.change(model.type, model.item, model.previousAreaDescriptionId);
+                    items.change(model.type, model.item, model.previousId);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -97,7 +97,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         EventModel model = new EventModel();
         model.type = event.getType();
         model.item = map(event.getData());
-        model.previousAreaDescriptionId = event.getPreviousChildName();
+        model.previousId = event.getPreviousChildName();
         return model;
     }
 
@@ -128,7 +128,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
         DataListEvent.Type type;
 
-        String previousAreaDescriptionId;
+        String previousId;
 
         ItemModel item;
     }
