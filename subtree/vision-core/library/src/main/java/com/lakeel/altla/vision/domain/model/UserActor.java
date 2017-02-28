@@ -12,19 +12,25 @@ public final class UserActor extends UserObject {
 
     public String assetId;
 
-    public float positionX;
+    public double positionX;
 
-    public float positionY;
+    public double positionY;
 
-    public float positionZ;
+    public double positionZ;
 
-    public float orientationX;
+    public double orientationX;
 
-    public float orientationY;
+    public double orientationY;
 
-    public float orientationZ;
+    public double orientationZ;
 
-    public float orientationW;
+    public double orientationW;
+
+    public double scaleX = 1;
+
+    public double scaleY = 1;
+
+    public double scaleZ = 1;
 
     public long createdAt = -1;
 
