@@ -86,6 +86,9 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         value.orientationY = userActor.orientationY;
         value.orientationZ = userActor.orientationZ;
         value.orientationW = userActor.orientationW;
+        value.scaleX = userActor.scaleX;
+        value.scaleY = userActor.scaleY;
+        value.scaleZ = userActor.scaleZ;
         value.createdAt = ServerTimestampMapper.map(userActor.createdAt);
         value.updatedAt = ServerValue.TIMESTAMP;
         return value;
@@ -104,6 +107,9 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         userActor.orientationY = value.orientationY;
         userActor.orientationZ = value.orientationZ;
         userActor.orientationW = value.orientationW;
+        userActor.scaleX = value.scaleX;
+        userActor.scaleY = value.scaleY;
+        userActor.scaleZ = value.scaleZ;
         userActor.createdAt = ServerTimestampMapper.map(value.createdAt);
         userActor.updatedAt = ServerTimestampMapper.map(value.updatedAt);
         return userActor;
@@ -115,19 +121,25 @@ public final class UserActorRepository extends BaseDatabaseRepository {
 
         public String modelId;
 
-        public float positionX;
+        public double positionX;
 
-        public float positionY;
+        public double positionY;
 
-        public float positionZ;
+        public double positionZ;
 
-        public float orientationX;
+        public double orientationX;
 
-        public float orientationY;
+        public double orientationY;
 
-        public float orientationZ;
+        public double orientationZ;
 
-        public float orientationW;
+        public double orientationW;
+
+        public double scaleX = 1;
+
+        public double scaleY = 1;
+
+        public double scaleZ = 1;
 
         public Object createdAt;
 

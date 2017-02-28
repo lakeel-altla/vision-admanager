@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UploadUserActorImageFileTaskRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileUploadTaskRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 
 import android.support.annotation.NonNull;
@@ -10,24 +10,24 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class DeleteUploadUserActorImageFileTaskUseCase {
+public final class DeleteUserAssetImageFileUploadTaskUseCase {
 
     @Inject
-    UploadUserActorImageFileTaskRepository uploadUserActorImageFileTaskRepository;
+    UserAssetImageFileUploadTaskRepository userAssetImageFileUploadTaskRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public DeleteUploadUserActorImageFileTaskUseCase() {
+    public DeleteUserAssetImageFileUploadTaskUseCase() {
     }
 
     @NonNull
-    public Completable execute(@NonNull String imageId) {
+    public Completable execute(@NonNull String assetId) {
         String userId = currentUserResolver.getUserId();
 
         return Completable.create(e -> {
-            uploadUserActorImageFileTaskRepository.delete(userId, imageId);
+            userAssetImageFileUploadTaskRepository.delete(userId, assetId);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }

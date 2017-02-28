@@ -1,9 +1,9 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UserActorImageRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.UserActorImage;
+import com.lakeel.altla.vision.domain.model.UserAssetImage;
 
 import android.support.annotation.NonNull;
 
@@ -12,24 +12,24 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class ObserveUserActorImageUseCase {
+public final class ObserveUserAssetImageUseCase {
 
     @Inject
-    UserActorImageRepository userActorImageRepository;
+    UserAssetImageRepository userAssetImageRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public ObserveUserActorImageUseCase() {
+    public ObserveUserAssetImageUseCase() {
     }
 
     @NonNull
-    public Observable<UserActorImage> execute(@NonNull String imageId) {
+    public Observable<UserAssetImage> execute(@NonNull String assetId) {
         String userId = currentUserResolver.getUserId();
 
         return ObservableData
-                .using(() -> userActorImageRepository.observe(userId, imageId))
+                .using(() -> userAssetImageRepository.observe(userId, assetId))
                 .subscribeOn(Schedulers.io());
     }
 }

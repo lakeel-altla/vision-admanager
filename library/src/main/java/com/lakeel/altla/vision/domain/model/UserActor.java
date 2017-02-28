@@ -2,9 +2,7 @@ package com.lakeel.altla.vision.domain.model;
 
 import android.support.annotation.NonNull;
 
-public final class UserActor {
-
-    public final String userId;
+public final class UserActor extends UserObject {
 
     public final String sceneId;
 
@@ -14,26 +12,32 @@ public final class UserActor {
 
     public String assetId;
 
-    public float positionX;
+    public double positionX;
 
-    public float positionY;
+    public double positionY;
 
-    public float positionZ;
+    public double positionZ;
 
-    public float orientationX;
+    public double orientationX;
 
-    public float orientationY;
+    public double orientationY;
 
-    public float orientationZ;
+    public double orientationZ;
 
-    public float orientationW;
+    public double orientationW;
+
+    public double scaleX = 1;
+
+    public double scaleY = 1;
+
+    public double scaleZ = 1;
 
     public long createdAt = -1;
 
     public long updatedAt = -1;
 
     public UserActor(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
-        this.userId = userId;
+        super(userId);
         this.sceneId = sceneId;
         this.actorId = actorId;
     }
