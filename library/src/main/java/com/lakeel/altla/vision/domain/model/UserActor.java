@@ -56,7 +56,7 @@ public final class UserActor extends UserObject {
         }
 
         @NonNull
-        public static AssetType toModelType(int value) {
+        public static AssetType toAssetType(int value) {
             for (AssetType assetType : AssetType.values()) {
                 if (assetType.value == value) {
                     return assetType;

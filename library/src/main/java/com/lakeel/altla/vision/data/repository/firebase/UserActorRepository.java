@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
@@ -9,6 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
@@ -65,6 +67,17 @@ public final class UserActorRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
+    public ObservableData<UserActor> observe(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
+        DatabaseReference reference = getDatabase().getReference()
+                                                   .child(BASE_PATH)
+                                                   .child(userId)
+                                                   .child(sceneId)
+                                                   .child(actorId);
+
+        return new ObservableData<>(reference, snapshot -> map(userId, sceneId, snapshot));
+    }
+
+    @NonNull
     public ObservableDataList<UserActor> observeAll(@NonNull String userId, @NonNull String sceneId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
@@ -74,11 +87,24 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         return new ObservableDataList<>(query, snapshot -> map(userId, sceneId, snapshot));
     }
 
+    public void delete(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
+        getDatabase().getReference()
+                     .child(BASE_PATH)
+                     .child(userId)
+                     .child(sceneId)
+                     .child(actorId)
+                     .removeValue((error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                         }
+                     });
+    }
+
     @NonNull
     private static Value map(@NonNull UserActor userActor) {
         Value value = new Value();
-        value.modelType = userActor.assetType.getValue();
-        value.modelId = userActor.assetId;
+        value.assetType = userActor.assetType.getValue();
+        value.assetId = userActor.assetId;
         value.positionX = userActor.positionX;
         value.positionY = userActor.positionY;
         value.positionZ = userActor.positionZ;
@@ -98,8 +124,8 @@ public final class UserActorRepository extends BaseDatabaseRepository {
     private static UserActor map(@NonNull String userId, @NonNull String sceneId, @NonNull DataSnapshot snapshot) {
         Value value = snapshot.getValue(Value.class);
         UserActor userActor = new UserActor(userId, sceneId, snapshot.getKey());
-        userActor.assetType = UserActor.AssetType.toModelType(value.modelType);
-        userActor.assetId = value.modelId;
+        userActor.assetType = UserActor.AssetType.toAssetType(value.assetType);
+        userActor.assetId = value.assetId;
         userActor.positionX = value.positionX;
         userActor.positionY = value.positionY;
         userActor.positionZ = value.positionZ;
@@ -117,9 +143,9 @@ public final class UserActorRepository extends BaseDatabaseRepository {
 
     public static final class Value {
 
-        public int modelType;
+        public int assetType;
 
-        public String modelId;
+        public String assetId;
 
         public double positionX;
 
