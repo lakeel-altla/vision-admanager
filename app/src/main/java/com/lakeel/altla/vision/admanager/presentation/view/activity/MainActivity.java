@@ -16,9 +16,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -27,6 +24,9 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
@@ -139,7 +139,7 @@ public final class MainActivity extends AppCompatActivity
 
     private Disposable observeConnectionDisposable;
 
-    private Disposable observeAllPendingStorageTasksDisposable;
+    private Disposable observeAllUserAssetImageFileUploadTasksDisposable;
 
     @NonNull
     public static Intent createStartIntent(@NonNull Context context) {
@@ -201,9 +201,9 @@ public final class MainActivity extends AppCompatActivity
         }
 
         // Unsubscribe pending storage tasks.
-        if (observeAllPendingStorageTasksDisposable != null) {
-            observeAllPendingStorageTasksDisposable.dispose();
-            observeAllPendingStorageTasksDisposable = null;
+        if (observeAllUserAssetImageFileUploadTasksDisposable != null) {
+            observeAllUserAssetImageFileUploadTasksDisposable.dispose();
+            observeAllUserAssetImageFileUploadTasksDisposable = null;
         }
 
         compositeDisposable.clear();
@@ -531,8 +531,8 @@ public final class MainActivity extends AppCompatActivity
                 }
 
                 // Observe all pending storage tasks.
-                if (observeAllPendingStorageTasksDisposable == null) {
-                    observeAllPendingStorageTasksDisposable = observeAllUserAssetImageFileUploadTasksUseCase
+                if (observeAllUserAssetImageFileUploadTasksDisposable == null) {
+                    observeAllUserAssetImageFileUploadTasksDisposable = observeAllUserAssetImageFileUploadTasksUseCase
                             .execute()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(event -> {
@@ -541,9 +541,8 @@ public final class MainActivity extends AppCompatActivity
 
                                     if (!currentDeviceResolver.getInstanceId().equals(task.instanceId)) return;
 
-                                    Intent intent =
-                                            UserAssetImageFileUploadTaskService
-                                                    .createIntent(getApplicationContext(), task);
+                                    Intent intent = UserAssetImageFileUploadTaskService.createIntent(
+                                            getApplicationContext(), task);
                                     startService(intent);
                                 }
                             }, e -> {
@@ -565,9 +564,9 @@ public final class MainActivity extends AppCompatActivity
                 }
 
                 // Unsubscribe pending storage tasks.
-                if (observeAllPendingStorageTasksDisposable != null) {
-                    observeAllPendingStorageTasksDisposable.dispose();
-                    observeAllPendingStorageTasksDisposable = null;
+                if (observeAllUserAssetImageFileUploadTasksDisposable != null) {
+                    observeAllUserAssetImageFileUploadTasksDisposable.dispose();
+                    observeAllUserAssetImageFileUploadTasksDisposable = null;
                 }
 
                 // Clear UI.
