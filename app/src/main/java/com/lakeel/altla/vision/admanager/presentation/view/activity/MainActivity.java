@@ -527,6 +527,8 @@ public final class MainActivity extends AppCompatActivity
                                 }
                                 textViewUserName.setText(userProfile.displayName);
                                 textViewUserEmail.setText(userProfile.email);
+                            }, e -> {
+                                LOG.e("Failed.", e);
                             });
                 }
 
