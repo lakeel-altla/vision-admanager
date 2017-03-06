@@ -12,6 +12,8 @@ public final class UserActor extends UserObject {
 
     public String assetId;
 
+    public String name;
+
     public double positionX;
 
     public double positionY;

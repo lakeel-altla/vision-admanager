@@ -105,6 +105,7 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         Value value = new Value();
         value.assetType = userActor.assetType.getValue();
         value.assetId = userActor.assetId;
+        value.name = userActor.name;
         value.positionX = userActor.positionX;
         value.positionY = userActor.positionY;
         value.positionZ = userActor.positionZ;
@@ -126,6 +127,7 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         UserActor userActor = new UserActor(userId, sceneId, snapshot.getKey());
         userActor.assetType = UserActor.AssetType.toAssetType(value.assetType);
         userActor.assetId = value.assetId;
+        userActor.name = value.name;
         userActor.positionX = value.positionX;
         userActor.positionY = value.positionY;
         userActor.positionZ = value.positionZ;
@@ -146,6 +148,8 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         public int assetType;
 
         public String assetId;
+
+        public String name;
 
         public double positionX;
 
