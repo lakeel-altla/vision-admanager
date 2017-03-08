@@ -1,10 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public interface UserAreaDescriptionItemView {
 
     void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId);
 
-    void onUpdateName(@NonNull String name);
+    void onUpdateName(@Nullable String name);
 }

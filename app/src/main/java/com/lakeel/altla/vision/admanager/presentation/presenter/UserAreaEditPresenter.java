@@ -5,7 +5,7 @@ import com.google.android.gms.location.places.Place;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaUseCase;
@@ -17,8 +17,6 @@ import org.parceler.Parcels;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -101,23 +99,22 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
         if (model == null) {
             if (areaId == null) {
-                areaId = UUID.randomUUID().toString();
                 model = new Model();
-                model.userId = currentUserResolver.getUserId();
-                model.areaId = areaId;
+                model.area.setUserId(currentUserResolver.getUserId());
+                getView().onUpdateLevel(model.area.getLevel());
                 getView().onUpdateViewsEnabled(true);
-                getView().onUpdateActionSave(canSave());
-                getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+                getView().onUpdateActionSave(model.canSave());
+                getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
             } else {
                 Disposable disposable = findUserAreaUseCase
                         .execute(areaId)
-                        .map(UserAreaEditPresenter::map)
+                        .map(Model::new)
                         .flatMap(model -> {
-                            if (model.placeId == null) {
+                            if (model.area.getPlaceId() == null) {
                                 return Maybe.just(model);
                             } else {
                                 return getPlaceUseCase
-                                        .execute(model.placeId)
+                                        .execute(model.area.getPlaceId())
                                         .map(place -> {
                                             model.placeName = place.getName().toString();
                                             model.placeAddress = place.getAddress().toString();
@@ -129,14 +126,14 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(model -> {
                             this.model = model;
-                            getView().onUpdateTitle(model.name);
-                            getView().onUpdateName(model.name);
+                            getView().onUpdateTitle(model.area.getName());
+                            getView().onUpdateName(model.area.getName());
                             getView().onUpdatePlaceName(model.placeName);
                             getView().onUpdatePlaceAddress(model.placeAddress);
-                            getView().onUpdateLevel(model.level);
+                            getView().onUpdateLevel(model.area.getLevel());
                             getView().onUpdateViewsEnabled(true);
-                            getView().onUpdateActionSave(canSave());
-                            getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+                            getView().onUpdateActionSave(model.canSave());
+                            getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -147,14 +144,14 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                 manageDisposable(disposable);
             }
         } else {
-            getView().onUpdateTitle(model.name);
-            getView().onUpdateName(model.name);
+            getView().onUpdateTitle(model.area.getName());
+            getView().onUpdateName(model.area.getName());
             getView().onUpdatePlaceName(model.placeName);
             getView().onUpdatePlaceAddress(model.placeAddress);
-            getView().onUpdateLevel(model.level);
+            getView().onUpdateLevel(model.area.getLevel());
             getView().onUpdateViewsEnabled(true);
-            getView().onUpdateActionSave(canSave());
-            getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+            getView().onUpdateActionSave(model.canSave());
+            getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
         }
     }
 
@@ -165,16 +162,16 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         getView().onUpdateHomeAsUpIndicator(null);
     }
 
-    public void onEditTextNameAfterTextChanged(String name) {
-        model.name = name;
+    public void onEditTextNameAfterTextChanged(String value) {
+        model.area.setName(value);
         getView().onHideNameError();
 
-        // Don't save the empty name.
-        if (name == null || name.length() == 0) {
+        // Don't save the empty value.
+        if (value == null || value.length() == 0) {
             getView().onShowNameError(R.string.input_error_name_required);
         }
 
-        getView().onUpdateActionSave(canSave());
+        getView().onUpdateActionSave(model.canSave());
     }
 
     public void onClickImageButtonPickPlace() {
@@ -183,43 +180,37 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     public void onPlacePicked(@NonNull Place place) {
         // onPlacePicked will be invoked after Fragment#onStart() because of the result of startActivityForResult.
-        model.placeId = place.getId();
+        model.area.setPlaceId(place.getId());
         model.placeName = place.getName().toString();
         model.placeAddress = place.getAddress().toString();
 
         getView().onUpdatePlaceName(model.placeName);
         getView().onUpdatePlaceAddress(model.placeAddress);
-        getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+        getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
     }
 
     public void onClickImageButtonRemovePlace() {
-        model.placeId = null;
+        model.area.setPlaceId(null);
         model.placeName = null;
         model.placeAddress = null;
 
         getView().onUpdatePlaceName(null);
         getView().onUpdatePlaceAddress(null);
-        getView().onUpdateButtonRemovePlaceEnabled(canRemovePlace());
+        getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
     }
 
     public void onItemSelectedSpinnerLevel(int level) {
         if (model == null) return;
 
-        model.level = level;
-    }
-
-    private boolean canRemovePlace() {
-        return model.placeId != null;
+        model.area.setLevel(level);
     }
 
     public void onActionSave() {
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
 
-        UserArea userArea = map(model);
-
         Disposable disposable = saveUserAreaUseCase
-                .execute(userArea)
+                .execute(model.area)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     getView().onSnackbar(R.string.snackbar_done);
@@ -231,53 +222,29 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
         manageDisposable(disposable);
     }
 
-    private boolean canSave() {
-        return model.name != null && model.name.length() != 0;
-    }
-
-    @NonNull
-    public static Model map(@NonNull UserArea userArea) {
-        Model model = new Model();
-        model.userId = userArea.userId;
-        model.areaId = userArea.areaId;
-        model.name = userArea.name;
-        model.placeId = userArea.placeId;
-        model.level = userArea.level;
-        model.createdAt = userArea.createdAt;
-        model.updatedAt = userArea.updatedAt;
-        return model;
-    }
-
-    @NonNull
-    public static UserArea map(@NonNull Model model) {
-        UserArea userArea = new UserArea(model.userId, model.areaId);
-        userArea.name = model.name;
-        userArea.placeId = model.placeId;
-        userArea.level = model.level;
-        userArea.createdAt = model.createdAt;
-        userArea.updatedAt = model.updatedAt;
-        return userArea;
-    }
-
     @Parcel
     public static final class Model {
 
-        String userId;
-
-        String areaId;
-
-        String name;
-
-        String placeId;
+        Area area;
 
         String placeName;
 
         String placeAddress;
 
-        int level;
+        Model() {
+            this(new Area());
+        }
 
-        long createdAt = -1;
+        Model(@NonNull Area area) {
+            this.area = area;
+        }
 
-        long updatedAt = -1;
+        boolean canRemovePlace() {
+            return area.getPlaceId() != null;
+        }
+
+        boolean canSave() {
+            return area.getName() != null && area.getName().length() != 0;
+        }
     }
 }

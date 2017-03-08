@@ -128,7 +128,7 @@ public final class UserSceneFragment extends AbstractFragment<UserSceneView, Use
     }
 
     @Override
-    public void onUpdateName(@NonNull String name) {
+    public void onUpdateName(@Nullable String name) {
         textViewName.setText(name);
     }
 

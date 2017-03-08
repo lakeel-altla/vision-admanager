@@ -55,7 +55,7 @@ public final class UploadUserAreaDescriptionFileUseCase {
                      // Open the stream of the area description file as cache.
                      .flatMap(this::createCacheStream)
                      // Upload it to Firebase Storage.
-                     .flatMap(this::uploadUserAreaDescriptionFile)
+                     .flatMap(this::uploadAreaDescriptionFile)
                      // Mark the user area description in Firebase database as uploaded.
                      .flatMapCompletable(this::markAsUploaded)
                      .subscribeOn(Schedulers.io());
@@ -71,7 +71,7 @@ public final class UploadUserAreaDescriptionFileUseCase {
         });
     }
 
-    private Single<Model> uploadUserAreaDescriptionFile(
+    private Single<Model> uploadAreaDescriptionFile(
             Model model) {
         return Completable
                 .using(() -> model.stream,
@@ -87,14 +87,14 @@ public final class UploadUserAreaDescriptionFileUseCase {
 
     private Completable markAsUploaded(Model model) {
         return Completable.create(e -> {
-            userAreaDescriptionRepository.find(model.userId, model.areaDescriptionId, userAreaDescription -> {
-                if (userAreaDescription == null) {
+            userAreaDescriptionRepository.find(model.userId, model.areaDescriptionId, areaDescription -> {
+                if (areaDescription == null) {
                     throw new IllegalStateException(
-                            String.format("UserAreaDescription not found: userId = %s, areaDescriptionId = %s",
+                            String.format("AreaDescription not found: userId = %s, areaDescriptionId = %s",
                                           model.userId, model.areaDescriptionId));
                 }
-                userAreaDescription.fileUploaded = true;
-                userAreaDescriptionRepository.save(userAreaDescription);
+                areaDescription.setFileUploaded(true);
+                userAreaDescriptionRepository.save(areaDescription);
                 e.onComplete();
             }, e::onError);
         });

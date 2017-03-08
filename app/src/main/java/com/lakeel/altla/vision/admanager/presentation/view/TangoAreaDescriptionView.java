@@ -24,7 +24,7 @@ public interface TangoAreaDescriptionView {
 
     void onShowDeleteConfirmationDialog();
 
-    void onDeleted();
+    void onBackView();
 
     void onSnackbar(@StringRes int resId);
 }

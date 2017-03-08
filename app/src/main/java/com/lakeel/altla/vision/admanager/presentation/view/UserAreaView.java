@@ -10,7 +10,7 @@ public interface UserAreaView {
 
     void onUpdateAreaId(@NonNull String areaId);
 
-    void onUpdateName(@NonNull String name);
+    void onUpdateName(@Nullable String name);
 
     void onUpdatePlaceName(@Nullable String placeName);
 

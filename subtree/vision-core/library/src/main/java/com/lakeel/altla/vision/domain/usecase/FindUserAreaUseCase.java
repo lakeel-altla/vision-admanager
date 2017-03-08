@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 
 import android.support.annotation.NonNull;
 
@@ -23,15 +23,15 @@ public final class FindUserAreaUseCase {
     }
 
     @NonNull
-    public Maybe<UserArea> execute(@NonNull String areaId) {
+    public Maybe<Area> execute(@NonNull String areaId) {
         String userId = currentUserResolver.getUserId();
 
         return Maybe.create(e -> {
-            userAreaRepository.find(userId, areaId, userAreaDescription -> {
-                if (userAreaDescription != null) {
-                    e.onSuccess(userAreaDescription);
-                } else {
+            userAreaRepository.find(userId, areaId, area -> {
+                if (area == null) {
                     e.onComplete();
+                } else {
+                    e.onSuccess(area);
                 }
             }, e::onError);
         });

@@ -5,23 +5,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
-import com.lakeel.altla.vision.domain.model.UserActor;
+import com.lakeel.altla.vision.domain.model.Actor;
 
 import android.support.annotation.NonNull;
 
 public final class UserActorRepository extends BaseDatabaseRepository {
-
-    private static final Log LOG = LogFactory.getLog(UserActorRepository.class);
 
     private static final String BASE_PATH = "userActors";
 
@@ -29,21 +23,27 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         super(database);
     }
 
-    public void save(@NonNull UserActor userActor) {
+    public void save(@NonNull Actor actor) {
+        if (actor.getUserId() == null) throw new IllegalArgumentException("actor.getUserId() must be not null.");
+        if (actor.getSceneId() == null) throw new IllegalArgumentException("actor.getSceneId() must be not null.");
+
+        actor.setUpdatedAtAsLong(-1);
+
         getDatabase().getReference()
                      .child(BASE_PATH)
-                     .child(userActor.userId)
-                     .child(userActor.sceneId)
-                     .child(userActor.actorId)
-                     .setValue(map(userActor), (error, reference) -> {
+                     .child(actor.getUserId())
+                     .child(actor.getSceneId())
+                     .child(actor.getId())
+                     .setValue(actor, (error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to save: reference = %s", reference),
+                                        error.toException());
                          }
                      });
     }
 
     public void find(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId,
-                     OnSuccessListener<UserActor> onSuccessListener, OnFailureListener onFailureListener) {
+                     OnSuccessListener<Actor> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
@@ -52,11 +52,8 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             UserActor userActor = null;
-                             if (snapshot.exists()) {
-                                 userActor = map(userId, sceneId, snapshot);
-                             }
-                             if (onSuccessListener != null) onSuccessListener.onSuccess(userActor);
+                             Actor actor = snapshot.getValue(Actor.class);
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(actor);
                          }
 
                          @Override
@@ -67,24 +64,24 @@ public final class UserActorRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
-    public ObservableData<UserActor> observe(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
+    public ObservableData<Actor> observe(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
         DatabaseReference reference = getDatabase().getReference()
                                                    .child(BASE_PATH)
                                                    .child(userId)
                                                    .child(sceneId)
                                                    .child(actorId);
 
-        return new ObservableData<>(reference, snapshot -> map(userId, sceneId, snapshot));
+        return new ObservableData<>(reference, snapshot -> snapshot.getValue(Actor.class));
     }
 
     @NonNull
-    public ObservableDataList<UserActor> observeAll(@NonNull String userId, @NonNull String sceneId) {
+    public ObservableDataList<Actor> observeAll(@NonNull String userId, @NonNull String sceneId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
                                    .child(sceneId);
 
-        return new ObservableDataList<>(query, snapshot -> map(userId, sceneId, snapshot));
+        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Actor.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
@@ -95,84 +92,9 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                      .child(actorId)
                      .removeValue((error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to remove: reference = %s", reference),
+                                        error.toException());
                          }
                      });
-    }
-
-    @NonNull
-    private static Value map(@NonNull UserActor userActor) {
-        Value value = new Value();
-        value.assetType = userActor.assetType.getValue();
-        value.assetId = userActor.assetId;
-        value.name = userActor.name;
-        value.positionX = userActor.positionX;
-        value.positionY = userActor.positionY;
-        value.positionZ = userActor.positionZ;
-        value.orientationX = userActor.orientationX;
-        value.orientationY = userActor.orientationY;
-        value.orientationZ = userActor.orientationZ;
-        value.orientationW = userActor.orientationW;
-        value.scaleX = userActor.scaleX;
-        value.scaleY = userActor.scaleY;
-        value.scaleZ = userActor.scaleZ;
-        value.createdAt = ServerTimestampMapper.map(userActor.createdAt);
-        value.updatedAt = ServerValue.TIMESTAMP;
-        return value;
-    }
-
-    @NonNull
-    private static UserActor map(@NonNull String userId, @NonNull String sceneId, @NonNull DataSnapshot snapshot) {
-        Value value = snapshot.getValue(Value.class);
-        UserActor userActor = new UserActor(userId, sceneId, snapshot.getKey());
-        userActor.assetType = UserActor.AssetType.toAssetType(value.assetType);
-        userActor.assetId = value.assetId;
-        userActor.name = value.name;
-        userActor.positionX = value.positionX;
-        userActor.positionY = value.positionY;
-        userActor.positionZ = value.positionZ;
-        userActor.orientationX = value.orientationX;
-        userActor.orientationY = value.orientationY;
-        userActor.orientationZ = value.orientationZ;
-        userActor.orientationW = value.orientationW;
-        userActor.scaleX = value.scaleX;
-        userActor.scaleY = value.scaleY;
-        userActor.scaleZ = value.scaleZ;
-        userActor.createdAt = ServerTimestampMapper.map(value.createdAt);
-        userActor.updatedAt = ServerTimestampMapper.map(value.updatedAt);
-        return userActor;
-    }
-
-    public static final class Value {
-
-        public int assetType;
-
-        public String assetId;
-
-        public String name;
-
-        public double positionX;
-
-        public double positionY;
-
-        public double positionZ;
-
-        public double orientationX;
-
-        public double orientationY;
-
-        public double orientationZ;
-
-        public double orientationW;
-
-        public double scaleX = 1;
-
-        public double scaleY = 1;
-
-        public double scaleZ = 1;
-
-        public Object createdAt;
-
-        public Object updatedAt;
     }
 }

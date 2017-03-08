@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAreasUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         implements DataList.OnItemListener {
 
-    private final DataList<ItemModel> items = new DataList<>(this);
+    private final DataList<Item> items = new DataList<>(this);
 
     @Inject
     ObserveAllUserAreasUseCase observeAllUserAreasUseCase;
@@ -48,24 +48,24 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         Disposable disposable = observeAllUserAreasUseCase
                 .execute()
-                .map(this::map)
-                .concatMap(model -> {
-                    if (model.item.placeId == null) {
-                        return Observable.just(model);
+                .map(ItemEvent::new)
+                .concatMap(event -> {
+                    if (event.item.area.getPlaceId() == null) {
+                        return Observable.just(event);
                     } else {
                         return getPlaceUseCase
-                                .execute(model.item.placeId)
+                                .execute(event.item.area.getPlaceId())
                                 .map(place -> {
-                                    model.item.placeName = place.getName().toString();
-                                    model.item.placeAddress = place.getAddress().toString();
-                                    return model;
+                                    event.item.placeName = place.getName().toString();
+                                    event.item.placeAddress = place.getAddress().toString();
+                                    return event;
                                 })
                                 .toObservable();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    items.change(model.type, model.item, model.previousId);
+                .subscribe(event -> {
+                    items.change(event.type, event.item, event.previousId);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -108,27 +108,8 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
     }
 
     public void onClickItem(int position) {
-        ItemModel model = items.get(position);
-        getView().onItemSelected(model.areaId);
-    }
-
-    @NonNull
-    private EventModel map(@NonNull DataListEvent<UserArea> event) {
-        EventModel model = new EventModel();
-        model.type = event.getType();
-        model.item = map(event.getData());
-        model.previousId = event.getPreviousChildName();
-        return model;
-    }
-
-    @NonNull
-    private ItemModel map(@NonNull UserArea userArea) {
-        ItemModel model = new ItemModel();
-        model.areaId = userArea.areaId;
-        model.name = userArea.name;
-        model.placeId = userArea.placeId;
-        model.level = userArea.level;
-        return model;
+        Item item = items.get(position);
+        getView().onItemSelected(item.area.getId());
     }
 
     public final class ItemPresenter {
@@ -140,41 +121,45 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         }
 
         public void onBind(int position) {
-            ItemModel model = items.get(position);
-            itemView.onUpdateAreaId(model.areaId);
-            itemView.onUpdateName(model.name);
-            itemView.onUpdatePlaceName(model.placeName);
-            itemView.onUpdatePladeAddress(model.placeAddress);
-            itemView.onUpdateLevel(model.level);
+            Item item = items.get(position);
+            itemView.onUpdateAreaId(item.area.getId());
+            itemView.onUpdateName(item.area.getName());
+            itemView.onUpdatePlaceName(item.placeName);
+            itemView.onUpdatePladeAddress(item.placeAddress);
+            itemView.onUpdateLevel(item.area.getLevel());
         }
     }
 
-    private final class EventModel {
+    private final class ItemEvent {
 
-        DataListEvent.Type type;
+        final DataListEvent.Type type;
 
-        String previousId;
+        final Item item;
 
-        ItemModel item;
+        final String previousId;
+
+        ItemEvent(DataListEvent<Area> event) {
+            type = event.getType();
+            item = new Item(event.getData());
+            previousId = event.getPreviousChildName();
+        }
     }
 
-    private final class ItemModel implements DataList.Item {
+    private final class Item implements DataList.Item {
 
-        String areaId;
-
-        String name;
-
-        String placeId;
+        final Area area;
 
         String placeName;
 
         String placeAddress;
 
-        int level;
+        Item(@NonNull Area area) {
+            this.area = area;
+        }
 
         @Override
         public String getId() {
-            return areaId;
+            return area.getId();
         }
     }
 }

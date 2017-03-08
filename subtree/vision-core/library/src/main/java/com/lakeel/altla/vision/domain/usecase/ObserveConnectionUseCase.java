@@ -5,10 +5,10 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserConnectionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserDeviceConnectionRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.UserConnection;
+import com.lakeel.altla.vision.domain.model.DeviceConnection;
 
 import android.support.annotation.NonNull;
 
@@ -25,7 +25,7 @@ public final class ObserveConnectionUseCase {
     ConnectionRepository connectionRepository;
 
     @Inject
-    UserConnectionRepository userConnectionRepository;
+    UserDeviceConnectionRepository userDeviceConnectionRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
@@ -38,22 +38,31 @@ public final class ObserveConnectionUseCase {
     public Observable<Boolean> execute() {
         return ObservableData
                 .using(() -> connectionRepository.observe())
-                .doOnNext(connected -> LOG.d("The connection state changed: connected = %b", connected))
-                .flatMap(this::registerUserConnection)
+                .doOnNext(connected -> LOG.i("The user device connection state changed: connected = %b", connected))
+                .flatMap(this::registerUserDeviceConnection)
                 .subscribeOn(Schedulers.io());
     }
 
-    private Observable<Boolean> registerUserConnection(Boolean connected) {
+    private Observable<Boolean> registerUserDeviceConnection(Boolean connected) {
         if (connected) {
             String userId = currentUserResolver.getUserId();
             String instanceId = FirebaseInstanceId.getInstance().getId();
-            UserConnection userConnection = new UserConnection(userId, instanceId);
 
             return Observable.create(e -> {
-                userConnectionRepository.markAsOnline(userConnection);
-                LOG.i("Mark the user online: userId = %s, instanceId = %s", userId, instanceId);
-                e.onNext(true);
-                e.onComplete();
+                userDeviceConnectionRepository.find(userId, instanceId, connection -> {
+                    if (connection == null) {
+                        connection = new DeviceConnection();
+                        connection.setId(instanceId);
+                        connection.setUserId(userId);
+                    }
+                    connection.setOnline(true);
+
+                    userDeviceConnectionRepository.save(connection);
+                    userDeviceConnectionRepository.markAsOfflineWhenDisconnected(userId, instanceId);
+
+                    e.onNext(true);
+                    e.onComplete();
+                }, e::onError);
             });
         } else {
             return Observable.just(false);

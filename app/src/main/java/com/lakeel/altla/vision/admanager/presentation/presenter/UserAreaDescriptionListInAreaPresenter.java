@@ -2,14 +2,14 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionsByAreaIdUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
+import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -35,7 +35,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
     private static final String ARG_AREA_ID = "areaId";
 
-    private final DataList<ItemModel> items = new DataList<>(this);
+    private final DataList<Item> items = new DataList<>(this);
 
     private String areaId;
 
@@ -79,10 +79,10 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
         Disposable disposable1 = observeUserAreaDescriptionsByAreaIdUseCase
                 .execute(areaId)
-                .map(this::map)
+                .map(Event::new)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    items.change(model.type, model.item, model.previousId);
+                .subscribe(event -> {
+                    items.change(event.type, event.item, event.previousId);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -92,9 +92,9 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
         Disposable disposable2 = findUserAreaUseCase
                 .execute(areaId)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userArea -> {
+                .subscribe(area -> {
                     String titleFormat = resources.getString(R.string.title_format_user_area_description_list_in_area);
-                    String title = String.format(titleFormat, userArea.name);
+                    String title = String.format(titleFormat, area.getName());
                     getView().onUpdateTitle(title);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -128,8 +128,6 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     }
 
     public int getItemCount() {
-        getLog().d("getItemCount: %d", items.size());
-
         return items.size();
     }
 
@@ -138,25 +136,8 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     }
 
     public void onClickItem(int position) {
-        ItemModel model = items.get(position);
-        getView().onItemSelected(model.areaDescriptionId);
-    }
-
-    @NonNull
-    private EventModel map(@NonNull DataListEvent<UserAreaDescription> event) {
-        EventModel model = new EventModel();
-        model.type = event.getType();
-        model.item = map(event.getData());
-        model.previousId = event.getPreviousChildName();
-        return model;
-    }
-
-    @NonNull
-    private ItemModel map(@NonNull UserAreaDescription userAreaDescription) {
-        ItemModel model = new ItemModel();
-        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
-        model.name = userAreaDescription.name;
-        return model;
+        Item item = items.get(position);
+        getView().onItemSelected(item.areaDescription.getId());
     }
 
     public final class ItemPresenter {
@@ -168,30 +149,38 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
         }
 
         public void onBind(int position) {
-            ItemModel model = items.get(position);
-            itemView.onUpdateAreaDescriptionId(model.areaDescriptionId);
-            itemView.onUpdateName(model.name);
+            Item item = items.get(position);
+            itemView.onUpdateAreaDescriptionId(item.areaDescription.getId());
+            itemView.onUpdateName(item.areaDescription.getName());
         }
     }
 
-    private final class EventModel {
+    private final class Event {
 
-        DataListEvent.Type type;
+        final DataListEvent.Type type;
 
-        String previousId;
+        final Item item;
 
-        ItemModel item;
+        final String previousId;
+
+        Event(@NonNull DataListEvent<AreaDescription> event) {
+            type = event.getType();
+            item = new Item(event.getData());
+            previousId = event.getPreviousChildName();
+        }
     }
 
-    private final class ItemModel implements DataList.Item {
+    private final class Item implements DataList.Item {
 
-        String areaDescriptionId;
+        final AreaDescription areaDescription;
 
-        String name;
+        Item(@NonNull AreaDescription areaDescription) {
+            this.areaDescription = areaDescription;
+        }
 
         @Override
         public String getId() {
-            return areaDescriptionId;
+            return areaDescription.getId();
         }
     }
 }

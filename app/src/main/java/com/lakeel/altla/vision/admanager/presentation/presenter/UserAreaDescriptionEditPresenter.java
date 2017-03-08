@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
@@ -47,8 +47,6 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     private String areaDescriptionId;
 
     private Model model;
-
-    private boolean areaNameDirty;
 
     @Inject
     public UserAreaDescriptionEditPresenter() {
@@ -108,15 +106,15 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         if (model == null) {
             Disposable disposable = findUserAreaDescriptionUseCase
                     .execute(areaDescriptionId)
-                    .map(UserAreaDescriptionEditPresenter::map)
+                    .map(Model::new)
                     .flatMap(model -> {
-                        if (model.areaId == null) {
+                        if (model.areaDescription.getAreaId() == null) {
                             return Maybe.just(model);
                         } else {
                             return findUserAreaUseCase
-                                    .execute(model.areaId)
+                                    .execute(model.areaDescription.getAreaId())
                                     .map(userArea -> {
-                                        model.areaName = userArea.name;
+                                        model.areaName = userArea.getName();
                                         return model;
                                     });
                         }
@@ -125,11 +123,11 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     .subscribe(model -> {
                         this.model = model;
 
-                        getView().onUpdateTitle(model.name);
-                        getView().onUpdateName(model.name);
+                        getView().onUpdateTitle(model.areaDescription.getName());
+                        getView().onUpdateName(model.areaDescription.getName());
                         getView().onUpdateAreaName(model.areaName);
                         getView().onUpdateViewsEnabled(true);
-                        getView().onUpdateActionSave(canSave());
+                        getView().onUpdateActionSave(model.canSave());
                     }, e -> {
                         getLog().e("Failed.", e);
                         getView().onSnackbar(R.string.snackbar_failed);
@@ -139,25 +137,33 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     });
             manageDisposable(disposable);
         } else {
-            getView().onUpdateTitle(model.name);
-            getView().onUpdateName(model.name);
+            getView().onUpdateTitle(model.areaDescription.getName());
+            getView().onUpdateName(model.areaDescription.getName());
 
-            if (areaNameDirty) {
-                areaNameDirty = false;
-                Disposable disposable = findUserAreaUseCase
-                        .execute(model.areaId)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(userArea -> {
-                            model.areaName = userArea.name;
-                            getView().onUpdateAreaName(model.areaName);
-                            getView().onUpdateViewsEnabled(true);
-                            getView().onUpdateActionSave(canSave());
-                        });
-                manageDisposable(disposable);
+            if (model.areaNameDirty) {
+                if (model.areaDescription.getAreaId() == null) {
+                    model.areaName = null;
+                    model.areaNameDirty = false;
+                    getView().onUpdateAreaName(model.areaName);
+                    getView().onUpdateViewsEnabled(true);
+                    getView().onUpdateActionSave(model.canSave());
+                } else {
+                    Disposable disposable = findUserAreaUseCase
+                            .execute(model.areaDescription.getAreaId())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(userArea -> {
+                                model.areaName = userArea.getName();
+                                model.areaNameDirty = false;
+                                getView().onUpdateAreaName(model.areaName);
+                                getView().onUpdateViewsEnabled(true);
+                                getView().onUpdateActionSave(model.canSave());
+                            });
+                    manageDisposable(disposable);
+                }
             } else {
                 getView().onUpdateAreaName(model.areaName);
                 getView().onUpdateViewsEnabled(true);
-                getView().onUpdateActionSave(canSave());
+                getView().onUpdateActionSave(model.canSave());
             }
         }
     }
@@ -169,16 +175,16 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         getView().onUpdateHomeAsUpIndicator(null);
     }
 
-    public void onEditTextNameAfterTextChanged(String name) {
-        model.name = name;
+    public void onEditTextNameAfterTextChanged(String value) {
+        model.areaDescription.setName(value);
         getView().onHideNameError();
 
-        // Don't save the empty name.
-        if (name == null || name.length() == 0) {
+        // Don't save the empty value.
+        if (value == null || value.length() == 0) {
             getView().onShowNameError(R.string.input_error_name_required);
         }
 
-        getView().onUpdateActionSave(canSave());
+        getView().onUpdateActionSave(model.canSave());
     }
 
     public void onClickImageButtonSelectArea() {
@@ -187,42 +193,16 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
     public void onUserAreaSelected(@NonNull String areaId) {
         // This method will be called before Fragment#onStart().
-        model.areaId = areaId;
-        areaNameDirty = true;
-    }
-
-    @NonNull
-    public static Model map(@NonNull UserAreaDescription userAreaDescription) {
-        Model model = new Model();
-        model.userId = userAreaDescription.userId;
-        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
-        model.name = userAreaDescription.name;
-        model.fileUploaded = userAreaDescription.fileUploaded;
-        model.areaId = userAreaDescription.areaId;
-        model.createdAt = userAreaDescription.createdAt;
-        model.updatedAt = userAreaDescription.updatedAt;
-        return model;
-    }
-
-    @NonNull
-    public static UserAreaDescription map(@NonNull Model model) {
-        UserAreaDescription userAreaDescription = new UserAreaDescription(model.userId, model.areaDescriptionId);
-        userAreaDescription.name = model.name;
-        userAreaDescription.fileUploaded = model.fileUploaded;
-        userAreaDescription.areaId = model.areaId;
-        userAreaDescription.createdAt = model.createdAt;
-        userAreaDescription.updatedAt = model.updatedAt;
-        return userAreaDescription;
+        model.areaDescription.setAreaId(areaId);
+        model.areaNameDirty = true;
     }
 
     public void onActionSave() {
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
 
-        UserAreaDescription userAreaDescription = map(model);
-
         Disposable disposable = saveUserAreaDescriptionUseCase
-                .execute(userAreaDescription)
+                .execute(model.areaDescription)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     getView().onSnackbar(R.string.snackbar_done);
@@ -234,27 +214,25 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         manageDisposable(disposable);
     }
 
-    public boolean canSave() {
-        return model.name != null && model.name.length() != 0;
-    }
-
     @Parcel
     public static class Model {
 
-        String userId;
-
-        String areaDescriptionId;
-
-        String name;
-
-        boolean fileUploaded;
-
-        String areaId;
+        AreaDescription areaDescription;
 
         String areaName;
 
-        long createdAt;
+        boolean areaNameDirty;
 
-        long updatedAt;
+        Model() {
+            this(new AreaDescription());
+        }
+
+        Model(@NonNull AreaDescription areaDescription) {
+            this.areaDescription = areaDescription;
+        }
+
+        boolean canSave() {
+            return areaDescription.getName() != null && areaDescription.getName().length() != 0;
+        }
     }
 }

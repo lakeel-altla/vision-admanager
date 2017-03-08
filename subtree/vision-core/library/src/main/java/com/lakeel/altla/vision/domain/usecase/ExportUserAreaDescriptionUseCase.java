@@ -8,7 +8,7 @@ import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRep
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 
@@ -38,22 +38,23 @@ public final class ExportUserAreaDescriptionUseCase {
     }
 
     @NonNull
-    public Single<UserAreaDescription> execute(@NonNull Tango tango, @NonNull String areaDescriptionId) {
+    public Single<AreaDescription> execute(@NonNull Tango tango, @NonNull String areaDescriptionId) {
         String userId = currentUserResolver.getUserId();
 
-        return Single.<UserAreaDescription>create(e -> {
+        return Single.<AreaDescription>create(e -> {
             List<String> areaDescriptionIds = tangoAreaDescriptionIdRepository.findAll(tango);
             if (areaDescriptionIds.contains(areaDescriptionId)) {
                 TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.get(
                         tango, areaDescriptionId);
-                UserAreaDescription userAreaDescription = new UserAreaDescription(
-                        userId, TangoAreaDescriptionMetaDataHelper.getUuid(metaData));
-                userAreaDescription.name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
+                AreaDescription areaDescription = new AreaDescription();
+                areaDescription.setId(TangoAreaDescriptionMetaDataHelper.getUuid(metaData));
+                areaDescription.setUserId(userId);
+                areaDescription.setName(TangoAreaDescriptionMetaDataHelper.getName(metaData));
 
                 // Save the user area description to Firebase Database.
-                userAreaDescriptionRepository.save(userAreaDescription);
+                userAreaDescriptionRepository.save(areaDescription);
 
-                e.onSuccess(userAreaDescription);
+                e.onSuccess(areaDescription);
             } else {
                 e.onError(new IllegalStateException(
                         "Tango metadata not be found: areaDescriptionId = " + areaDescriptionId));

@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 
@@ -24,13 +24,13 @@ public final class FindUserAreaDescriptionsByAreaIdUseCase {
     }
 
     @NonNull
-    public Observable<UserAreaDescription> execute(@NonNull String areaId) {
+    public Observable<AreaDescription> execute(@NonNull String areaId) {
         String userId = currentUserResolver.getUserId();
 
-        return Observable.<UserAreaDescription>create(e -> {
-            userAreaDescriptionRepository.findByAreaId(userId, areaId, userAreaDescriptions -> {
-                for (UserAreaDescription userAreaDescription : userAreaDescriptions) {
-                    e.onNext(userAreaDescription);
+        return Observable.<AreaDescription>create(e -> {
+            userAreaDescriptionRepository.findByAreaId(userId, areaId, areaDescriptions -> {
+                for (AreaDescription areaDescription : areaDescriptions) {
+                    e.onNext(areaDescription);
                 }
                 e.onComplete();
             }, e::onError);

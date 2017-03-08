@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserSceneView;
-import com.lakeel.altla.vision.domain.model.UserScene;
+import com.lakeel.altla.vision.domain.model.Scene;
 import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserSceneUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -68,15 +68,15 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
 
         Disposable disposable = observeUserSceneUseCase
                 .execute(sceneId)
-                .map(this::map)
+                .map(Model::new)
                 .flatMap(model -> {
-                    if (model.areaId == null) {
+                    if (model.scene.getAreaId() == null) {
                         return Observable.just(model);
                     } else {
                         return findUserAreaUseCase
-                                .execute(model.areaId)
+                                .execute(model.scene.getAreaId())
                                 .map(userArea -> {
-                                    model.areaName = userArea.name;
+                                    model.areaName = userArea.getName();
                                     return model;
                                 })
                                 .toObservable();
@@ -84,12 +84,12 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateSceneId(model.sceneId);
-                    getView().onUpdateName(model.name);
+                    getView().onUpdateTitle(model.scene.getName());
+                    getView().onUpdateSceneId(model.scene.getId());
+                    getView().onUpdateName(model.scene.getName());
                     getView().onUpdateAreaName(model.areaName);
-                    getView().onUpdateCreatedAt(model.createdAt);
-                    getView().onUpdateUpdatedAt(model.updatedAt);
+                    getView().onUpdateCreatedAt(model.scene.getCreatedAtAsLong());
+                    getView().onUpdateUpdatedAt(model.scene.getUpdatedAtAsLong());
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -101,29 +101,14 @@ public final class UserScenePresenter extends BasePresenter<UserSceneView> {
         getView().onShowUserSceneEditView(sceneId);
     }
 
-    @NonNull
-    private Model map(@NonNull UserScene userScene) {
-        Model model = new Model();
-        model.sceneId = userScene.sceneId;
-        model.name = userScene.name;
-        model.areaId = userScene.areaId;
-        model.createdAt = userScene.createdAt;
-        model.updatedAt = userScene.updatedAt;
-        return model;
-    }
-
     private final class Model {
 
-        String sceneId;
-
-        String name;
-
-        String areaId;
+        final Scene scene;
 
         String areaName;
 
-        long createdAt;
-
-        long updatedAt;
+        Model(@NonNull Scene scene) {
+            this.scene = scene;
+        }
     }
 }

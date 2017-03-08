@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 public final class UserAreaDescriptionFileRepository extends BaseStorageRepository {
 
-    private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
+    private static final String BASE_PATH = "userAreaDescriptions";
 
     public UserAreaDescriptionFileRepository(@NonNull FirebaseStorage storage) {
         super(storage);
@@ -23,7 +23,7 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
     public void exists(@NonNull String userId, @NonNull String areaDescriptionId,
                        OnSuccessListener<Boolean> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
                     .child(areaDescriptionId)
                     .getMetadata()
@@ -46,7 +46,7 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                        OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                        OnProgressListener onProgressListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
                     .child(areaDescriptionId)
                     .putStream(stream)
@@ -68,7 +68,7 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
                          OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
                          OnProgressListener onProgressListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
                     .child(areaDescriptionId)
                     .getFile(destination)
@@ -89,7 +89,7 @@ public final class UserAreaDescriptionFileRepository extends BaseStorageReposito
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId,
                        OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
         getStorage().getReference()
-                    .child(PATH_USER_AREA_DESCRIPTIONS)
+                    .child(BASE_PATH)
                     .child(userId)
                     .child(areaDescriptionId)
                     .delete()

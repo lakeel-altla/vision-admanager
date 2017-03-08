@@ -57,7 +57,11 @@ public final class ObservableData<TData> implements Closeable {
                     if (snapshot.exists()) {
                         data = dataSnapshotConverter.convert(snapshot);
                     }
-                    if (onDataChangeListener != null) onDataChangeListener.onDataChange(data);
+                    if (data == null) {
+                        LOG.w("The target data not found.");
+                    } else {
+                        if (onDataChangeListener != null) onDataChangeListener.onDataChange(data);
+                    }
                 }
 
                 @Override

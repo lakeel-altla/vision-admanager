@@ -17,9 +17,9 @@ public interface UserAreaDescriptionEditView {
 
     void onUpdateTitle(@Nullable String title);
 
-    void onUpdateName(String name);
+    void onUpdateName(@Nullable String name);
 
-    void onUpdateAreaName(String areaName);
+    void onUpdateAreaName(@Nullable String areaName);
 
     void onShowNameError(@StringRes int resId);
 

@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 
@@ -20,9 +20,9 @@ public final class SaveUserAreaDescriptionUseCase {
     }
 
     @NonNull
-    public Completable execute(@NonNull UserAreaDescription userAreaDescription) {
+    public Completable execute(@NonNull AreaDescription areaDescription) {
         return Completable.create(e -> {
-            userAreaDescriptionRepository.save(userAreaDescription);
+            userAreaDescriptionRepository.save(areaDescription);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }

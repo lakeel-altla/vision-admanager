@@ -6,7 +6,7 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
@@ -129,16 +129,16 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         Disposable disposable = observeUserAreaDescriptionUseCase
                 .execute(areaDescriptionId)
-                .map(this::map)
+                .map(Model::new)
                 .flatMap(model -> {
                     // Resolve the area name
-                    if (model.areaId == null) {
+                    if (model.areaDescription.getAreaId() == null) {
                         return Observable.just(model);
                     } else {
                         return findUserAreaUseCase
-                                .execute(model.areaId)
+                                .execute(model.areaDescription.getAreaId())
                                 .map(userArea -> {
-                                    model.areaName = userArea.name;
+                                    model.areaName = userArea.getName();
                                     return model;
                                 })
                                 .toObservable();
@@ -156,16 +156,18 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
+                    fileUploaded = model.areaDescription.isFileUploaded();
+                    fileCached = model.fileCached;
                     updateActions();
-                    getView().onUpdateTitle(model.name);
-                    getView().onUpdateAreaDescriptionId(areaDescriptionId);
+                    getView().onUpdateTitle(model.areaDescription.getName());
+                    getView().onUpdateAreaDescriptionId(model.areaDescription.getId());
                     getView().onUpdateImportStatus(importStatus);
-                    getView().onUpdateFileUploaded(model.fileUploaded);
+                    getView().onUpdateFileUploaded(model.areaDescription.isFileUploaded());
                     getView().onUpdateFileCached(model.fileCached);
-                    getView().onUpdateName(model.name);
+                    getView().onUpdateName(model.areaDescription.getName());
                     getView().onUpdateAreaName(model.areaName);
-                    getView().onUpdateCreatedAt(model.createdAt);
-                    getView().onUpdateUpdatedAt(model.updatedAt);
+                    getView().onUpdateCreatedAt(model.areaDescription.getCreatedAtAsLong());
+                    getView().onUpdateUpdatedAt(model.areaDescription.getUpdatedAtAsLong());
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -274,7 +276,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                 .execute(areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    getView().onDeleted();
+                    getView().onSnackbar(R.string.snackbar_done);
+                    getView().onBackView();
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
@@ -305,31 +308,16 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
         return fileUploaded && fileCached;
     }
 
-    @NonNull
-    public Model map(@NonNull UserAreaDescription userAreaDescription) {
-        Model model = new Model();
-        model.name = userAreaDescription.name;
-        model.fileUploaded = userAreaDescription.fileUploaded;
-        model.areaId = userAreaDescription.areaId;
-        model.createdAt = userAreaDescription.createdAt;
-        model.updatedAt = userAreaDescription.updatedAt;
-        return model;
-    }
-
     private final class Model {
 
-        String name;
-
-        boolean fileUploaded;
+        final AreaDescription areaDescription;
 
         boolean fileCached;
 
-        String areaId;
-
         String areaName;
 
-        long createdAt;
-
-        long updatedAt;
+        Model(@NonNull AreaDescription areaDescription) {
+            this.areaDescription = areaDescription;
+        }
     }
 }

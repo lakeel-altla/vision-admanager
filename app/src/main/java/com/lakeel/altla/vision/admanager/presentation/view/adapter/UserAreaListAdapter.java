@@ -98,7 +98,7 @@ public final class UserAreaListAdapter extends RecyclerView.Adapter<UserAreaList
         }
 
         @Override
-        public void onUpdateName(@NonNull String name) {
+        public void onUpdateName(@Nullable String name) {
             textViewName.setText(name);
         }
 

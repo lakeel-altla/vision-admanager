@@ -5,17 +5,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 
@@ -24,9 +20,7 @@ import java.util.List;
 
 public final class UserAreaDescriptionRepository extends BaseDatabaseRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserAreaDescriptionRepository.class);
-
-    private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
+    private static final String BASE_PATH = "userAreaDescriptions";
 
     private static final String FIELD_NAME = "name";
 
@@ -36,32 +30,36 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
         super(database);
     }
 
-    public void save(@NonNull UserAreaDescription userAreaDescription) {
+    public void save(@NonNull AreaDescription areaDescription) {
+        if (areaDescription.getUserId() == null) {
+            throw new IllegalArgumentException("areaDescription.getUserId() must be not null.");
+        }
+
+        areaDescription.setUpdatedAtAsLong(-1);
+
         getDatabase().getReference()
-                     .child(PATH_USER_AREA_DESCRIPTIONS)
-                     .child(userAreaDescription.userId)
-                     .child(userAreaDescription.areaDescriptionId)
-                     .setValue(map(userAreaDescription), (error, reference) -> {
+                     .child(BASE_PATH)
+                     .child(areaDescription.getUserId())
+                     .child(areaDescription.getId())
+                     .setValue(areaDescription, (error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to save: reference = %s", reference),
+                                        error.toException());
                          }
                      });
     }
 
     public void find(@NonNull String userId, @NonNull String areaDescriptionId,
-                     OnSuccessListener<UserAreaDescription> onSuccessListener, OnFailureListener onFailureListener) {
+                     OnSuccessListener<AreaDescription> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(BASE_PATH)
                      .child(userId)
                      .child(areaDescriptionId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             UserAreaDescription userAreaDescription = null;
-                             if (snapshot.exists()) {
-                                 userAreaDescription = map(userId, snapshot);
-                             }
-                             if (onSuccessListener != null) onSuccessListener.onSuccess(userAreaDescription);
+                             AreaDescription areaDescription = snapshot.getValue(AreaDescription.class);
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(areaDescription);
                          }
 
                          @Override
@@ -71,18 +69,18 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                      });
     }
 
-    public void findAll(@NonNull String userId, OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<AreaDescription>> onSuccessListener,
                         OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(BASE_PATH)
                      .child(userId)
                      .orderByChild(FIELD_NAME)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<AreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 list.add(map(userId, child));
+                                 list.add(child.getValue(AreaDescription.class));
                              }
                              if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
@@ -95,19 +93,19 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
     }
 
     public void findByAreaId(@NonNull String userId, @NonNull String areaId,
-                             OnSuccessListener<List<UserAreaDescription>> onSuccessListener,
+                             OnSuccessListener<List<AreaDescription>> onSuccessListener,
                              OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(BASE_PATH)
                      .child(userId)
                      .orderByChild(FIELD_AREA_ID)
                      .equalTo(areaId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserAreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<AreaDescription> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 list.add(map(userId, child));
+                                 list.add(child.getValue(AreaDescription.class));
                              }
                              if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
@@ -120,81 +118,46 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
     }
 
     @NonNull
-    public ObservableData<UserAreaDescription> observe(@NonNull String userId, @NonNull String areaDescriptionId) {
+    public ObservableData<AreaDescription> observe(@NonNull String userId, @NonNull String areaDescriptionId) {
         DatabaseReference reference = getDatabase().getReference()
-                                                   .child(PATH_USER_AREA_DESCRIPTIONS)
+                                                   .child(BASE_PATH)
                                                    .child(userId)
                                                    .child(areaDescriptionId);
 
-        return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
+        return new ObservableData<>(reference, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     @NonNull
-    public ObservableDataList<UserAreaDescription> observeAll(@NonNull String userId) {
+    public ObservableDataList<AreaDescription> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
-                                   .child(PATH_USER_AREA_DESCRIPTIONS)
+                                   .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_NAME);
 
-        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     @NonNull
-    public ObservableDataList<UserAreaDescription> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
+    public ObservableDataList<AreaDescription> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
         Query query = getDatabase().getReference()
-                                   .child(PATH_USER_AREA_DESCRIPTIONS)
+                                   .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_AREA_ID)
                                    .equalTo(areaId);
 
-        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
         getDatabase().getReference()
-                     .child(PATH_USER_AREA_DESCRIPTIONS)
+                     .child(BASE_PATH)
                      .child(userId)
                      .child(areaDescriptionId)
                      .removeValue((error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to remove: reference = %s", reference),
+                                        error.toException());
                          }
                      });
-    }
-
-    @NonNull
-    private static Value map(@NonNull UserAreaDescription userAreaDescription) {
-        Value value = new Value();
-        value.name = userAreaDescription.name;
-        value.fileUploaded = userAreaDescription.fileUploaded;
-        value.areaId = userAreaDescription.areaId;
-        value.createdAt = ServerTimestampMapper.map(userAreaDescription.createdAt);
-        value.updatedAt = ServerValue.TIMESTAMP;
-        return value;
-    }
-
-    @NonNull
-    private static UserAreaDescription map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
-        Value value = snapshot.getValue(Value.class);
-        UserAreaDescription userAreaDescription = new UserAreaDescription(userId, snapshot.getKey());
-        userAreaDescription.name = value.name;
-        userAreaDescription.fileUploaded = value.fileUploaded;
-        userAreaDescription.areaId = value.areaId;
-        userAreaDescription.createdAt = ServerTimestampMapper.map(value.createdAt);
-        userAreaDescription.updatedAt = ServerTimestampMapper.map(value.updatedAt);
-        return userAreaDescription;
-    }
-
-    public static final class Value {
-
-        public String name;
-
-        public boolean fileUploaded;
-
-        public String areaId;
-
-        public Object createdAt;
-
-        public Object updatedAt;
     }
 }

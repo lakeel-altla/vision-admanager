@@ -20,7 +20,7 @@ public interface UserAreaDescriptionView {
 
     void onUpdateFileCached(boolean fileCached);
 
-    void onUpdateName(@NonNull String name);
+    void onUpdateName(@Nullable String name);
 
     void onUpdateAreaName(@Nullable String areaName);
 
@@ -48,7 +48,7 @@ public interface UserAreaDescriptionView {
 
     void onShowDeleteConfirmationDialog();
 
-    void onDeleted();
+    void onBackView();
 
     void onSnackbar(@StringRes int resId);
 }

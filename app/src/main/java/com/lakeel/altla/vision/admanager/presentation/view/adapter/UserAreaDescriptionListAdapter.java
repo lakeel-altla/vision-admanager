@@ -5,6 +5,7 @@ import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescript
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +90,7 @@ public final class UserAreaDescriptionListAdapter
         }
 
         @Override
-        public void onUpdateName(@NonNull String name) {
+        public void onUpdateName(@Nullable String name) {
             textViewName.setText(name);
         }
     }

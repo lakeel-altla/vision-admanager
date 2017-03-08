@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserActorRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.UserActor;
+import com.lakeel.altla.vision.domain.model.Actor;
 
 import android.support.annotation.NonNull;
 
@@ -26,7 +26,7 @@ public final class ObserveAllUserActorsUserCase {
     }
 
     @NonNull
-    public Observable<DataListEvent<UserActor>> execute(@NonNull String sceneId) {
+    public Observable<DataListEvent<Actor>> execute(@NonNull String sceneId) {
         String userId = currentUserResolver.getUserId();
 
         return ObservableDataList.using(() -> userActorRepository.observeAll(userId, sceneId))

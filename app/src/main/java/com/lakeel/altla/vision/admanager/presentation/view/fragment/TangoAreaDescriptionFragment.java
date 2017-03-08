@@ -40,7 +40,7 @@ public final class TangoAreaDescriptionFragment
     TangoAreaDescriptionPresenter presenter;
 
     @BindView(R.id.view_top)
-    View view;
+    View viewTop;
 
     @BindView(R.id.text_view_id)
     TextView textViewId;
@@ -200,13 +200,13 @@ public final class TangoAreaDescriptionFragment
     }
 
     @Override
-    public void onDeleted() {
+    public void onBackView() {
         interactionListener.onCloseTangoAreaDescriptionView();
     }
 
     @Override
     public void onSnackbar(@StringRes int resId) {
-        Snackbar.make(view, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     public interface InteractionListener {

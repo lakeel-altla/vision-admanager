@@ -11,7 +11,7 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.service.UserAssetImageFileUploadTaskService;
+import com.lakeel.altla.vision.admanager.presentation.service.UserImageAssetFileUploadTaskService;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
@@ -24,9 +24,9 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
@@ -35,7 +35,7 @@ import com.lakeel.altla.vision.domain.helper.CurrentApplicationResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.model.UserAssetImageFileUploadTask;
+import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
 import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAssetImageFileUploadTasksUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
@@ -87,9 +87,9 @@ public final class MainActivity extends AppCompatActivity
                    UserSceneListFragment.InteractionListener,
                    UserSceneFragment.InteractionListener,
                    UserSceneEditFragment.InteractionListener,
-                   UserAssetImageListFragment.InteractionListener,
-                   UserAssetImageFragment.InteractionListener,
-                   UserAssetImageEditFragment.InteractionListener,
+                   UserImageAssetListFragment.InteractionListener,
+                   UserImageAssetFragment.InteractionListener,
+                   UserImageAssetEditFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
@@ -285,9 +285,9 @@ public final class MainActivity extends AppCompatActivity
                 break;
             }
             case R.id.nav_user_actor_image_list: {
-                Fragment fragment = findFragment(UserAssetImageListFragment.class);
+                Fragment fragment = findFragment(UserImageAssetListFragment.class);
                 if (fragment == null) {
-                    fragment = UserAssetImageListFragment.newInstance();
+                    fragment = UserImageAssetListFragment.newInstance();
                     replaceFragment(fragment);
                 }
                 break;
@@ -431,19 +431,19 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserActorImageCreateView() {
-        UserAssetImageEditFragment fragment = UserAssetImageEditFragment.newInstance(null);
+        UserImageAssetEditFragment fragment = UserImageAssetEditFragment.newInstance(null);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserActorImageView(@NonNull String imageId) {
-        UserAssetImageFragment fragment = UserAssetImageFragment.newInstance(imageId);
+        UserImageAssetFragment fragment = UserImageAssetFragment.newInstance(imageId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
     @Override
     public void onShowUserActorImageEditView(@NonNull String imageId) {
-        UserAssetImageEditFragment fragment = UserAssetImageEditFragment.newInstance(imageId);
+        UserImageAssetEditFragment fragment = UserImageAssetEditFragment.newInstance(imageId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
@@ -519,14 +519,14 @@ public final class MainActivity extends AppCompatActivity
                     observeUserProfileDisposable = observeUserProfileUseCase
                             .execute()
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(userProfile -> {
+                            .subscribe(profile -> {
                                 // Update UI each time the user profile is updated.
-                                if (userProfile.photoUri != null) {
-                                    Uri photoUri = Uri.parse(userProfile.photoUri);
+                                if (profile.getPhotoUri() != null) {
+                                    Uri photoUri = Uri.parse(profile.getPhotoUri());
                                     Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
                                 }
-                                textViewUserName.setText(userProfile.displayName);
-                                textViewUserEmail.setText(userProfile.email);
+                                textViewUserName.setText(profile.getDisplayName());
+                                textViewUserEmail.setText(profile.getEmail());
                             }, e -> {
                                 LOG.e("Failed.", e);
                             });
@@ -539,11 +539,11 @@ public final class MainActivity extends AppCompatActivity
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(event -> {
                                 if (event.getType() == DataListEvent.Type.ADDED) {
-                                    UserAssetImageFileUploadTask task = event.getData();
+                                    ImageAssetFileUploadTask task = event.getData();
 
-                                    if (!currentDeviceResolver.getInstanceId().equals(task.instanceId)) return;
+                                    if (!currentDeviceResolver.getInstanceId().equals(task.getInstanceId())) return;
 
-                                    Intent intent = UserAssetImageFileUploadTaskService.createIntent(
+                                    Intent intent = UserImageAssetFileUploadTaskService.createIntent(
                                             getApplicationContext(), task);
                                     startService(intent);
                                 }

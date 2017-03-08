@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserActorRepository;
-import com.lakeel.altla.vision.domain.model.UserActor;
+import com.lakeel.altla.vision.domain.model.Actor;
 
 import android.support.annotation.NonNull;
 
@@ -20,9 +20,9 @@ public final class SaveUserActorUseCase {
     }
 
     @NonNull
-    public Completable execute(@NonNull UserActor userActor) {
+    public Completable execute(@NonNull Actor actor) {
         return Completable.create(e -> {
-            userActorRepository.save(userActor);
+            userActorRepository.save(actor);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }

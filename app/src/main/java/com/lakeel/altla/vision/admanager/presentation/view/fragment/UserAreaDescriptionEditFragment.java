@@ -198,12 +198,12 @@ public final class UserAreaDescriptionEditFragment
     }
 
     @Override
-    public void onUpdateName(String name) {
+    public void onUpdateName(@Nullable String name) {
         textInputEditTextName.setText(name);
     }
 
     @Override
-    public void onUpdateAreaName(String areaName) {
+    public void onUpdateAreaName(@Nullable String areaName) {
         textViewAreaName.setText(areaName);
     }
 

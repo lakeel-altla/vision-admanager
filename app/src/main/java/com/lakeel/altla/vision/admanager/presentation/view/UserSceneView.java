@@ -10,7 +10,7 @@ public interface UserSceneView {
 
     void onUpdateSceneId(@NonNull String sceneId);
 
-    void onUpdateName(@NonNull String name);
+    void onUpdateName(@Nullable String name);
 
     void onUpdateAreaName(@Nullable String areaName);
 

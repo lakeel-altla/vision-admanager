@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".presentation.service.UserAssetImageFileUploadTaskService"/>
+        <service android:name=".presentation.service.UserImageAssetFileUploadTaskService"/>
 
     </application>
 

@@ -5,17 +5,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.mapper.ServerTimestampMapper;
-import com.lakeel.altla.vision.domain.model.UserScene;
+import com.lakeel.altla.vision.domain.model.Scene;
 
 import android.support.annotation.NonNull;
 
@@ -24,9 +20,7 @@ import java.util.List;
 
 public final class UserSceneRepository extends BaseDatabaseRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserSceneRepository.class);
-
-    private static final String PATH_USER_SCENES = "userScenes";
+    private static final String BASE_PATH = "userScenes";
 
     private static final String FIELD_NAME = "name";
 
@@ -36,32 +30,34 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
         super(database);
     }
 
-    public void save(@NonNull UserScene userScene) {
+    public void save(@NonNull Scene scene) {
+        if (scene.getUserId() == null) throw new IllegalArgumentException("scene.getUserId() must be not null.");
+
+        scene.setUpdatedAtAsLong(-1);
+
         getDatabase().getReference()
-                     .child(PATH_USER_SCENES)
-                     .child(userScene.userId)
-                     .child(userScene.sceneId)
-                     .setValue(map(userScene), (error, reference) -> {
+                     .child(BASE_PATH)
+                     .child(scene.getUserId())
+                     .child(scene.getId())
+                     .setValue(scene, (error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to save: reference = %s", reference),
+                                        error.toException());
                          }
                      });
     }
 
-    public void find(@NonNull String userId, @NonNull String sceneId, OnSuccessListener<UserScene> onSuccessListener,
+    public void find(@NonNull String userId, @NonNull String sceneId, OnSuccessListener<Scene> onSuccessListener,
                      OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_SCENES)
+                     .child(BASE_PATH)
                      .child(userId)
                      .child(sceneId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             UserScene userScene = null;
-                             if (snapshot.exists()) {
-                                 userScene = map(userId, snapshot);
-                             }
-                             if (onSuccessListener != null) onSuccessListener.onSuccess(userScene);
+                             Scene scene = snapshot.getValue(Scene.class);
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(scene);
                          }
 
                          @Override
@@ -71,18 +67,18 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void findAll(@NonNull String userId, OnSuccessListener<List<UserScene>> onSuccessListener,
+    public void findAll(@NonNull String userId, OnSuccessListener<List<Scene>> onSuccessListener,
                         OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_SCENES)
+                     .child(BASE_PATH)
                      .child(userId)
                      .orderByChild(FIELD_NAME)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserScene> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<Scene> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 list.add(map(userId, child));
+                                 list.add(child.getValue(Scene.class));
                              }
                              if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
@@ -95,19 +91,19 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
     }
 
     public void findByAreaId(@NonNull String userId, @NonNull String areaId,
-                             OnSuccessListener<List<UserScene>> onSuccessListener,
+                             OnSuccessListener<List<Scene>> onSuccessListener,
                              OnFailureListener onFailureListener) {
         getDatabase().getReference()
-                     .child(PATH_USER_SCENES)
+                     .child(BASE_PATH)
                      .child(userId)
                      .orderByChild(FIELD_AREA_ID)
                      .equalTo(areaId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {
-                             List<UserScene> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             List<Scene> list = new ArrayList<>((int) snapshot.getChildrenCount());
                              for (DataSnapshot child : snapshot.getChildren()) {
-                                 list.add(map(userId, child));
+                                 list.add(child.getValue(Scene.class));
                              }
                              if (onSuccessListener != null) onSuccessListener.onSuccess(list);
                          }
@@ -120,77 +116,46 @@ public final class UserSceneRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
-    public ObservableData<UserScene> observe(@NonNull String userId, @NonNull String sceneId) {
+    public ObservableData<Scene> observe(@NonNull String userId, @NonNull String sceneId) {
         DatabaseReference reference = getDatabase().getReference()
-                                                   .child(PATH_USER_SCENES)
+                                                   .child(BASE_PATH)
                                                    .child(userId)
                                                    .child(sceneId);
 
-        return new ObservableData<>(reference, snapshot -> map(userId, snapshot));
+        return new ObservableData<>(reference, snapshot -> snapshot.getValue(Scene.class));
     }
 
     @NonNull
-    public ObservableDataList<UserScene> observeAll(@NonNull String userId) {
+    public ObservableDataList<Scene> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
-                                   .child(PATH_USER_SCENES)
+                                   .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_NAME);
 
-        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Scene.class));
     }
 
     @NonNull
-    public ObservableDataList<UserScene> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
+    public ObservableDataList<Scene> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
         Query query = getDatabase().getReference()
-                                   .child(PATH_USER_SCENES)
+                                   .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_AREA_ID)
                                    .equalTo(areaId);
 
-        return new ObservableDataList<>(query, snapshot -> map(userId, snapshot));
+        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Scene.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String sceneId) {
         getDatabase().getReference()
-                     .child(PATH_USER_SCENES)
+                     .child(BASE_PATH)
                      .child(userId)
                      .child(sceneId)
                      .removeValue((error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                             getLog().e(String.format("Failed to remove: reference = %s", reference),
+                                        error.toException());
                          }
                      });
-    }
-
-    @NonNull
-    public static Value map(@NonNull UserScene userScene) {
-        Value value = new Value();
-        value.name = userScene.name;
-        value.areaId = userScene.areaId;
-        value.createdAt = ServerTimestampMapper.map(userScene.createdAt);
-        value.updatedAt = ServerValue.TIMESTAMP;
-        return value;
-    }
-
-    @NonNull
-    private static UserScene map(@NonNull String userId, @NonNull DataSnapshot snapshot) {
-        Value value = snapshot.getValue(Value.class);
-        UserScene userScene = new UserScene(userId, snapshot.getKey());
-        userScene.name = value.name;
-        userScene.areaId = value.areaId;
-        userScene.createdAt = ServerTimestampMapper.map(value.createdAt);
-        userScene.updatedAt = ServerTimestampMapper.map(value.updatedAt);
-        return userScene;
-    }
-
-    public static final class Value {
-
-        public String name;
-
-        public String areaId;
-
-        public Object createdAt;
-
-        public Object updatedAt;
     }
 }

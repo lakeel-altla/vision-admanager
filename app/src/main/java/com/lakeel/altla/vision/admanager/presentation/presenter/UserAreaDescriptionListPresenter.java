@@ -1,13 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
+import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
 import android.support.annotation.NonNull;
 
@@ -22,7 +22,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     @Inject
     ObserveAllUserAreaDescriptionsUseCase observeAllUserAreaDescriptionsUseCase;
 
-    private final DataList<ItemModel> items = new DataList<>(this);
+    private final DataList<Item> items = new DataList<>(this);
 
     @Inject
     public UserAreaDescriptionListPresenter() {
@@ -43,7 +43,7 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
         Disposable disposable = observeAllUserAreaDescriptionsUseCase
                 .execute()
-                .map(this::map)
+                .map(Event::new)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.change(model.type, model.item, model.previousId);
@@ -88,25 +88,8 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
     }
 
     public void onClickItem(int position) {
-        ItemModel model = items.get(position);
-        getView().onItemSelected(model.areaDescriptionId);
-    }
-
-    @NonNull
-    private EventModel map(@NonNull DataListEvent<UserAreaDescription> event) {
-        EventModel model = new EventModel();
-        model.type = event.getType();
-        model.item = map(event.getData());
-        model.previousId = event.getPreviousChildName();
-        return model;
-    }
-
-    @NonNull
-    private ItemModel map(@NonNull UserAreaDescription userAreaDescription) {
-        ItemModel model = new ItemModel();
-        model.areaDescriptionId = userAreaDescription.areaDescriptionId;
-        model.name = userAreaDescription.name;
-        return model;
+        Item item = items.get(position);
+        getView().onItemSelected(item.areaDescription.getId());
     }
 
     public final class ItemPresenter {
@@ -118,30 +101,38 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
         }
 
         public void onBind(int position) {
-            ItemModel model = items.get(position);
-            itemView.onUpdateAreaDescriptionId(model.areaDescriptionId);
-            itemView.onUpdateName(model.name);
+            Item item = items.get(position);
+            itemView.onUpdateAreaDescriptionId(item.areaDescription.getId());
+            itemView.onUpdateName(item.areaDescription.getName());
         }
     }
 
-    private final class EventModel {
+    private final class Event {
 
-        DataListEvent.Type type;
+        final DataListEvent.Type type;
 
-        String previousId;
+        final Item item;
 
-        ItemModel item;
+        final String previousId;
+
+        Event(@NonNull DataListEvent<AreaDescription> event) {
+            type = event.getType();
+            item = new Item(event.getData());
+            previousId = event.getPreviousChildName();
+        }
     }
 
-    private final class ItemModel implements DataList.Item {
+    private final class Item implements DataList.Item {
 
-        String areaDescriptionId;
+        final AreaDescription areaDescription;
 
-        String name;
+        Item(@NonNull AreaDescription areaDescription) {
+            this.areaDescription = areaDescription;
+        }
 
         @Override
         public String getId() {
-            return areaDescriptionId;
+            return areaDescription.getId();
         }
     }
 }

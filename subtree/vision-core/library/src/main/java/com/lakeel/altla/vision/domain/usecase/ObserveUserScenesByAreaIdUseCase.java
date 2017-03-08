@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.UserScene;
+import com.lakeel.altla.vision.domain.model.Scene;
 
 import android.support.annotation.NonNull;
 
@@ -26,7 +26,7 @@ public final class ObserveUserScenesByAreaIdUseCase {
     }
 
     @NonNull
-    public Observable<DataListEvent<UserScene>> execute(@NonNull String areaId) {
+    public Observable<DataListEvent<Scene>> execute(@NonNull String areaId) {
         String userId = currentUserResolver.getUserId();
 
         return ObservableDataList.using(() -> userSceneRepository.observeByAreaId(userId, areaId))

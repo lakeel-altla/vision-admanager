@@ -221,7 +221,7 @@ public final class UserAreaDescriptionFragment
     }
 
     @Override
-    public void onUpdateName(@NonNull String name) {
+    public void onUpdateName(@Nullable String name) {
         textViewName.setText(name);
     }
 
@@ -320,7 +320,7 @@ public final class UserAreaDescriptionFragment
     }
 
     @Override
-    public void onDeleted() {
+    public void onBackView() {
         interactionListener.onBackView();
     }
 

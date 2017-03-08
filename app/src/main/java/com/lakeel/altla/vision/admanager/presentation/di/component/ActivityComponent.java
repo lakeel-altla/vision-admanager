@@ -9,9 +9,9 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAssetImageListFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -69,9 +69,9 @@ public interface ActivityComponent {
 
     void inject(UserSceneEditFragment fragment);
 
-    void inject(UserAssetImageListFragment fragment);
+    void inject(UserImageAssetListFragment fragment);
 
-    void inject(UserAssetImageFragment fragment);
+    void inject(UserImageAssetFragment fragment);
 
-    void inject(UserAssetImageEditFragment fragment);
+    void inject(UserImageAssetEditFragment fragment);
 }

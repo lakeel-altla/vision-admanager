@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepos
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 
@@ -26,7 +26,7 @@ public final class ObserveAllUserAreaDescriptionsUseCase {
     }
 
     @NonNull
-    public Observable<DataListEvent<UserAreaDescription>> execute() {
+    public Observable<DataListEvent<AreaDescription>> execute() {
         String userId = currentUserResolver.getUserId();
 
         return ObservableDataList.using(() -> userAreaDescriptionRepository.observeAll(userId))

@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 
 import android.support.annotation.NonNull;
 
@@ -25,7 +25,7 @@ public final class ObserveUserAreaUseCase {
     }
 
     @NonNull
-    public Observable<UserArea> execute(@NonNull String areaId) {
+    public Observable<Area> execute(@NonNull String areaId) {
         String userId = currentUserResolver.getUserId();
 
         return ObservableData

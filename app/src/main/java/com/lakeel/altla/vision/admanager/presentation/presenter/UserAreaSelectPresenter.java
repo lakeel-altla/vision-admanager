@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 
 public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectView> {
 
-    private final List<ItemModel> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     @Inject
     FindAllUserAreasUseCase findAllUserAreasUseCase;
@@ -49,24 +49,24 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
 
         Disposable disposable = findAllUserAreasUseCase
                 .execute()
-                .map(this::map)
-                .concatMap(model -> {
-                    if (model.placeId == null) {
-                        return Observable.just(model);
+                .map(Item::new)
+                .concatMap(item -> {
+                    if (item.area.getPlaceId() == null) {
+                        return Observable.just(item);
                     } else {
                         return getPlaceUseCase
-                                .execute(model.placeId)
+                                .execute(item.area.getPlaceId())
                                 .map(place -> {
-                                    model.placeName = place.getName().toString();
-                                    model.placeAddress = place.getAddress().toString();
-                                    return model;
+                                    item.placeName = place.getName().toString();
+                                    item.placeAddress = place.getAddress().toString();
+                                    return item;
                                 })
                                 .toObservable();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    items.add(model);
+                .subscribe(item -> {
+                    items.add(item);
                     getView().onItemInserted(items.size() - 1);
                 }, e -> {
                     getLog().e("Failed.", e);
@@ -84,18 +84,8 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
     }
 
     public void onClickItem(int position) {
-        ItemModel model = items.get(position);
-        getView().onItemSelected(model.areaId);
-    }
-
-    @NonNull
-    private ItemModel map(@NonNull UserArea userArea) {
-        ItemModel model = new ItemModel();
-        model.areaId = userArea.areaId;
-        model.name = userArea.name;
-        model.placeId = userArea.placeId;
-        model.level = userArea.level;
-        return model;
+        Item item = items.get(position);
+        getView().onItemSelected(item.area.getId());
     }
 
     public final class ItemPresenter {
@@ -107,27 +97,25 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
         }
 
         public void onBind(int position) {
-            ItemModel model = items.get(position);
-            itemView.onUpdateAreaId(model.areaId);
-            itemView.onUpdateName(model.name);
-            itemView.onUpdatePlaceName(model.placeName);
-            itemView.onUpdatePladeAddress(model.placeAddress);
-            itemView.onUpdateLevel(model.level);
+            Item item = items.get(position);
+            itemView.onUpdateAreaId(item.area.getId());
+            itemView.onUpdateName(item.area.getName());
+            itemView.onUpdatePlaceName(item.placeName);
+            itemView.onUpdatePladeAddress(item.placeAddress);
+            itemView.onUpdateLevel(item.area.getLevel());
         }
     }
 
-    private final class ItemModel {
+    private final class Item {
 
-        String areaId;
-
-        String name;
-
-        String placeId;
+        final Area area;
 
         String placeName;
 
         String placeAddress;
 
-        int level;
+        Item(@NonNull Area area) {
+            this.area = area;
+        }
     }
 }

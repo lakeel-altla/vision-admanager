@@ -165,8 +165,8 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                 .execute(tangoWrapper.getTango(), areaDescriptionId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    getView().onDeleted();
                     getView().onSnackbar(R.string.snackbar_done);
+                    getView().onBackView();
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);

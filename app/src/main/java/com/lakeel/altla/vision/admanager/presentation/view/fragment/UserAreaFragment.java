@@ -135,7 +135,7 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     }
 
     @Override
-    public void onUpdateName(@NonNull String name) {
+    public void onUpdateName(@Nullable String name) {
         textViewName.setText(name);
     }
 
