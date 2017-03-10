@@ -62,12 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-    <Button android:id="@+id/button_user_scenes_in_area"
-            android:text="@string/button_user_scenes_in_area"
-            android:layout_marginTop="@dimen/content_vertical_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
     <TextView android:text="@string/label_created_at"
               android:textAppearance="@style/TextAppearance.AppCompat.Body1"
               android:layout_marginTop="@dimen/content_vertical_margin"

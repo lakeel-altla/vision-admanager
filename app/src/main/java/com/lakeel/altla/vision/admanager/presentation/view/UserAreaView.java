@@ -26,7 +26,5 @@ public interface UserAreaView {
 
     void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId);
 
-    void onShowUserSceneListInAreaView(@NonNull String areaId);
-
     void onSnackbar(@StringRes int resId);
 }

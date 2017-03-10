@@ -13,7 +13,6 @@ import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileReposi
 import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileUploadTaskRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserSceneRepository;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Module;
@@ -62,12 +61,6 @@ public final class FirebaseRepositoryModule {
     @Provides
     UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
         return new UserAreaRepository(database);
-    }
-
-    @ActivityScope
-    @Provides
-    UserSceneRepository provideUserSceneRepository(FirebaseDatabase database) {
-        return new UserSceneRepository(database);
     }
 
     @ActivityScope

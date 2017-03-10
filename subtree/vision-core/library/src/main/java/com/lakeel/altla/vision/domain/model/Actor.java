@@ -1,22 +1,27 @@
 package com.lakeel.altla.vision.domain.model;
 
-import com.google.firebase.database.Exclude;
-
 import org.parceler.Parcel;
-import org.parceler.Transient;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 @Parcel(Parcel.Serialization.BEAN)
 public final class Actor extends BaseEntity {
 
-    private String sceneId;
+    public static final int ASSET_TYPE_UNKNOWN = 0;
 
-    @Transient
-    private AssetType assetType;
+    public static final int ASSET_TYPE_IMAGE = 1;
+
+    public static final int LAYER_COMMERCIAL = 0;
+
+    public static final int LAYER_NONCOMMERCIAL = 1;
+
+    private String areaId;
+
+    private int assetType;
 
     private String assetId;
+
+    private int layer;
 
     private String name;
 
@@ -41,26 +46,20 @@ public final class Actor extends BaseEntity {
     private double scaleZ = 1;
 
     @Nullable
-    public String getSceneId() {
-        return sceneId;
+    public String getAreaId() {
+        return areaId;
     }
 
-    public void setSceneId(@Nullable String sceneId) {
-        this.sceneId = sceneId;
+    public void setAreaId(@Nullable String areaId) {
+        this.areaId = areaId;
     }
 
-    @Exclude
-    @Nullable
-    public AssetType getAssetType() {
+    public int getAssetType() {
         return assetType;
     }
 
-    public void setAssetType(@Nullable AssetType assetType) {
+    public void setAssetType(int assetType) {
         this.assetType = assetType;
-    }
-
-    public int getAssetTypeAsInt() {
-        return assetType == null ? AssetType.UNKNOWN.getValue() : assetType.getValue();
     }
 
     @Nullable
@@ -70,6 +69,14 @@ public final class Actor extends BaseEntity {
 
     public void setAssetId(@Nullable String assetId) {
         this.assetId = assetId;
+    }
+
+    public int getLayer() {
+        return layer;
+    }
+
+    public void setLayer(int layer) {
+        this.layer = layer;
     }
 
     @Nullable
@@ -159,31 +166,5 @@ public final class Actor extends BaseEntity {
 
     public void setScaleZ(double scaleZ) {
         this.scaleZ = scaleZ;
-    }
-
-    public enum AssetType {
-        UNKNOWN(0),
-        IMAGE(1);
-
-        private final int value;
-
-        AssetType(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        @NonNull
-        public static AssetType toAssetType(int value) {
-            for (AssetType assetType : AssetType.values()) {
-                if (assetType.value == value) {
-                    return assetType;
-                }
-            }
-
-            throw new IllegalArgumentException("Unknown value: " + value);
-        }
     }
 }

@@ -175,11 +175,6 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     }
 
     @Override
-    public void onShowUserSceneListInAreaView(@NonNull String areaId) {
-        interactionListener.onShowUserSceneListInAreaView(areaId);
-    }
-
-    @Override
     public void onSnackbar(@StringRes int resId) {
         Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
@@ -189,17 +184,10 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
         presenter.onClickButtonUserAreaDescriptionsInArea();
     }
 
-    @OnClick(R.id.button_user_scenes_in_area)
-    void onClickButtonUserScenesInArea() {
-        presenter.onClickButtonUserScenesInArea();
-    }
-
     public interface InteractionListener {
 
         void onShowUserAreaEditView(@NonNull String areaId);
 
         void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId);
-
-        void onShowUserSceneListInAreaView(@NonNull String areaId);
     }
 }

@@ -9,9 +9,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
@@ -20,10 +17,9 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEdit
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSelectFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListInAreaFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
@@ -60,14 +56,6 @@ public interface ActivityComponent {
     void inject(UserAreaSelectFragment fragment);
 
     void inject(UserAreaDescriptionListInAreaFragment fragment);
-
-    void inject(UserSceneListFragment fragment);
-
-    void inject(UserSceneListInAreaFragment fragment);
-
-    void inject(UserSceneFragment fragment);
-
-    void inject(UserSceneEditFragment fragment);
 
     void inject(UserImageAssetListFragment fragment);
 

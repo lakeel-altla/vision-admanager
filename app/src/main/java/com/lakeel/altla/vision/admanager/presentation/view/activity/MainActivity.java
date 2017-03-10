@@ -27,10 +27,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSele
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneEditFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserSceneListInAreaFragment;
 import com.lakeel.altla.vision.domain.helper.CurrentApplicationResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
@@ -79,14 +75,10 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaFragment.InteractionListener,
                    UserAreaEditFragment.InteractionListener,
                    UserAreaDescriptionListInAreaFragment.InteractionListener,
-                   UserSceneListInAreaFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
                    UserAreaDescriptionFragment.InteractionListener,
                    UserAreaDescriptionEditFragment.InteractionListener,
                    UserAreaSelectFragment.InteractionListener,
-                   UserSceneListFragment.InteractionListener,
-                   UserSceneFragment.InteractionListener,
-                   UserSceneEditFragment.InteractionListener,
                    UserImageAssetListFragment.InteractionListener,
                    UserImageAssetFragment.InteractionListener,
                    UserImageAssetEditFragment.InteractionListener,
@@ -276,14 +268,6 @@ public final class MainActivity extends AppCompatActivity
                 }
                 break;
             }
-            case R.id.nav_user_scene_list: {
-                Fragment fragment = findFragment(UserSceneListFragment.class);
-                if (fragment == null) {
-                    fragment = UserSceneListFragment.newInstance();
-                    replaceFragment(fragment);
-                }
-                break;
-            }
             case R.id.nav_user_actor_image_list: {
                 Fragment fragment = findFragment(UserImageAssetListFragment.class);
                 if (fragment == null) {
@@ -388,30 +372,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowUserSceneListInAreaView(@NonNull String areaId) {
-        UserSceneListInAreaFragment fragment = UserSceneListInAreaFragment.newInstance(areaId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    @Override
-    public void onShowUserSceneCreateView() {
-        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(null);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    @Override
-    public void onShowUserSceneView(@NonNull String sceneId) {
-        UserSceneFragment fragment = UserSceneFragment.newInstance(sceneId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    @Override
-    public void onShowUserSceneEditView(@NonNull String sceneId) {
-        UserSceneEditFragment fragment = UserSceneEditFragment.newInstance(sceneId);
-        replaceFragmentAndAddToBackStack(fragment);
-    }
-
-    @Override
     public void onUserAreaSelected(@NonNull String areaId) {
         getSupportFragmentManager().popBackStack();
 
@@ -420,12 +380,6 @@ public final class MainActivity extends AppCompatActivity
                 (UserAreaDescriptionEditFragment) findFragment(UserAreaDescriptionEditFragment.class);
         if (userAreaDescriptionEditFragment != null) {
             userAreaDescriptionEditFragment.onUserAreaSelected(areaId);
-        }
-
-        // if you should back to the user scene edit view.
-        UserSceneEditFragment userSceneEditFragment = (UserSceneEditFragment) findFragment(UserSceneEditFragment.class);
-        if (userSceneEditFragment != null) {
-            userSceneEditFragment.onUserAreaSelected(areaId);
         }
     }
 
