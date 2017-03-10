@@ -11,8 +11,6 @@ public final class CurrentProject extends BaseEntity {
 
     private String areaDescriptionId;
 
-    private String sceneId;
-
     @Nullable
     public String getAreaId() {
         return areaId;
@@ -29,14 +27,5 @@ public final class CurrentProject extends BaseEntity {
 
     public void setAreaDescriptionId(@Nullable String areaDescriptionId) {
         this.areaDescriptionId = areaDescriptionId;
-    }
-
-    @Nullable
-    public String getSceneId() {
-        return sceneId;
-    }
-
-    public void setSceneId(@Nullable String sceneId) {
-        this.sceneId = sceneId;
     }
 }
