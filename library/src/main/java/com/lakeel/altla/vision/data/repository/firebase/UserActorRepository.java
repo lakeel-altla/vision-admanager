@@ -25,14 +25,14 @@ public final class UserActorRepository extends BaseDatabaseRepository {
 
     public void save(@NonNull Actor actor) {
         if (actor.getUserId() == null) throw new IllegalArgumentException("actor.getUserId() must be not null.");
-        if (actor.getSceneId() == null) throw new IllegalArgumentException("actor.getSceneId() must be not null.");
+        if (actor.getAreaId() == null) throw new IllegalArgumentException("actor.getAreaId() must be not null.");
 
         actor.setUpdatedAtAsLong(-1);
 
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(actor.getUserId())
-                     .child(actor.getSceneId())
+                     .child(actor.getAreaId())
                      .child(actor.getId())
                      .setValue(actor, (error, reference) -> {
                          if (error != null) {
@@ -42,12 +42,12 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId,
+    public void find(@NonNull String userId, @NonNull String areaId, @NonNull String actorId,
                      OnSuccessListener<Actor> onSuccessListener, OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
-                     .child(sceneId)
+                     .child(areaId)
                      .child(actorId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
@@ -64,31 +64,31 @@ public final class UserActorRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
-    public ObservableData<Actor> observe(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
+    public ObservableData<Actor> observe(@NonNull String userId, @NonNull String areaId, @NonNull String actorId) {
         DatabaseReference reference = getDatabase().getReference()
                                                    .child(BASE_PATH)
                                                    .child(userId)
-                                                   .child(sceneId)
+                                                   .child(areaId)
                                                    .child(actorId);
 
         return new ObservableData<>(reference, snapshot -> snapshot.getValue(Actor.class));
     }
 
     @NonNull
-    public ObservableDataList<Actor> observeAll(@NonNull String userId, @NonNull String sceneId) {
+    public ObservableDataList<Actor> observeAll(@NonNull String userId, @NonNull String areaId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
-                                   .child(sceneId);
+                                   .child(areaId);
 
         return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Actor.class));
     }
 
-    public void delete(@NonNull String userId, @NonNull String sceneId, @NonNull String actorId) {
+    public void delete(@NonNull String userId, @NonNull String areaId, @NonNull String actorId) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
-                     .child(sceneId)
+                     .child(areaId)
                      .child(actorId)
                      .removeValue((error, reference) -> {
                          if (error != null) {

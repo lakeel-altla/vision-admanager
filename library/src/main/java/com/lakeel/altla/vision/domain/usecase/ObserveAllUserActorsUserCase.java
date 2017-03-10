@@ -26,10 +26,10 @@ public final class ObserveAllUserActorsUserCase {
     }
 
     @NonNull
-    public Observable<DataListEvent<Actor>> execute(@NonNull String sceneId) {
+    public Observable<DataListEvent<Actor>> execute(@NonNull String areaId) {
         String userId = currentUserResolver.getUserId();
 
-        return ObservableDataList.using(() -> userActorRepository.observeAll(userId, sceneId))
+        return ObservableDataList.using(() -> userActorRepository.observeAll(userId, areaId))
                                  .subscribeOn(Schedulers.io());
     }
 }
