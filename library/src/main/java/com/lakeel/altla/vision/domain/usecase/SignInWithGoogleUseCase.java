@@ -11,8 +11,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
-import com.lakeel.altla.vision.domain.model.UserDevice;
-import com.lakeel.altla.vision.domain.model.UserProfile;
+import com.lakeel.altla.vision.domain.model.Device;
+import com.lakeel.altla.vision.domain.model.Profile;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -58,17 +58,19 @@ public final class SignInWithGoogleUseCase {
     @NonNull
     private Single<FirebaseUser> ensureUserProfile(@NonNull FirebaseUser firebaseUser) {
         // Check if the user profile exists.
-        return Single.create(e -> userProfileRepository.find(firebaseUser.getUid(), userProfile -> {
+        return Single.create(e -> userProfileRepository.find(firebaseUser.getUid(), profile -> {
             // Create the user profile if it does not exist.
-            if (userProfile == null) {
-                userProfile = new UserProfile(firebaseUser.getUid());
-                userProfile.displayName = firebaseUser.getDisplayName();
-                userProfile.email = firebaseUser.getEmail();
+            if (profile == null) {
+                profile = new Profile();
+                profile.setId(firebaseUser.getUid());
+                profile.setUserId(firebaseUser.getUid());
+                profile.setDisplayName(firebaseUser.getDisplayName());
+                profile.setEmail(firebaseUser.getEmail());
                 if (firebaseUser.getPhotoUrl() != null) {
-                    userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
+                    profile.setPhotoUri(firebaseUser.getPhotoUrl().toString());
                 }
 
-                userProfileRepository.save(userProfile);
+                userProfileRepository.save(profile);
             }
             e.onSuccess(firebaseUser);
         }, e::onError));
@@ -77,13 +79,15 @@ public final class SignInWithGoogleUseCase {
     @NonNull
     private Completable saveUserDevice(@NonNull FirebaseUser firebaseUser) {
         return Completable.create(e -> {
-            UserDevice userDevice = new UserDevice(firebaseUser.getUid(), FirebaseInstanceId.getInstance().getId());
-            userDevice.createdAt = FirebaseInstanceId.getInstance().getCreationTime();
-            userDevice.osName = "android";
-            userDevice.osModel = Build.MODEL;
-            userDevice.osVersion = Build.VERSION.RELEASE;
+            Device device = new Device();
+            device.setId(FirebaseInstanceId.getInstance().getId());
+            device.setUserId(firebaseUser.getUid());
+            device.setCreatedAtAsLong(FirebaseInstanceId.getInstance().getCreationTime());
+            device.setOsName("android");
+            device.setOsModel(Build.MODEL);
+            device.setOsVersion(Build.VERSION.RELEASE);
 
-            userDeviceRepository.save(userDevice);
+            userDeviceRepository.save(device);
 
             e.onComplete();
         });

@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 
 public final class ConnectionRepository extends BaseDatabaseRepository {
 
-    private static final String PATH_INFO_CONNECTED = ".info/connected";
+    private static final String PATH = ".info/connected";
 
     public ConnectionRepository(@NonNull FirebaseDatabase database) {
         super(database);
@@ -17,7 +17,7 @@ public final class ConnectionRepository extends BaseDatabaseRepository {
 
     @NonNull
     public ObservableData<Boolean> observe() {
-        DatabaseReference reference = getDatabase().getReference(PATH_INFO_CONNECTED);
+        DatabaseReference reference = getDatabase().getReference(PATH);
         return new ObservableData<>(reference, snapshot -> snapshot.getValue(Boolean.class));
     }
 }

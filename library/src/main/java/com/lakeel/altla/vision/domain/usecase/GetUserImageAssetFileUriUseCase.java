@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.data.repository.firebase.UserAssetImageFileRepository;
+import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 
 import android.net.Uri;
@@ -11,16 +11,16 @@ import javax.inject.Inject;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
-public final class GetUserAssetImageFileUriUseCase {
+public final class GetUserImageAssetFileUriUseCase {
 
     @Inject
-    UserAssetImageFileRepository userAssetImageFileRepository;
+    UserImageAssetFileRepository userImageAssetFileRepository;
 
     @Inject
     CurrentUserResolver currentUserResolver;
 
     @Inject
-    public GetUserAssetImageFileUriUseCase() {
+    public GetUserImageAssetFileUriUseCase() {
     }
 
     @NonNull
@@ -28,7 +28,7 @@ public final class GetUserAssetImageFileUriUseCase {
         String userId = currentUserResolver.getUserId();
 
         return Single.<Uri>create(e -> {
-            userAssetImageFileRepository.getDownloadUri(userId, assetId, e::onSuccess, e::onError);
+            userImageAssetFileRepository.getDownloadUri(userId, assetId, e::onSuccess, e::onError);
         }).subscribeOn(Schedulers.io());
     }
 }

@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserArea;
+import com.lakeel.altla.vision.domain.model.Area;
 
 import android.support.annotation.NonNull;
 
@@ -24,13 +24,13 @@ public final class FindAllUserAreasUseCase {
     }
 
     @NonNull
-    public Observable<UserArea> execute() {
+    public Observable<Area> execute() {
         String userId = currentUserResolver.getUserId();
 
-        return Observable.<UserArea>create(e -> {
-            userAreaRepository.findAll(userId, userAreas -> {
-                for (UserArea userArea : userAreas) {
-                    e.onNext(userArea);
+        return Observable.<Area>create(e -> {
+            userAreaRepository.findAll(userId, areas -> {
+                for (Area area : areas) {
+                    e.onNext(area);
                 }
                 e.onComplete();
             }, e::onError);

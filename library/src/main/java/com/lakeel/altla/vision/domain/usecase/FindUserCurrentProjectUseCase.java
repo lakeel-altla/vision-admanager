@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.domain.usecase;
 import com.lakeel.altla.vision.data.repository.firebase.UserCurrentProjectRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserCurrentProject;
+import com.lakeel.altla.vision.domain.model.CurrentProject;
 
 import android.support.annotation.NonNull;
 
@@ -28,11 +28,11 @@ public final class FindUserCurrentProjectUseCase {
     }
 
     @NonNull
-    public Maybe<UserCurrentProject> execute() {
+    public Maybe<CurrentProject> execute() {
         String userId = currentUserResolver.getUserId();
         String instanceId = currentDeviceResolver.getInstanceId();
 
-        return Maybe.<UserCurrentProject>create(e -> {
+        return Maybe.<CurrentProject>create(e -> {
             userCurrentProjectRepository.find(userId, instanceId, userCurrentProject -> {
                 if (userCurrentProject == null) {
                     e.onComplete();

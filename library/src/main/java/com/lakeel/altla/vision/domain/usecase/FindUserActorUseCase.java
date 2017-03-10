@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserActorRepository;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
-import com.lakeel.altla.vision.domain.model.UserActor;
+import com.lakeel.altla.vision.domain.model.Actor;
 
 import android.support.annotation.NonNull;
 
@@ -24,15 +24,15 @@ public final class FindUserActorUseCase {
     }
 
     @NonNull
-    public Maybe<UserActor> execute(@NonNull String sceneId, @NonNull String actorId) {
+    public Maybe<Actor> execute(@NonNull String sceneId, @NonNull String actorId) {
         String userId = currentUserResolver.getUserId();
 
-        return Maybe.<UserActor>create(e -> {
-            userActorRepository.find(userId, sceneId, actorId, userActor -> {
-                if (userActor == null) {
+        return Maybe.<Actor>create(e -> {
+            userActorRepository.find(userId, sceneId, actorId, actor -> {
+                if (actor == null) {
                     e.onComplete();
                 } else {
-                    e.onSuccess(userActor);
+                    e.onSuccess(actor);
                 }
             }, e::onError);
         }).subscribeOn(Schedulers.io());

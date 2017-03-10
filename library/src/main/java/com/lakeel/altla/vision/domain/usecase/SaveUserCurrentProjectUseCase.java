@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserCurrentProjectRepository;
-import com.lakeel.altla.vision.domain.model.UserCurrentProject;
+import com.lakeel.altla.vision.domain.model.CurrentProject;
 
 import android.support.annotation.NonNull;
 
@@ -20,9 +20,9 @@ public final class SaveUserCurrentProjectUseCase {
     }
 
     @NonNull
-    public Completable execute(@NonNull UserCurrentProject userCurrentProject) {
+    public Completable execute(@NonNull CurrentProject currentProject) {
         return Completable.create(e -> {
-            userCurrentProjectRepository.save(userCurrentProject);
+            userCurrentProjectRepository.save(currentProject);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }
