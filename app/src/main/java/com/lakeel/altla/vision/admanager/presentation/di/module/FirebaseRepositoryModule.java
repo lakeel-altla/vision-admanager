@@ -4,6 +4,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.PublicAreaDescriptionRepository;
+import com.lakeel.altla.vision.data.repository.firebase.PublicAreaRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
@@ -47,6 +49,24 @@ public final class FirebaseRepositoryModule {
 
     @ActivityScope
     @Provides
+    PublicAreaRepository providePublicAreaRepository(FirebaseDatabase database) {
+        return new PublicAreaRepository(database);
+    }
+
+    @ActivityScope
+    @Provides
+    UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
+        return new UserAreaRepository(database);
+    }
+
+    @ActivityScope
+    @Provides
+    PublicAreaDescriptionRepository providePublicAreaDescriptionRepository(FirebaseDatabase database) {
+        return new PublicAreaDescriptionRepository(database);
+    }
+
+    @ActivityScope
+    @Provides
     UserAreaDescriptionRepository provideUserAreaDescriptionRepository(FirebaseDatabase database) {
         return new UserAreaDescriptionRepository(database);
     }
@@ -55,12 +75,6 @@ public final class FirebaseRepositoryModule {
     @Provides
     UserAreaDescriptionFileRepository provideUserAreaDescriptionFileRepository(FirebaseStorage storage) {
         return new UserAreaDescriptionFileRepository(storage);
-    }
-
-    @ActivityScope
-    @Provides
-    UserAreaRepository provideUserAreaRepository(FirebaseDatabase database) {
-        return new UserAreaRepository(database);
     }
 
     @ActivityScope

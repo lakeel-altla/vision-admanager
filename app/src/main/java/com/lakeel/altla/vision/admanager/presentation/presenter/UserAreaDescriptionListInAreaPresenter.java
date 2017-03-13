@@ -6,7 +6,8 @@ import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionIt
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
+import com.lakeel.altla.vision.domain.model.AreaScope;
+import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionsByAreaIdUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
@@ -28,7 +29,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     ObserveUserAreaDescriptionsByAreaIdUseCase observeUserAreaDescriptionsByAreaIdUseCase;
 
     @Inject
-    FindUserAreaUseCase findUserAreaUseCase;
+    FindAreaUseCase findAreaUseCase;
 
     @Inject
     Resources resources;
@@ -89,8 +90,8 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
                 });
         manageDisposable(disposable1);
 
-        Disposable disposable2 = findUserAreaUseCase
-                .execute(areaId)
+        Disposable disposable2 = findAreaUseCase
+                .execute(AreaScope.USER, areaId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(area -> {
                     String titleFormat = resources.getString(R.string.title_format_user_area_description_list_in_area);

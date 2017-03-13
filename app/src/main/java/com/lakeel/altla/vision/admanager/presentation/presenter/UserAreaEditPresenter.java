@@ -6,7 +6,8 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaEditView;
 import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
 import com.lakeel.altla.vision.domain.model.Area;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
+import com.lakeel.altla.vision.domain.model.AreaScope;
+import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -31,7 +32,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     private static final String STATE_MODEL = "model";
 
     @Inject
-    FindUserAreaUseCase findUserAreaUseCase;
+    FindAreaUseCase findUserAreaUseCase;
 
     @Inject
     GetPlaceUseCase getPlaceUseCase;
@@ -107,7 +108,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                 getView().onUpdateButtonRemovePlaceEnabled(model.canRemovePlace());
             } else {
                 Disposable disposable = findUserAreaUseCase
-                        .execute(areaId)
+                        .execute(AreaScope.USER, areaId)
                         .map(Model::new)
                         .flatMap(model -> {
                             if (model.area.getPlaceId() == null) {

@@ -7,11 +7,12 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
+import com.lakeel.altla.vision.domain.model.AreaScope;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
@@ -36,7 +37,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     ObserveUserAreaDescriptionUseCase observeUserAreaDescriptionUseCase;
 
     @Inject
-    FindUserAreaUseCase findUserAreaUseCase;
+    FindAreaUseCase findAreaUseCase;
 
     @Inject
     FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
@@ -135,8 +136,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     if (model.areaDescription.getAreaId() == null) {
                         return Observable.just(model);
                     } else {
-                        return findUserAreaUseCase
-                                .execute(model.areaDescription.getAreaId())
+                        return findAreaUseCase
+                                .execute(AreaScope.USER, model.areaDescription.getAreaId())
                                 .map(userArea -> {
                                     model.areaName = userArea.getName();
                                     return model;

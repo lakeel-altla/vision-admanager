@@ -6,11 +6,12 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
+import com.lakeel.altla.vision.domain.model.AreaScope;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -32,7 +33,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
     FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
 
     @Inject
-    FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
+    FindAreaDescriptionUseCase findAreaDescriptionUseCase;
 
     @Inject
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
@@ -90,8 +91,8 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                     return model;
                 })
                 .flatMap(model -> {
-                    return findUserAreaDescriptionUseCase
-                            .execute(areaDescriptionId)
+                    return findAreaDescriptionUseCase
+                            .execute(AreaScope.USER, areaDescriptionId)
                             .map(userAreaDescription -> {
                                 model.exported = true;
                                 return model;

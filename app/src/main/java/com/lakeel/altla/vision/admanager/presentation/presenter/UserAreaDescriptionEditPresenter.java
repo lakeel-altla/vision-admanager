@@ -3,8 +3,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserAreaUseCase;
+import com.lakeel.altla.vision.domain.model.AreaScope;
+import com.lakeel.altla.vision.domain.usecase.FindAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -30,7 +31,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     private static final String STATE_MODEL = "model";
 
     @Inject
-    FindUserAreaDescriptionUseCase findUserAreaDescriptionUseCase;
+    FindAreaDescriptionUseCase findAreaDescriptionUseCase;
 
     @Inject
     SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
@@ -39,7 +40,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     GetPlaceUseCase getPlaceUseCase;
 
     @Inject
-    FindUserAreaUseCase findUserAreaUseCase;
+    FindAreaUseCase findAreaUseCase;
 
     @Inject
     Resources resources;
@@ -104,15 +105,15 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         getView().onUpdateActionSave(false);
 
         if (model == null) {
-            Disposable disposable = findUserAreaDescriptionUseCase
-                    .execute(areaDescriptionId)
+            Disposable disposable = findAreaDescriptionUseCase
+                    .execute(AreaScope.USER, areaDescriptionId)
                     .map(Model::new)
                     .flatMap(model -> {
                         if (model.areaDescription.getAreaId() == null) {
                             return Maybe.just(model);
                         } else {
-                            return findUserAreaUseCase
-                                    .execute(model.areaDescription.getAreaId())
+                            return findAreaUseCase
+                                    .execute(AreaScope.USER, model.areaDescription.getAreaId())
                                     .map(userArea -> {
                                         model.areaName = userArea.getName();
                                         return model;
@@ -148,8 +149,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     getView().onUpdateViewsEnabled(true);
                     getView().onUpdateActionSave(model.canSave());
                 } else {
-                    Disposable disposable = findUserAreaUseCase
-                            .execute(model.areaDescription.getAreaId())
+                    Disposable disposable = findAreaUseCase
+                            .execute(AreaScope.USER, model.areaDescription.getAreaId())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(userArea -> {
                                 model.areaName = userArea.getName();
