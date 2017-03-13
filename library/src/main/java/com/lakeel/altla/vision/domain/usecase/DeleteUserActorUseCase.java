@@ -23,11 +23,11 @@ public final class DeleteUserActorUseCase {
     }
 
     @NonNull
-    public Completable execute(@NonNull String areaId, @NonNull String actorId) {
+    public Completable execute(@NonNull String actorId) {
         String userId = currentUserResolver.getUserId();
 
         return Completable.create(e -> {
-            userActorRepository.delete(userId, areaId, actorId);
+            userActorRepository.delete(userId, actorId);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }

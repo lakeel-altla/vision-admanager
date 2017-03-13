@@ -24,11 +24,11 @@ public final class FindUserActorUseCase {
     }
 
     @NonNull
-    public Maybe<Actor> execute(@NonNull String areaId, @NonNull String actorId) {
+    public Maybe<Actor> execute(@NonNull String actorId) {
         String userId = currentUserResolver.getUserId();
 
         return Maybe.<Actor>create(e -> {
-            userActorRepository.find(userId, areaId, actorId, actor -> {
+            userActorRepository.find(userId, actorId, actor -> {
                 if (actor == null) {
                     e.onComplete();
                 } else {

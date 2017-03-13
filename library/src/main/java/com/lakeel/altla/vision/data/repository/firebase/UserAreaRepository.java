@@ -14,6 +14,7 @@ import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.Area;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
     private static final String BASE_PATH = "userAreas";
 
     private static final String FIELD_NAME = "name";
+
+    private static final String FIELD_PLACE_ID = "placeId";
 
     public UserAreaRepository(@NonNull FirebaseDatabase database) {
         super(database);
@@ -45,8 +48,9 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(@NonNull String userId, @NonNull String areaId, OnSuccessListener<Area> onSuccessListener,
-                     OnFailureListener onFailureListener) {
+    public void find(@NonNull String userId, @NonNull String areaId,
+                     @Nullable OnSuccessListener<Area> onSuccessListener,
+                     @Nullable OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
@@ -65,12 +69,38 @@ public final class UserAreaRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void findAll(@NonNull String userId, OnSuccessListener<List<Area>> onSuccessListener,
-                        OnFailureListener onFailureListener) {
+    public void findAll(@NonNull String userId,
+                        @Nullable OnSuccessListener<List<Area>> onSuccessListener,
+                        @Nullable OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
                      .orderByChild(FIELD_NAME)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<Area> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(child.getValue(Area.class));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
+
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
+    public void findByPlaceId(@NonNull String userId, @NonNull String placeId,
+                              @Nullable OnSuccessListener<List<Area>> onSuccessListener,
+                              @Nullable OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(BASE_PATH)
+                     .child(userId)
+                     .orderByChild(FIELD_PLACE_ID)
+                     .equalTo(placeId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
                          public void onDataChange(DataSnapshot snapshot) {

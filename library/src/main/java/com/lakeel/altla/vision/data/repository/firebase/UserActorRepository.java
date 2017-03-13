@@ -14,10 +14,16 @@ import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 import com.lakeel.altla.vision.domain.model.Actor;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class UserActorRepository extends BaseDatabaseRepository {
 
     private static final String BASE_PATH = "userActors";
+
+    private static final String FIELD_AREA_ID = "areaId";
 
     public UserActorRepository(@NonNull FirebaseDatabase database) {
         super(database);
@@ -32,7 +38,6 @@ public final class UserActorRepository extends BaseDatabaseRepository {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(actor.getUserId())
-                     .child(actor.getAreaId())
                      .child(actor.getId())
                      .setValue(actor, (error, reference) -> {
                          if (error != null) {
@@ -42,12 +47,12 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                      });
     }
 
-    public void find(@NonNull String userId, @NonNull String areaId, @NonNull String actorId,
-                     OnSuccessListener<Actor> onSuccessListener, OnFailureListener onFailureListener) {
+    public void find(@NonNull String userId, @NonNull String actorId,
+                     @Nullable OnSuccessListener<Actor> onSuccessListener,
+                     @Nullable OnFailureListener onFailureListener) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
-                     .child(areaId)
                      .child(actorId)
                      .addListenerForSingleValueEvent(new ValueEventListener() {
                          @Override
@@ -63,32 +68,54 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                      });
     }
 
+    public void findByAreaId(@NonNull String userId, @NonNull String areaId,
+                             @Nullable OnSuccessListener<List<Actor>> onSuccessListener,
+                             @Nullable OnFailureListener onFailureListener) {
+        getDatabase().getReference()
+                     .child(BASE_PATH)
+                     .child(userId)
+                     .orderByChild(FIELD_AREA_ID)
+                     .equalTo(areaId)
+                     .addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(DataSnapshot snapshot) {
+                             List<Actor> list = new ArrayList<>((int) snapshot.getChildrenCount());
+                             for (DataSnapshot child : snapshot.getChildren()) {
+                                 list.add(child.getValue(Actor.class));
+                             }
+                             if (onSuccessListener != null) onSuccessListener.onSuccess(list);
+                         }
+
+                         @Override
+                         public void onCancelled(DatabaseError error) {
+                             if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+                         }
+                     });
+    }
+
     @NonNull
-    public ObservableData<Actor> observe(@NonNull String userId, @NonNull String areaId, @NonNull String actorId) {
+    public ObservableData<Actor> observe(@NonNull String userId, @NonNull String actorId) {
         DatabaseReference reference = getDatabase().getReference()
                                                    .child(BASE_PATH)
                                                    .child(userId)
-                                                   .child(areaId)
                                                    .child(actorId);
 
         return new ObservableData<>(reference, snapshot -> snapshot.getValue(Actor.class));
     }
 
     @NonNull
-    public ObservableDataList<Actor> observeAll(@NonNull String userId, @NonNull String areaId) {
+    public ObservableDataList<Actor> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
-                                   .child(userId)
-                                   .child(areaId);
+                                   .child(userId);
 
         return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Actor.class));
     }
 
-    public void delete(@NonNull String userId, @NonNull String areaId, @NonNull String actorId) {
+    public void delete(@NonNull String userId, @NonNull String actorId) {
         getDatabase().getReference()
                      .child(BASE_PATH)
                      .child(userId)
-                     .child(areaId)
                      .child(actorId)
                      .removeValue((error, reference) -> {
                          if (error != null) {
