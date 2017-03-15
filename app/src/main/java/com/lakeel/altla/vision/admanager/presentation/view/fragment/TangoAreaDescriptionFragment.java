@@ -150,7 +150,7 @@ public final class TangoAreaDescriptionFragment
     }
 
     @Override
-    public void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId) {
+    public void onUpdateAreaDescriptionId(@Nullable String areaDescriptionId) {
         textViewId.setText(areaDescriptionId);
     }
 

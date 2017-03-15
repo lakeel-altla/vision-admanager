@@ -2,18 +2,14 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
+import com.lakeel.altla.vision.api.VisionService;
+import com.lakeel.altla.vision.domain.model.Area;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.model.AreaScope;
-import com.lakeel.altla.vision.domain.usecase.FindAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
-import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import org.parceler.Parcel;
 import org.parceler.Parcels;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,7 +17,6 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Maybe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAreaDescriptionEditView> {
@@ -31,19 +26,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     private static final String STATE_MODEL = "model";
 
     @Inject
-    FindAreaDescriptionUseCase findAreaDescriptionUseCase;
-
-    @Inject
-    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
-
-    @Inject
-    GetPlaceUseCase getPlaceUseCase;
-
-    @Inject
-    FindAreaUseCase findAreaUseCase;
-
-    @Inject
-    Resources resources;
+    VisionService visionService;
 
     private String areaDescriptionId;
 
@@ -105,37 +88,39 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         getView().onUpdateActionSave(false);
 
         if (model == null) {
-            Disposable disposable = findAreaDescriptionUseCase
-                    .execute(AreaScope.USER, areaDescriptionId)
-                    .map(Model::new)
-                    .flatMap(model -> {
-                        if (model.areaDescription.getAreaId() == null) {
-                            return Maybe.just(model);
-                        } else {
-                            return findAreaUseCase
-                                    .execute(AreaScope.USER, model.areaDescription.getAreaId())
-                                    .map(userArea -> {
-                                        model.areaName = userArea.getName();
-                                        return model;
-                                    });
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(model -> {
-                        this.model = model;
+            Disposable disposable = Maybe.<Model>create(e -> {
+                visionService.getUserAreaDescriptionApi()
+                             .findAreaDescriptionById(areaDescriptionId, areaDescription -> {
+                                 if (areaDescription == null) {
+                                     e.onComplete();
+                                 } else {
+                                     Model model = new Model(areaDescription);
 
-                        getView().onUpdateTitle(model.areaDescription.getName());
-                        getView().onUpdateName(model.areaDescription.getName());
-                        getView().onUpdateAreaName(model.areaName);
-                        getView().onUpdateViewsEnabled(true);
-                        getView().onUpdateActionSave(model.canSave());
-                    }, e -> {
-                        getLog().e("Failed.", e);
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    }, () -> {
-                        getLog().e("Entity not found.");
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    });
+                                     if (areaDescription.getAreaId() == null) {
+                                         e.onSuccess(model);
+                                     } else {
+                                         visionService.getUserAreaApi()
+                                                      .findAreaById(areaDescription.getAreaId(), area -> {
+                                                          model.areaName = area.getName();
+                                                          e.onSuccess(model);
+                                                      }, e::onError);
+                                     }
+                                 }
+                             }, e::onError);
+            }).subscribe(model -> {
+                this.model = model;
+                getView().onUpdateTitle(model.areaDescription.getName());
+                getView().onUpdateName(model.areaDescription.getName());
+                getView().onUpdateAreaName(model.areaName);
+                getView().onUpdateViewsEnabled(true);
+                getView().onUpdateActionSave(model.canSave());
+            }, e -> {
+                getLog().e("Failed.", e);
+                getView().onSnackbar(R.string.snackbar_failed);
+            }, () -> {
+                getLog().e("Entity not found.");
+                getView().onSnackbar(R.string.snackbar_failed);
+            });
             manageDisposable(disposable);
         } else {
             getView().onUpdateTitle(model.areaDescription.getName());
@@ -149,16 +134,27 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                     getView().onUpdateViewsEnabled(true);
                     getView().onUpdateActionSave(model.canSave());
                 } else {
-                    Disposable disposable = findAreaUseCase
-                            .execute(AreaScope.USER, model.areaDescription.getAreaId())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(userArea -> {
-                                model.areaName = userArea.getName();
-                                model.areaNameDirty = false;
-                                getView().onUpdateAreaName(model.areaName);
-                                getView().onUpdateViewsEnabled(true);
-                                getView().onUpdateActionSave(model.canSave());
-                            });
+                    Disposable disposable = Maybe.<Area>create(e -> {
+                        visionService.getUserAreaApi().findAreaById(model.areaDescription.getAreaId(), area -> {
+                            if (area == null) {
+                                e.onComplete();
+                            } else {
+                                e.onSuccess(area);
+                            }
+                        }, e::onError);
+                    }).subscribe(userArea -> {
+                        model.areaName = userArea.getName();
+                        model.areaNameDirty = false;
+                        getView().onUpdateAreaName(model.areaName);
+                        getView().onUpdateViewsEnabled(true);
+                        getView().onUpdateActionSave(model.canSave());
+                    }, e -> {
+                        getLog().e("Failed.", e);
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    }, () -> {
+                        getLog().e("Entity not found.");
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    });
                     manageDisposable(disposable);
                 }
             } else {
@@ -202,17 +198,9 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
 
-        Disposable disposable = saveUserAreaDescriptionUseCase
-                .execute(model.areaDescription)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getView().onSnackbar(R.string.snackbar_done);
-                    getView().onBackView();
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        visionService.getUserAreaDescriptionApi().saveAreaDescriptionById(model.areaDescription);
+        getView().onSnackbar(R.string.snackbar_done);
+        getView().onBackView();
     }
 
     @Parcel

@@ -5,7 +5,6 @@ import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
-import com.lakeel.altla.vision.domain.mapper.TangoAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 
 import android.support.annotation.NonNull;
@@ -36,7 +35,7 @@ public final class FindTangoAreaDescriptionUseCase {
             if (areaDescriptionIds.contains(areaDescriptionId)) {
                 TangoAreaDescriptionMetaData metaData = tangoAreaDescriptionMetadataRepository.get(
                         tango, areaDescriptionId);
-                TangoAreaDescription tangoAreaDescription = TangoAreaDescriptionMapper.map(metaData);
+                TangoAreaDescription tangoAreaDescription = TangoAreaDescription.toTangoAreaDescription(metaData);
                 e.onSuccess(tangoAreaDescription);
             } else {
                 e.onComplete();

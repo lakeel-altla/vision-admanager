@@ -170,7 +170,7 @@ public final class UserAreaFragment extends AbstractFragment<UserAreaView, UserA
     }
 
     @Override
-    public void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId) {
+    public void onShowUserAreaDescriptionByAreaListView(@NonNull String areaId) {
         interactionListener.onShowUserAreaDescriptionListInAreaView(areaId);
     }
 

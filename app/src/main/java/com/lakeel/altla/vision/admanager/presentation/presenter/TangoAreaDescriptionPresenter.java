@@ -6,22 +6,19 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionView;
-import com.lakeel.altla.vision.domain.model.AreaScope;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
-import com.lakeel.altla.vision.domain.usecase.DeleteTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.ExportUserAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Maybe;
 import io.reactivex.disposables.Disposable;
 
 public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoAreaDescriptionView>
@@ -30,22 +27,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
     @Inject
-    FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
-
-    @Inject
-    FindAreaDescriptionUseCase findAreaDescriptionUseCase;
-
-    @Inject
-    GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
-
-    @Inject
-    ExportUserAreaDescriptionUseCase exportUserAreaDescriptionUseCase;
-
-    @Inject
-    DeleteTangoAreaDescriptionUseCase deleteTangoAreaDescriptionUseCase;
-
-    @Inject
-    TangoWrapper tangoWrapper;
+    VisionService visionService;
 
     private String areaDescriptionId;
 
@@ -83,51 +65,58 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
 
     @Override
     public void onTangoReady(Tango tango) {
-        Disposable disposable = findTangoAreaDescriptionUseCase
-                .execute(tangoWrapper.getTango(), areaDescriptionId)
-                .map(tangoAreaDescription -> {
-                    Model model = new Model();
-                    model.tangoAreaDescription = tangoAreaDescription;
-                    return model;
-                })
-                .flatMap(model -> {
-                    return findAreaDescriptionUseCase
-                            .execute(AreaScope.USER, areaDescriptionId)
-                            .map(userAreaDescription -> {
-                                model.exported = true;
-                                return model;
-                            }).defaultIfEmpty(model);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    getView().onUpdateTitle(model.tangoAreaDescription.name);
-                    getView().onUpdateActionExport(!model.exported);
-                    getView().onUpdateAreaDescriptionId(model.tangoAreaDescription.areaDescriptionId);
-                    getView().onUpdateExported(model.exported);
-                    getView().onUpdateName(model.tangoAreaDescription.name);
-                    getView().onUpdateCreatedAt(model.tangoAreaDescription.createdAt);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                }, () -> {
-                    getLog().e("Entity not found.");
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        runOnUiThread(() -> {
+            Disposable disposable = Maybe
+                    .<TangoAreaDescription>create(e -> {
+                        TangoAreaDescription tangoAreaDescription =
+                                visionService.getTangoAreaDescriptionApi()
+                                             .findTangoAreaDescriptionById(areaDescriptionId);
+                        if (tangoAreaDescription == null) {
+                            e.onComplete();
+                        } else {
+                            e.onSuccess(tangoAreaDescription);
+                        }
+                    })
+                    .map(Model::new)
+                    .flatMap(model -> {
+                        return Maybe.<Model>create(e -> {
+                            visionService.getUserAreaDescriptionApi()
+                                         .findAreaDescriptionById(areaDescriptionId, areaDescription -> {
+                                             model.exported = (areaDescription != null);
+                                             e.onSuccess(model);
+                                         }, e::onError);
+                        });
+                    })
+                    .subscribe(model -> {
+                        getView().onUpdateTitle(model.tangoAreaDescription.getName());
+                        getView().onUpdateActionExport(!model.exported);
+                        getView().onUpdateAreaDescriptionId(model.tangoAreaDescription.getAreaDescriptionId());
+                        getView().onUpdateExported(model.exported);
+                        getView().onUpdateName(model.tangoAreaDescription.getName());
+                        getView().onUpdateCreatedAt(model.tangoAreaDescription.getCreatedAt());
+                    }, e -> {
+                        getLog().e("Failed.", e);
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    }, () -> {
+                        getLog().e("Entity not found.");
+                        getView().onSnackbar(R.string.snackbar_failed);
+                    });
+            manageDisposable(disposable);
+        });
     }
 
     @Override
     protected void onResumeOverride() {
         super.onResumeOverride();
 
-        tangoWrapper.addOnTangoReadyListener(this);
+        visionService.getTangoWrapper().addOnTangoReadyListener(this);
     }
 
     @Override
     protected void onPauseOverride() {
         super.onPauseOverride();
 
-        tangoWrapper.removeOnTangoReadyListener(this);
+        visionService.getTangoWrapper().removeOnTangoReadyListener(this);
     }
 
     public void onActionDelete() {
@@ -135,50 +124,31 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
     }
 
     public void onActionExport() {
-        Disposable disposable = getAreaDescriptionCacheDirectoryUseCase
-                .execute()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(directory -> {
-                    getView().onShowTangoAreaDescriptionExportActivity(areaDescriptionId, directory);
-                });
-        manageDisposable(disposable);
+        File directory = visionService.getUserAreaDescriptionApi().getAreaDescriptionCacheDirectory();
+        getView().onShowTangoAreaDescriptionExportActivity(areaDescriptionId, directory);
     }
 
     public void onExported() {
-        Disposable disposable = exportUserAreaDescriptionUseCase
-                .execute(tangoWrapper.getTango(), areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userAreaDescription -> {
-                    getView().onUpdateActionExport(false);
-                    getView().onUpdateExported(true);
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
-
+        visionService.getTangoAreaDescriptionApi().exportTangoAreaDescriptionById(areaDescriptionId);
+        getView().onUpdateActionExport(false);
+        getView().onUpdateExported(true);
         getView().onSnackbar(R.string.snackbar_done);
     }
 
     public void onDelete() {
-        Disposable disposable = deleteTangoAreaDescriptionUseCase
-                .execute(tangoWrapper.getTango(), areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getView().onSnackbar(R.string.snackbar_done);
-                    getView().onBackView();
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        visionService.getTangoAreaDescriptionApi().deleteTangoAreaDescriptionById(areaDescriptionId);
+        getView().onSnackbar(R.string.snackbar_done);
+        getView().onBackView();
     }
 
     private final class Model {
 
-        TangoAreaDescription tangoAreaDescription;
+        final TangoAreaDescription tangoAreaDescription;
 
         boolean exported;
+
+        Model(@NonNull TangoAreaDescription tangoAreaDescription) {
+            this.tangoAreaDescription = tangoAreaDescription;
+        }
     }
 }

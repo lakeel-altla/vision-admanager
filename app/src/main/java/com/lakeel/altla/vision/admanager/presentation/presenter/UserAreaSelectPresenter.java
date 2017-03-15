@@ -1,11 +1,12 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaSelectView;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.model.Area;
-import com.lakeel.altla.vision.domain.usecase.FindAllUserAreasUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.support.annotation.NonNull;
@@ -16,18 +17,17 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectView> {
 
+    @Inject
+    VisionService visionService;
+
+    @Inject
+    GoogleApiClient googleApiClient;
+
     private final List<Item> items = new ArrayList<>();
-
-    @Inject
-    FindAllUserAreasUseCase findAllUserAreasUseCase;
-
-    @Inject
-    GetPlaceUseCase getPlaceUseCase;
 
     @Inject
     public UserAreaSelectPresenter() {
@@ -47,31 +47,34 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
         items.clear();
         getView().onItemsUpdated();
 
-        Disposable disposable = findAllUserAreasUseCase
-                .execute()
-                .map(Item::new)
-                .concatMap(item -> {
-                    if (item.area.getPlaceId() == null) {
-                        return Observable.just(item);
-                    } else {
-                        return getPlaceUseCase
-                                .execute(item.area.getPlaceId())
-                                .map(place -> {
-                                    item.placeName = place.getName().toString();
-                                    item.placeAddress = place.getAddress().toString();
-                                    return item;
-                                })
-                                .toObservable();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> {
-                    items.add(item);
-                    getView().onItemInserted(items.size() - 1);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
+        Disposable disposable = Observable.<Item>create(e -> {
+            visionService.getUserAreaApi().findAllAreas(areas -> {
+                for (Area area : areas) {
+                    e.onNext(new Item(area));
+                }
+                e.onComplete();
+            }, e::onError);
+        }).concatMap(item -> {
+            String placeId = item.area.getPlaceId();
+            if (placeId == null) {
+                return Observable.just(item);
+            } else {
+                return Observable.create(e -> {
+                    visionService.getGooglePlaceApi().getPlaceById(googleApiClient, placeId, place -> {
+                        item.placeName = place.getName().toString();
+                        item.placeAddress = place.getAddress().toString();
+                        e.onNext(item);
+                        e.onComplete();
+                    }, e::onError);
                 });
+            }
+        }).subscribe(item -> {
+            items.add(item);
+            getView().onItemInserted(items.size() - 1);
+        }, e -> {
+            getLog().e("Failed.", e);
+            getView().onSnackbar(R.string.snackbar_failed);
+        });
         manageDisposable(disposable);
     }
 

@@ -6,26 +6,22 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
+import com.lakeel.altla.vision.api.VisionService;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.model.AreaScope;
-import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionCacheUseCase;
-import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.DownloadUserAreaDescriptionFileUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindTangoAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheFileUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionUseCase;
-import com.lakeel.altla.vision.domain.usecase.UploadUserAreaDescriptionFileUseCase;
+import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDescriptionView>
@@ -34,31 +30,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     private static final String ARG_AREA_DESCRIPTION_ID = "areaDescriptionId";
 
     @Inject
-    ObserveUserAreaDescriptionUseCase observeUserAreaDescriptionUseCase;
-
-    @Inject
-    FindAreaUseCase findAreaUseCase;
-
-    @Inject
-    FindTangoAreaDescriptionUseCase findTangoAreaDescriptionUseCase;
-
-    @Inject
-    GetAreaDescriptionCacheFileUseCase getAreaDescriptionCacheFileUseCase;
-
-    @Inject
-    UploadUserAreaDescriptionFileUseCase uploadUserAreaDescriptionFileUseCase;
-
-    @Inject
-    DownloadUserAreaDescriptionFileUseCase downloadUserAreaDescriptionFileUseCase;
-
-    @Inject
-    DeleteAreaDescriptionCacheUseCase deleteAreaDescriptionCacheUseCase;
-
-    @Inject
-    DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
-
-    @Inject
-    TangoWrapper tangoWrapper;
+    VisionService visionService;
 
     private String areaDescriptionId;
 
@@ -105,20 +77,12 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     @Override
     public void onTangoReady(Tango tango) {
         runOnUiThread(() -> {
-            Disposable disposable = findTangoAreaDescriptionUseCase
-                    .execute(tango, areaDescriptionId)
-                    .map(tangoAreaDescription -> ImportStatus.IMPORTED)
-                    .defaultIfEmpty(ImportStatus.NOT_IMPORTED)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(importStatus -> {
-                        this.importStatus = importStatus;
-                        updateActions();
-                        getView().onUpdateImportStatus(importStatus);
-                    }, e -> {
-                        getLog().e("Failed.", e);
-                        getView().onSnackbar(R.string.snackbar_failed);
-                    });
-            manageDisposable(disposable);
+            TangoAreaDescription tangoAreaDescription = visionService.getTangoAreaDescriptionApi()
+                                                                     .findTangoAreaDescriptionById(areaDescriptionId);
+
+            importStatus = (tangoAreaDescription == null) ? ImportStatus.NOT_IMPORTED : ImportStatus.IMPORTED;
+            updateActions();
+            getView().onUpdateImportStatus(importStatus);
         });
     }
 
@@ -126,36 +90,34 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     protected void onStartOverride() {
         super.onStartOverride();
 
-        tangoWrapper.addOnTangoReadyListener(this);
+        visionService.getTangoWrapper().addOnTangoReadyListener(this);
 
-        Disposable disposable = observeUserAreaDescriptionUseCase
-                .execute(areaDescriptionId)
+        Disposable disposable = ObservableData
+                .using(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionById(areaDescriptionId))
                 .map(Model::new)
                 .flatMap(model -> {
                     // Resolve the area name
-                    if (model.areaDescription.getAreaId() == null) {
+                    String areaId = model.areaDescription.getAreaId();
+                    if (areaId == null) {
                         return Observable.just(model);
                     } else {
-                        return findAreaUseCase
-                                .execute(AreaScope.USER, model.areaDescription.getAreaId())
-                                .map(userArea -> {
-                                    model.areaName = userArea.getName();
-                                    return model;
-                                })
-                                .toObservable();
+                        return Observable.create(e -> {
+                            visionService.getUserAreaApi().findAreaById(areaId, area -> {
+                                model.areaName = area.getName();
+                                e.onNext(model);
+                                e.onComplete();
+                            }, e::onError);
+                        });
                     }
                 })
                 .flatMap(model -> {
                     // Check if the cache file exists.
-                    return getAreaDescriptionCacheFileUseCase
-                            .execute(areaDescriptionId)
-                            .map(file -> {
-                                model.fileCached = file.exists();
-                                return model;
-                            })
-                            .toObservable();
+                    File file = visionService.getUserAreaDescriptionApi()
+                                             .getAreaDescriptionCacheById(areaDescriptionId);
+
+                    model.fileCached = file.exists();
+                    return Observable.just(model);
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     fileUploaded = model.areaDescription.isFileUploaded();
                     fileCached = model.fileCached;
@@ -180,20 +142,13 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     protected void onStopOverride() {
         super.onStopOverride();
 
-        tangoWrapper.removeOnTangoReadyListener(this);
+        visionService.getTangoWrapper().removeOnTangoReadyListener(this);
     }
 
     public void onActionImport() {
-        Disposable disposable = getAreaDescriptionCacheFileUseCase
-                .execute(areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((file) -> {
-                    getView().onShowImportActivity(file);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        File file = visionService.getUserAreaDescriptionApi()
+                                 .getAreaDescriptionCacheById(areaDescriptionId);
+        getView().onShowImportActivity(file);
     }
 
     public void onActionEdit() {
@@ -203,13 +158,17 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     public void onActionUpload() {
         prevBytesTransferred = 0;
 
-        Disposable disposable = uploadUserAreaDescriptionFileUseCase
-                .execute(areaDescriptionId, (totalBytes, bytesTransferred) -> {
-                    long increment = bytesTransferred - prevBytesTransferred;
-                    prevBytesTransferred = bytesTransferred;
-                    getView().onProgressUpdated(totalBytes, increment);
+        // TODO: use the background service.
+        Disposable disposable = Completable
+                .create(e -> {
+                    visionService.getUserAreaDescriptionApi().uploadAreaDescription(
+                            areaDescriptionId, aVoid -> e.onComplete(), e::onError, (totalBytes, bytesTransferred) -> {
+                                long increment = bytesTransferred - prevBytesTransferred;
+                                prevBytesTransferred = bytesTransferred;
+                                getView().onProgressUpdated(totalBytes, increment);
+                            });
+
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_upload))
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
@@ -227,13 +186,16 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     public void onActionDownload() {
         prevBytesTransferred = 0;
 
-        Disposable disposable = downloadUserAreaDescriptionFileUseCase
-                .execute(areaDescriptionId, (totalBytes, bytesTransferred) -> {
-                    long increment = bytesTransferred - prevBytesTransferred;
-                    prevBytesTransferred = bytesTransferred;
-                    getView().onProgressUpdated(totalBytes, increment);
+        // TODO: use the background service.
+        Disposable disposable = Completable
+                .create(e -> {
+                    visionService.getUserAreaDescriptionApi().downloadAreaDescription(
+                            areaDescriptionId, aVoid -> e.onComplete(), e::onError, (totalBytes, bytesTransferred) -> {
+                                long increment = bytesTransferred - prevBytesTransferred;
+                                prevBytesTransferred = bytesTransferred;
+                                getView().onProgressUpdated(totalBytes, increment);
+                            });
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(_subscription -> getView().onShowProgressDialog(R.string.progress_dialog_download))
                 .doOnTerminate(() -> getView().onHideProgressDialog())
                 .subscribe(() -> {
@@ -249,19 +211,11 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     }
 
     public void onActionDeleteCache() {
-        Disposable disposable = deleteAreaDescriptionCacheUseCase
-                .execute(areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    fileCached = false;
-                    updateActions();
-                    getView().onUpdateFileCached(fileCached);
-                    getView().onSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        visionService.getUserAreaDescriptionApi().deleteAreaDescriptionCacheById(areaDescriptionId);
+        fileCached = false;
+        updateActions();
+        getView().onUpdateFileCached(fileCached);
+        getView().onSnackbar(R.string.snackbar_done);
     }
 
     public void onActionDelete() {
@@ -273,17 +227,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
     }
 
     public void onDelete() {
-        Disposable disposable = deleteUserAreaDescriptionUseCase
-                .execute(areaDescriptionId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getView().onSnackbar(R.string.snackbar_done);
-                    getView().onBackView();
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        visionService.getUserAreaDescriptionApi().deleteAreaDescriptionById(areaDescriptionId);
+        getView().onSnackbar(R.string.snackbar_done);
+        getView().onBackView();
     }
 
     private void updateActions() {

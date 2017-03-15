@@ -6,8 +6,8 @@ import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.TangoAreaDescriptionListView;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
-import com.lakeel.altla.vision.domain.usecase.FindAllTangoAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.support.annotation.NonNull;
@@ -17,19 +17,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-
 public final class TangoAreaDescriptionListPresenter extends BasePresenter<TangoAreaDescriptionListView>
         implements TangoWrapper.OnTangoReadyListener {
 
     @Inject
-    FindAllTangoAreaDescriptionsUseCase findAllTangoAreaDescriptionsUseCase;
+    VisionService visionService;
 
-    @Inject
-    TangoWrapper tangoWrapper;
-
-    private final List<ItemModel> items = new ArrayList<>();
+    private final List<TangoAreaDescription> items = new ArrayList<>();
 
     @Inject
     public TangoAreaDescriptionListPresenter() {
@@ -37,17 +31,14 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
 
     @Override
     public void onTangoReady(Tango tango) {
-        Disposable disposable = findAllTangoAreaDescriptionsUseCase
-                .execute(tangoWrapper.getTango())
-                .map(this::map)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    items.add(model);
-                    getView().onItemInserted(items.size() - 1);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                });
-        manageDisposable(disposable);
+        runOnUiThread(() -> {
+            List<TangoAreaDescription> tangoAreaDescriptions = visionService.getTangoAreaDescriptionApi()
+                                                                            .findAllTangoAreaDescriptions();
+
+            items.clear();
+            items.addAll(tangoAreaDescriptions);
+            getView().onDataSetChanged();
+        });
     }
 
     @Override
@@ -62,16 +53,16 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         super.onResumeOverride();
 
         items.clear();
-        getView().onItemsUpdated();
+        getView().onDataSetChanged();
 
-        tangoWrapper.addOnTangoReadyListener(this);
+        visionService.getTangoWrapper().addOnTangoReadyListener(this);
     }
 
     @Override
     protected void onPauseOverride() {
         super.onPauseOverride();
 
-        tangoWrapper.removeOnTangoReadyListener(this);
+        visionService.getTangoWrapper().removeOnTangoReadyListener(this);
     }
 
     public int getItemCount() {
@@ -83,16 +74,8 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
     }
 
     public void onClickItem(int position) {
-        ItemModel model = items.get(position);
-        getView().onItemSelected(model.areaDescriptionId);
-    }
-
-    @NonNull
-    private ItemModel map(@NonNull TangoAreaDescription tangoAreaDescription) {
-        ItemModel model = new ItemModel();
-        model.areaDescriptionId = tangoAreaDescription.areaDescriptionId;
-        model.name = tangoAreaDescription.name;
-        return model;
+        TangoAreaDescription tangoAreaDescription = items.get(position);
+        getView().onItemSelected(tangoAreaDescription.getAreaDescriptionId());
     }
 
     public final class ItemPresenter {
@@ -104,16 +87,9 @@ public final class TangoAreaDescriptionListPresenter extends BasePresenter<Tango
         }
 
         public void onBind(int position) {
-            ItemModel model = items.get(position);
-            itemView.onUpdateAreaDescriptionId(model.areaDescriptionId);
-            itemView.onUpdateName(model.name);
+            TangoAreaDescription tangoAreaDescription = items.get(position);
+            itemView.onUpdateAreaDescriptionId(tangoAreaDescription.getAreaDescriptionId());
+            itemView.onUpdateName(tangoAreaDescription.getName());
         }
-    }
-
-    private final class ItemModel {
-
-        String areaDescriptionId;
-
-        String name;
     }
 }

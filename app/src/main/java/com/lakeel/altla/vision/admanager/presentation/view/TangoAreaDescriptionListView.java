@@ -7,9 +7,7 @@ public interface TangoAreaDescriptionListView {
 
     void onUpdateTitle(@StringRes int resId);
 
-    void onItemsUpdated();
-
-    void onItemInserted(int position);
+    void onDataSetChanged();
 
     void onItemSelected(@NonNull String areaDescriptionId);
 

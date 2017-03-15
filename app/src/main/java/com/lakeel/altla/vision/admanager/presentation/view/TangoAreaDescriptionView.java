@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -10,7 +9,7 @@ public interface TangoAreaDescriptionView {
 
     void onUpdateTitle(@Nullable String title);
 
-    void onUpdateAreaDescriptionId(@NonNull String areaDescriptionId);
+    void onUpdateAreaDescriptionId(@Nullable String areaDescriptionId);
 
     void onUpdateExported(boolean exported);
 

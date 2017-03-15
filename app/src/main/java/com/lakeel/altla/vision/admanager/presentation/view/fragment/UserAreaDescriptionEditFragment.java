@@ -1,12 +1,9 @@
 package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionEditPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
-import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -46,15 +43,6 @@ public final class UserAreaDescriptionEditFragment
 
     @Inject
     UserAreaDescriptionEditPresenter presenter;
-
-    @Inject
-    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
-
-    @Inject
-    AppCompatActivity activity;
-
-    @Inject
-    GoogleApiClient googleApiClient;
 
     @BindView(R.id.view_top)
     View view;

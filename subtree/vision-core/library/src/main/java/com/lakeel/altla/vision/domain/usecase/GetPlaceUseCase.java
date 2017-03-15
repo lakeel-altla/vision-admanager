@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.domain.usecase;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
@@ -21,9 +22,9 @@ public final class GetPlaceUseCase {
     }
 
     @NonNull
-    public Single<Place> execute(@NonNull String placeId) {
+    public Single<Place> execute(@NonNull GoogleApiClient googleApiClient, @NonNull String placeId) {
         return Single.<Place>create(e -> {
-            placeRepository.get(placeId, e::onSuccess, e::onError);
+            placeRepository.get(googleApiClient, placeId, e::onSuccess, e::onError);
         }).subscribeOn(Schedulers.io());
     }
 }

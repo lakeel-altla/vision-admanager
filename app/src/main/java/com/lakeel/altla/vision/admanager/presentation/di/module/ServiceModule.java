@@ -4,10 +4,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.vision.admanager.presentation.di.ServiceScope;
-import com.lakeel.altla.vision.data.repository.android.DocumentRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileUploadTaskRepository;
-import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetRepository;
+import com.lakeel.altla.vision.api.VisionService;
 
 import android.app.Service;
 import android.content.ContentResolver;
@@ -33,25 +30,7 @@ public final class ServiceModule {
 
     @ServiceScope
     @Provides
-    DocumentRepository provideDocumentRepository(ContentResolver contentResolver) {
-        return new DocumentRepository(contentResolver);
-    }
-
-    @ServiceScope
-    @Provides
-    UserImageAssetFileRepository provideUserAssetImageFileRepository(FirebaseStorage storage) {
-        return new UserImageAssetFileRepository(storage);
-    }
-
-    @ServiceScope
-    @Provides
-    UserImageAssetFileUploadTaskRepository provideUserAssetImageFileUploadTaskRepository(FirebaseDatabase database) {
-        return new UserImageAssetFileUploadTaskRepository(database);
-    }
-
-    @ServiceScope
-    @Provides
-    UserImageAssetRepository provideUserAssetImageRepository(FirebaseDatabase database) {
-        return new UserImageAssetRepository(database);
+    VisionService provideVisionService(FirebaseDatabase firebaseDatabase, FirebaseStorage firebaseStorage) {
+        return new VisionService(service, firebaseDatabase, firebaseStorage);
     }
 }

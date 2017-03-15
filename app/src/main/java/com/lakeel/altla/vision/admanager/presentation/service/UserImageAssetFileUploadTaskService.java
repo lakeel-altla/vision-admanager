@@ -7,11 +7,9 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ServiceComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ServiceModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
-import com.lakeel.altla.vision.domain.usecase.DeleteUserImageAssetFileUploadTaskUseCase;
-import com.lakeel.altla.vision.domain.usecase.UploadUserImageAssetFileUseCase;
 
-import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import android.app.NotificationManager;
@@ -26,7 +24,7 @@ import android.support.v4.app.NotificationCompat;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -39,10 +37,7 @@ public final class UserImageAssetFileUploadTaskService extends Service {
     private static final String EXTRA_TASK = "task";
 
     @Inject
-    UploadUserImageAssetFileUseCase uploadUserImageAssetFileUseCase;
-
-    @Inject
-    DeleteUserImageAssetFileUploadTaskUseCase deleteUserImageAssetFileUploadTaskUseCase;
+    VisionService visionService;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -86,19 +81,21 @@ public final class UserImageAssetFileUploadTaskService extends Service {
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
 
-        Disposable disposable = uploadUserImageAssetFileUseCase
-                .execute(task.getId(), task.getSourceUriString())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(progress -> {
-                    // Progress.
-                    builder.setProgress((int) progress.totalBytes, (int) progress.bytesTransferred, false);
-                    notificationManager.notify(NOTIFICATION_ID, builder.build());
+        Disposable disposable = Completable
+                .create(e -> {
+                    visionService.getUserAssetApi().uploadUserImageAssetFile(task, aVoid -> {
+                        e.onComplete();
+                    }, e::onError, (totalBytes, bytesTransferred) -> {
+                        // Progress.
+                        builder.setProgress((int) totalBytes, (int) bytesTransferred, false);
+                        notificationManager.notify(NOTIFICATION_ID, builder.build());
+                    });
+                })
+                .subscribe(() -> {
+                    notificationManager.cancel(NOTIFICATION_ID);
                 }, e -> {
                     // Failed.
                     LOG.e("Failed.", e);
-                    notificationManager.cancel(NOTIFICATION_ID);
-                }, () -> {
-                    // Completed.
                     notificationManager.cancel(NOTIFICATION_ID);
                 });
         compositeDisposable.add(disposable);
@@ -117,13 +114,5 @@ public final class UserImageAssetFileUploadTaskService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    @Parcel
-    public static final class Model {
-
-        public String imageId;
-
-        public String sourceUriString;
     }
 }

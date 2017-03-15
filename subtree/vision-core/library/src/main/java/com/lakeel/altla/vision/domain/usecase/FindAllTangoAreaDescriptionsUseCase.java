@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
-import com.lakeel.altla.vision.domain.mapper.TangoAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
 
 import android.support.annotation.NonNull;
@@ -35,7 +34,7 @@ public final class FindAllTangoAreaDescriptionsUseCase {
         return Observable.<TangoAreaDescription>create(e -> {
             List<TangoAreaDescriptionMetaData> metaDatas = tangoAreaDescriptionMetadataRepository.findAll(tango);
             for (TangoAreaDescriptionMetaData metaData : metaDatas) {
-                TangoAreaDescription tangoAreaDescription = TangoAreaDescriptionMapper.map(metaData);
+                TangoAreaDescription tangoAreaDescription = TangoAreaDescription.toTangoAreaDescription(metaData);
                 e.onNext(tangoAreaDescription);
             }
             e.onComplete();

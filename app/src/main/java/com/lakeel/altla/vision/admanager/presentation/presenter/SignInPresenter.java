@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.SignInView;
-import com.lakeel.altla.vision.domain.usecase.SignInWithGoogleUseCase;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.app.Activity;
@@ -17,7 +17,7 @@ import android.content.Intent;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 
 public final class SignInPresenter extends BasePresenter<SignInView> {
@@ -25,10 +25,10 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
     private static final int REQUEST_CODE_GOOGLE_SIGN_IN = 0;
 
     @Inject
-    GoogleApiClient googleApiClient;
+    VisionService visionService;
 
     @Inject
-    SignInWithGoogleUseCase signInWithGoogleUseCase;
+    GoogleApiClient googleApiClient;
 
     private final FirebaseAuth.AuthStateListener authStateListener;
 
@@ -116,13 +116,20 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
             return;
         }
 
-        Disposable disposable = signInWithGoogleUseCase
-                .execute(googleSignInAccount)
-                .observeOn(AndroidSchedulers.mainThread())
+        Disposable disposable = Completable
+                .create(e -> {
+                    visionService.getAuthApi().signInWithGoogle(googleSignInAccount, aVoid -> {
+                        e.onComplete();
+                    }, e::onError);
+                })
                 .doOnSubscribe(_subscription -> getView().onShowProgressDialog())
                 .doOnTerminate(() -> getView().onHideProgressDialog())
-                .subscribe(() -> getView().onCloseSignInView(),
-                           e -> getLog().e("Failed to sign in to Firebase.", e));
+                .subscribe(() -> {
+                               getView().onCloseSignInView();
+                           },
+                           e -> {
+                               getLog().e("Failed to sign in to Firebase.", e);
+                           });
         manageDisposable(disposable);
     }
 }

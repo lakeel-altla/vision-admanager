@@ -88,13 +88,8 @@ public final class TangoAreaDescriptionListFragment
     }
 
     @Override
-    public void onItemsUpdated() {
+    public void onDataSetChanged() {
         recyclerView.getAdapter().notifyDataSetChanged();
-    }
-
-    @Override
-    public void onItemInserted(int position) {
-        recyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override

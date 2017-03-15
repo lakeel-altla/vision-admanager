@@ -2,10 +2,10 @@ package com.lakeel.altla.vision.admanager.presentation.view.activity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
@@ -16,10 +16,10 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragme
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionByAreaListFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListFragment;
-import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaDescriptionListInAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaListFragment;
@@ -27,15 +27,11 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserAreaSele
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetEditFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
-import com.lakeel.altla.vision.domain.helper.CurrentApplicationResolver;
-import com.lakeel.altla.vision.domain.helper.CurrentDeviceResolver;
-import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
-import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAssetImageFileUploadTasksUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
-import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
 import com.squareup.picasso.Picasso;
 
 import android.content.Context;
@@ -60,7 +56,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -74,7 +70,7 @@ public final class MainActivity extends AppCompatActivity
                    UserAreaListFragment.InteractionListener,
                    UserAreaFragment.InteractionListener,
                    UserAreaEditFragment.InteractionListener,
-                   UserAreaDescriptionListInAreaFragment.InteractionListener,
+                   UserAreaDescriptionByAreaListFragment.InteractionListener,
                    UserAreaDescriptionListFragment.InteractionListener,
                    UserAreaDescriptionFragment.InteractionListener,
                    UserAreaDescriptionEditFragment.InteractionListener,
@@ -87,28 +83,7 @@ public final class MainActivity extends AppCompatActivity
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
     @Inject
-    TangoWrapper tangoWrapper;
-
-    @Inject
-    ObserveUserProfileUseCase observeUserProfileUseCase;
-
-    @Inject
-    ObserveConnectionUseCase observeConnectionUseCase;
-
-    @Inject
-    ObserveAllUserAssetImageFileUploadTasksUseCase observeAllUserAssetImageFileUploadTasksUseCase;
-
-    @Inject
-    SignOutUseCase signOutUseCase;
-
-    @Inject
-    CurrentApplicationResolver currentApplicationResolver;
-
-    @Inject
-    CurrentDeviceResolver currentDeviceResolver;
-
-    @Inject
-    CurrentUserResolver currentUserResolver;
+    VisionService visionService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -207,14 +182,14 @@ public final class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
 
-        tangoWrapper.connect();
+        visionService.getTangoWrapper().connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        tangoWrapper.disconnect();
+        visionService.getTangoWrapper().disconnect();
     }
 
     @Override
@@ -367,7 +342,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowUserAreaDescriptionListInAreaView(@NonNull String areaId) {
-        UserAreaDescriptionListInAreaFragment fragment = UserAreaDescriptionListInAreaFragment.newInstance(areaId);
+        UserAreaDescriptionByAreaListFragment fragment = UserAreaDescriptionByAreaListFragment.newInstance(areaId);
         replaceFragmentAndAddToBackStack(fragment);
     }
 
@@ -409,11 +384,14 @@ public final class MainActivity extends AppCompatActivity
     }
 
     private void onSignOut() {
-        Disposable disposable = signOutUseCase
-                .execute()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::showSignInView);
-        compositeDisposable.add(disposable);
+        visionService.getUserDeviceConnectionApi().markUserDeviceConnectionAsOffline(aVoid -> {
+            FirebaseAuth.getInstance().signOut();
+            showSignInView();
+        }, e -> {
+            LOG.e("Failed.", e);
+            FirebaseAuth.getInstance().signOut();
+            showSignInView();
+        });
     }
 
     private void showSignInView() {
@@ -462,17 +440,28 @@ public final class MainActivity extends AppCompatActivity
             if (user != null) {
                 // Subscribe the connection.
                 if (observeConnectionDisposable == null) {
-                    observeConnectionDisposable = observeConnectionUseCase
-                            .execute()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
+                    observeConnectionDisposable = ObservableData
+                            .using(() -> visionService.getFirebaseConnectionApi().observeConnection())
+                            .doOnNext(connected -> LOG
+                                    .i("The user device connection state changed: connected = %b", connected))
+                            .flatMapCompletable(connected -> {
+                                return Completable.create(e -> {
+                                    if (connected) {
+                                        visionService.getUserDeviceConnectionApi()
+                                                     .markUserDeviceConnectionAsOnline(aVoid -> {
+                                                         e.onComplete();
+                                                     }, e::onError);
+                                    } else {
+                                        e.onComplete();
+                                    }
+                                });
+                            }).subscribe();
                 }
 
                 // Subscribe the user profile.
                 if (observeUserProfileDisposable == null) {
-                    observeUserProfileDisposable = observeUserProfileUseCase
-                            .execute()
-                            .observeOn(AndroidSchedulers.mainThread())
+                    observeUserProfileDisposable = ObservableData
+                            .using(() -> visionService.getUserProfileApi().observeUserProfileById(user.getUid()))
                             .subscribe(profile -> {
                                 // Update UI each time the user profile is updated.
                                 if (profile.getPhotoUri() != null) {
@@ -488,14 +477,13 @@ public final class MainActivity extends AppCompatActivity
 
                 // Observe all pending storage tasks.
                 if (observeAllUserAssetImageFileUploadTasksDisposable == null) {
-                    observeAllUserAssetImageFileUploadTasksDisposable = observeAllUserAssetImageFileUploadTasksUseCase
-                            .execute()
-                            .observeOn(AndroidSchedulers.mainThread())
+                    observeAllUserAssetImageFileUploadTasksDisposable = ObservableDataList
+                            .using(() -> visionService.getUserAssetApi().observeUserImageAssetFileUploadTask())
                             .subscribe(event -> {
                                 if (event.getType() == DataListEvent.Type.ADDED) {
                                     ImageAssetFileUploadTask task = event.getData();
 
-                                    if (!currentDeviceResolver.getInstanceId().equals(task.getInstanceId())) return;
+                                    if (!FirebaseInstanceId.getInstance().getId().equals(task.getInstanceId())) return;
 
                                     Intent intent = UserImageAssetFileUploadTaskService.createIntent(
                                             getApplicationContext(), task);

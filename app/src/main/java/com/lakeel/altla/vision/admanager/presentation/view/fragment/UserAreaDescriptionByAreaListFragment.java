@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.view.fragment;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListInAreaPresenter;
-import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
-import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionListInAreaAdapter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionByAreaListPresenter;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionByAreaListView;
+import com.lakeel.altla.vision.admanager.presentation.view.adapter.UserAreaDescriptionByAreaListAdapter;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.content.Context;
@@ -24,12 +24,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserAreaDescriptionListInAreaFragment
-        extends AbstractFragment<UserAreaDescriptionListInAreaView, UserAreaDescriptionListInAreaPresenter>
-        implements UserAreaDescriptionListInAreaView {
+public final class UserAreaDescriptionByAreaListFragment
+        extends AbstractFragment<UserAreaDescriptionByAreaListView, UserAreaDescriptionByAreaListPresenter>
+        implements UserAreaDescriptionByAreaListView {
 
     @Inject
-    UserAreaDescriptionListInAreaPresenter presenter;
+    UserAreaDescriptionByAreaListPresenter presenter;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -37,20 +37,20 @@ public final class UserAreaDescriptionListInAreaFragment
     private InteractionListener interactionListener;
 
     @NonNull
-    public static UserAreaDescriptionListInAreaFragment newInstance(@NonNull String areaId) {
-        UserAreaDescriptionListInAreaFragment fragment = new UserAreaDescriptionListInAreaFragment();
-        Bundle bundle = UserAreaDescriptionListInAreaPresenter.createArguments(areaId);
+    public static UserAreaDescriptionByAreaListFragment newInstance(@NonNull String areaId) {
+        UserAreaDescriptionByAreaListFragment fragment = new UserAreaDescriptionByAreaListFragment();
+        Bundle bundle = UserAreaDescriptionByAreaListPresenter.createArguments(areaId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
-    protected UserAreaDescriptionListInAreaPresenter getPresenter() {
+    protected UserAreaDescriptionByAreaListPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    protected UserAreaDescriptionListInAreaView getViewInterface() {
+    protected UserAreaDescriptionByAreaListView getViewInterface() {
         return this;
     }
 
@@ -73,7 +73,7 @@ public final class UserAreaDescriptionListInAreaFragment
     @Override
     protected View onCreateViewCore(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user_area_description_list_in_area, container, false);
+        return inflater.inflate(R.layout.fragment_user_area_description_by_area_list, container, false);
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class UserAreaDescriptionListInAreaFragment
 
         ButterKnife.bind(this, view);
 
-        recyclerView.setAdapter(new UserAreaDescriptionListInAreaAdapter(presenter));
+        recyclerView.setAdapter(new UserAreaDescriptionByAreaListAdapter(presenter));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 

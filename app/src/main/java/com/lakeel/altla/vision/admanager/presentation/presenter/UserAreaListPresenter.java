@@ -1,12 +1,14 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.model.Area;
-import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAreasUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
@@ -15,19 +17,18 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
         implements DataList.OnItemListener {
 
+    @Inject
+    VisionService visionService;
+
+    @Inject
+    GoogleApiClient googleApiClient;
+
     private final DataList<Item> items = new DataList<>(this);
-
-    @Inject
-    ObserveAllUserAreasUseCase observeAllUserAreasUseCase;
-
-    @Inject
-    GetPlaceUseCase getPlaceUseCase;
 
     @Inject
     public UserAreaListPresenter() {
@@ -46,24 +47,24 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         items.clear();
 
-        Disposable disposable = observeAllUserAreasUseCase
-                .execute()
+        Disposable disposable = ObservableDataList
+                .using(() -> visionService.getUserAreaApi().observeAreas())
                 .map(ItemEvent::new)
                 .concatMap(event -> {
-                    if (event.item.area.getPlaceId() == null) {
+                    String placeId = event.item.area.getPlaceId();
+                    if (placeId == null) {
                         return Observable.just(event);
                     } else {
-                        return getPlaceUseCase
-                                .execute(event.item.area.getPlaceId())
-                                .map(place -> {
-                                    event.item.placeName = place.getName().toString();
-                                    event.item.placeAddress = place.getAddress().toString();
-                                    return event;
-                                })
-                                .toObservable();
+                        return Observable.create(e -> {
+                            visionService.getGooglePlaceApi().getPlaceById(googleApiClient, placeId, place -> {
+                                event.item.placeName = place.getName().toString();
+                                event.item.placeAddress = place.getAddress().toString();
+                                e.onNext(event);
+                                e.onComplete();
+                            }, e::onError);
+                        });
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(event -> {
                     items.change(event.type, event.item, event.previousId);
                 }, e -> {

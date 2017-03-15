@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionListInAreaPresenter;
+import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionByAreaListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 
 import android.support.annotation.NonNull;
@@ -15,16 +15,16 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class UserAreaDescriptionListInAreaAdapter
-        extends RecyclerView.Adapter<UserAreaDescriptionListInAreaAdapter.ViewHolder> {
+public final class UserAreaDescriptionByAreaListAdapter
+        extends RecyclerView.Adapter<UserAreaDescriptionByAreaListAdapter.ViewHolder> {
 
-    private final UserAreaDescriptionListInAreaPresenter presenter;
+    private final UserAreaDescriptionByAreaListPresenter presenter;
 
     private RecyclerView recyclerView;
 
     private LayoutInflater inflater;
 
-    public UserAreaDescriptionListInAreaAdapter(@NonNull UserAreaDescriptionListInAreaPresenter presenter) {
+    public UserAreaDescriptionByAreaListAdapter(@NonNull UserAreaDescriptionByAreaListPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -45,7 +45,7 @@ public final class UserAreaDescriptionListInAreaAdapter
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
-        View itemView = inflater.inflate(R.layout.item_user_area_description_in_area, parent, false);
+        View itemView = inflater.inflate(R.layout.item_user_area_description_by_area, parent, false);
         itemView.setOnClickListener(v -> {
             if (recyclerView != null) {
                 int position = recyclerView.getChildAdapterPosition(itemView);
@@ -73,7 +73,7 @@ public final class UserAreaDescriptionListInAreaAdapter
         @BindView(R.id.text_view_id)
         TextView textViewId;
 
-        private UserAreaDescriptionListInAreaPresenter.ItemPresenter itemPresenter;
+        private UserAreaDescriptionByAreaListPresenter.ItemPresenter itemPresenter;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

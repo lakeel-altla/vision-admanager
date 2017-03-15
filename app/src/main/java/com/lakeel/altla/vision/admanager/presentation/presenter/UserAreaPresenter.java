@@ -1,11 +1,13 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
+import com.lakeel.altla.vision.api.VisionService;
+import com.lakeel.altla.vision.domain.helper.ObservableData;
 import com.lakeel.altla.vision.domain.model.Area;
-import com.lakeel.altla.vision.domain.usecase.GetPlaceUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;
@@ -15,7 +17,6 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
@@ -23,10 +24,10 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
     private static final String ARG_AREA_ID = "areaId";
 
     @Inject
-    ObserveUserAreaUseCase observeUserAreaUseCase;
+    VisionService visionService;
 
     @Inject
-    GetPlaceUseCase getPlaceUseCase;
+    GoogleApiClient googleApiClient;
 
     private String areaId;
 
@@ -68,24 +69,25 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
         getView().onUpdateTitle(null);
 
-        Disposable disposable = observeUserAreaUseCase
-                .execute(areaId)
+        Disposable disposable = ObservableData
+                .using(() -> visionService.getUserAreaApi().observeAreaById(areaId))
                 .map(Model::new)
                 .flatMap(model -> {
-                    if (model.area.getPlaceId() == null) {
+                    String placeId = model.area.getPlaceId();
+
+                    if (placeId == null) {
                         return Observable.just(model);
                     } else {
-                        return getPlaceUseCase
-                                .execute(model.area.getPlaceId())
-                                .map(place -> {
-                                    model.placeName = place.getName().toString();
-                                    model.placeAddress = place.getAddress().toString();
-                                    return model;
-                                })
-                                .toObservable();
+                        return Observable.create(e -> {
+                            visionService.getGooglePlaceApi().getPlaceById(googleApiClient, placeId, place -> {
+                                model.placeName = place.getName().toString();
+                                model.placeAddress = place.getAddress().toString();
+                                e.onNext(model);
+                                e.onComplete();
+                            }, e::onError);
+                        });
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     getView().onUpdateTitle(model.area.getName());
                     getView().onUpdateAreaId(model.area.getId());
@@ -107,7 +109,7 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
     }
 
     public void onClickButtonUserAreaDescriptionsInArea() {
-        getView().onShowUserAreaDescriptionListInAreaView(areaId);
+        getView().onShowUserAreaDescriptionByAreaListView(areaId);
     }
 
     private final class Model {

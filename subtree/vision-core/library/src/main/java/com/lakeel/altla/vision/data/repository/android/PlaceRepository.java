@@ -8,17 +8,13 @@ import com.lakeel.altla.vision.domain.helper.OnFailureListener;
 import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public final class PlaceRepository {
 
-    private final GoogleApiClient googleApiClient;
-
-    public PlaceRepository(@NonNull GoogleApiClient googleApiClient) {
-        this.googleApiClient = googleApiClient;
-    }
-
-    public void get(@NonNull String placeId, OnSuccessListener<Place> onSuccessListener,
-                    OnFailureListener onFailureListener) {
+    public void get(@NonNull GoogleApiClient googleApiClient, @NonNull String placeId,
+                    @Nullable OnSuccessListener<Place> onSuccessListener,
+                    @Nullable OnFailureListener onFailureListener) {
         Places.GeoDataApi.getPlaceById(googleApiClient, placeId)
                          .setResultCallback(places -> {
                              if (places.getStatus().isSuccess()) {

@@ -3,9 +3,10 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.usecase.ObserveAllUserAreaDescriptionsUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
@@ -13,14 +14,13 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAreaDescriptionListView>
         implements DataList.OnItemListener {
 
     @Inject
-    ObserveAllUserAreaDescriptionsUseCase observeAllUserAreaDescriptionsUseCase;
+    VisionService visionService;
 
     private final DataList<Item> items = new DataList<>(this);
 
@@ -41,10 +41,9 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
         items.clear();
 
-        Disposable disposable = observeAllUserAreaDescriptionsUseCase
-                .execute()
+        Disposable disposable = ObservableDataList
+                .using(() -> visionService.getUserAreaDescriptionApi().observeAllAreaDescriptions())
                 .map(Event::new)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
                     items.change(model.type, model.item, model.previousId);
                 }, e -> {

@@ -2,13 +2,13 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionByAreaListView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
-import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListInAreaView;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.domain.helper.ObservableDataList;
+import com.lakeel.altla.vision.domain.model.Area;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.model.AreaScope;
-import com.lakeel.altla.vision.domain.usecase.FindAreaUseCase;
-import com.lakeel.altla.vision.domain.usecase.ObserveUserAreaDescriptionsByAreaIdUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
@@ -19,17 +19,14 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Maybe;
 import io.reactivex.disposables.Disposable;
 
-public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAreaDescriptionListInAreaView>
+public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAreaDescriptionByAreaListView>
         implements DataList.OnItemListener {
 
     @Inject
-    ObserveUserAreaDescriptionsByAreaIdUseCase observeUserAreaDescriptionsByAreaIdUseCase;
-
-    @Inject
-    FindAreaUseCase findAreaUseCase;
+    VisionService visionService;
 
     @Inject
     Resources resources;
@@ -41,7 +38,7 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
     private String areaId;
 
     @Inject
-    public UserAreaDescriptionListInAreaPresenter() {
+    public UserAreaDescriptionByAreaListPresenter() {
     }
 
     @NonNull
@@ -78,10 +75,9 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
 
         items.clear();
 
-        Disposable disposable1 = observeUserAreaDescriptionsByAreaIdUseCase
-                .execute(areaId)
+        Disposable disposable1 = ObservableDataList
+                .using(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionsByAreaId(areaId))
                 .map(Event::new)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(event -> {
                     items.change(event.type, event.item, event.previousId);
                 }, e -> {
@@ -90,16 +86,25 @@ public class UserAreaDescriptionListInAreaPresenter extends BasePresenter<UserAr
                 });
         manageDisposable(disposable1);
 
-        Disposable disposable2 = findAreaUseCase
-                .execute(AreaScope.USER, areaId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(area -> {
-                    String titleFormat = resources.getString(R.string.title_format_user_area_description_list_in_area);
-                    String title = String.format(titleFormat, area.getName());
-                    getView().onUpdateTitle(title);
-                }, e -> {
-                    getLog().e("Failed.", e);
-                });
+        Disposable disposable2 = Maybe.<Area>create(e -> {
+            visionService.getUserAreaApi().findAreaById(areaId, area -> {
+                if (area == null) {
+                    e.onComplete();
+                } else {
+                    e.onSuccess(area);
+                }
+            }, e::onError);
+        }).subscribe(area -> {
+            String titleFormat = resources.getString(R.string.title_format_user_area_description_list_in_area);
+            String title = String.format(titleFormat, area.getName());
+            getView().onUpdateTitle(title);
+        }, e -> {
+            getLog().e("Failed.", e);
+            getView().onSnackbar(R.string.snackbar_failed);
+        }, () -> {
+            getLog().e("Entity not found.");
+            getView().onSnackbar(R.string.snackbar_failed);
+        });
         manageDisposable(disposable2);
     }
 

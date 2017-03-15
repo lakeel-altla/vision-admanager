@@ -2,12 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetEditView;
-import com.lakeel.altla.vision.domain.helper.CurrentUserResolver;
+import com.lakeel.altla.vision.api.CurrentUser;
+import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.domain.model.ImageAsset;
-import com.lakeel.altla.vision.domain.usecase.FindDocumentBitmapUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindUserImageAssetUseCase;
-import com.lakeel.altla.vision.domain.usecase.GetUserImageAssetFileUriUseCase;
-import com.lakeel.altla.vision.domain.usecase.SaveUserImageAssetUseCase;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import org.parceler.Parcel;
@@ -20,31 +17,20 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 
 public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAssetEditView> {
 
-    private static final String ARG_IMAGE_ID = "imageId";
+    private static final String ARG_ASSET_ID = "assetId";
 
     private static final String STATE_MODEL = "model";
 
     @Inject
-    FindUserImageAssetUseCase findUserImageAssetUseCase;
+    VisionService visionService;
 
-    @Inject
-    SaveUserImageAssetUseCase saveUserImageAssetUseCase;
-
-    @Inject
-    FindDocumentBitmapUseCase findDocumentBitmapUseCase;
-
-    @Inject
-    GetUserImageAssetFileUriUseCase getUserImageAssetFileUriUseCase;
-
-    @Inject
-    CurrentUserResolver currentUserResolver;
-
-    private String imageId;
+    private String assetId;
 
     private Model model;
 
@@ -53,9 +39,9 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
     }
 
     @NonNull
-    public static Bundle createArguments(@Nullable String imageId) {
+    public static Bundle createArguments(@Nullable String assetId) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_IMAGE_ID, imageId);
+        bundle.putString(ARG_ASSET_ID, assetId);
         return bundle;
     }
 
@@ -64,7 +50,7 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
         super.onCreate(arguments, savedInstanceState);
 
         if (arguments != null) {
-            imageId = arguments.getString(ARG_IMAGE_ID);
+            assetId = arguments.getString(ARG_ASSET_ID);
         }
 
         if (savedInstanceState == null) {
@@ -98,19 +84,26 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
         getView().onUpdateTitle(null);
 
         if (model == null) {
-            if (imageId == null) {
+            if (assetId == null) {
                 model = new Model();
-                model.asset.setUserId(currentUserResolver.getUserId());
+                model.asset.setUserId(CurrentUser.getInstance().getUserId());
                 getView().onShowNameError(R.string.input_error_name_required);
                 getView().onUpdateViewsEnabled(true);
                 getView().onUpdateActionSave(model.canSave());
             } else {
                 getView().onUpdateViewsEnabled(false);
 
-                Disposable disposable = findUserImageAssetUseCase
-                        .execute(imageId)
+                Disposable disposable = Maybe
+                        .<ImageAsset>create(e -> {
+                            visionService.getUserAssetApi().findUserImageAssetById(assetId, asset -> {
+                                if (asset == null) {
+                                    e.onComplete();
+                                } else {
+                                    e.onSuccess(asset);
+                                }
+                            }, e::onError);
+                        })
                         .map(Model::new)
-                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(model -> {
                             this.model = model;
                             getView().onUpdateTitle(model.asset.getName());
@@ -118,14 +111,15 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
                             getView().onUpdateViewsEnabled(true);
                             getView().onUpdateActionSave(model.canSave());
 
-                            Disposable disposable1 = getUserImageAssetFileUriUseCase
-                                    .execute(model.asset.getId())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(uri -> {
-                                        getView().onUpdateThumbnail(uri);
-                                    }, e -> {
-                                        getLog().e("Failed.", e);
-                                    });
+                            Disposable disposable1 = Single.<Uri>create(e -> {
+                                visionService.getUserAssetApi()
+                                             .getUserImageAssetFileUriById(model.asset.getId(),
+                                                                           e::onSuccess, e::onError);
+                            }).subscribe(uri -> {
+                                getView().onUpdateThumbnail(uri);
+                            }, e -> {
+                                getLog().e("Failed.", e);
+                            });
                             manageDisposable(disposable1);
                         }, e -> {
                             getLog().e("Failed.", e);
@@ -178,17 +172,10 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
         getView().onUpdateViewsEnabled(false);
         getView().onUpdateActionSave(false);
 
-        Disposable disposable = saveUserImageAssetUseCase
-                .execute(model.asset, model.imageUri)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getView().onSnackbar(R.string.snackbar_done);
-                    getView().onBackView();
-                }, e -> {
-                    getLog().e("Failed.", e);
-                    getView().onSnackbar(R.string.snackbar_failed);
-                });
-        manageDisposable(disposable);
+        visionService.getUserAssetApi().saveUserImageAsset(model.asset);
+        visionService.getUserAssetApi().registerUserImageAssetFileUploadTask(model.asset.getId(), model.imageUri);
+        getView().onSnackbar(R.string.snackbar_done);
+        getView().onBackView();
     }
 
     @Parcel
