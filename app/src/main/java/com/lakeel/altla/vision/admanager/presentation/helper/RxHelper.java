@@ -28,8 +28,8 @@ public final class RxHelper {
     public static <TData> Observable<DataListEvent<TData>> usingList(
             @NonNull Callable<ObservableList<TData>> observableListFactory) {
         return Observable.using(observableListFactory,
-                                observableDataList -> Observable.<DataListEvent<TData>>create(subscriber -> {
-                                    observableDataList.observe(subscriber::onNext, subscriber::onError);
+                                observableList -> Observable.<DataListEvent<TData>>create(subscriber -> {
+                                    observableList.observe(subscriber::onNext, subscriber::onError);
                                 }),
                                 ObservableList::close);
     }
