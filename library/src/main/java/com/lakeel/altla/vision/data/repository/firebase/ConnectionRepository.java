@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.helper.ObservableData;
 
 import android.support.annotation.NonNull;
 

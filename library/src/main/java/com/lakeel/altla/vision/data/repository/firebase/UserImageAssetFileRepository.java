@@ -3,12 +3,13 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnProgressListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -22,7 +23,8 @@ public final class UserImageAssetFileRepository extends BaseStorageRepository {
     }
 
     public void exists(@NonNull String userId, @NonNull String assetId,
-                       OnSuccessListener<Boolean> onSuccessListener, OnFailureListener onFailureListener) {
+                       @Nullable OnSuccessListener<Boolean> onSuccessListener,
+                       @Nullable OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
@@ -45,7 +47,7 @@ public final class UserImageAssetFileRepository extends BaseStorageRepository {
 
     public void upload(@NonNull String userId, @NonNull String assetId,
                        @NonNull InputStream stream, OnSuccessListener<Void> onSuccessListener,
-                       OnFailureListener onFailureListener, OnProgressListener onProgressListener) {
+                       @Nullable OnFailureListener onFailureListener, @Nullable OnProgressListener onProgressListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
@@ -66,8 +68,9 @@ public final class UserImageAssetFileRepository extends BaseStorageRepository {
     }
 
     public void download(@NonNull String userId, @NonNull String assetId, @NonNull File destination,
-                         OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener,
-                         OnProgressListener onProgressListener) {
+                         @Nullable OnSuccessListener<Void> onSuccessListener,
+                         @Nullable OnFailureListener onFailureListener,
+                         @Nullable OnProgressListener onProgressListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
@@ -88,7 +91,8 @@ public final class UserImageAssetFileRepository extends BaseStorageRepository {
     }
 
     public void getDownloadUri(@NonNull String userId, @NonNull String assetId,
-                               OnSuccessListener<Uri> onSuccessListener, OnFailureListener onFailureListener) {
+                               @Nullable OnSuccessListener<Uri> onSuccessListener,
+                               @Nullable OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)
@@ -103,7 +107,8 @@ public final class UserImageAssetFileRepository extends BaseStorageRepository {
     }
 
     public void delete(@NonNull String userId, @NonNull String assetId,
-                       OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
+                       @Nullable OnSuccessListener<Void> onSuccessListener,
+                       @Nullable OnFailureListener onFailureListener) {
         getStorage().getReference()
                     .child(BASE_PATH)
                     .child(userId)

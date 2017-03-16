@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.presentation.presenter.model;
 
-import com.lakeel.altla.vision.domain.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.DataListEvent;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
