@@ -1,11 +1,11 @@
 package com.lakeel.altla.vision.api;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Area;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
+import com.lakeel.altla.vision.model.Area;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

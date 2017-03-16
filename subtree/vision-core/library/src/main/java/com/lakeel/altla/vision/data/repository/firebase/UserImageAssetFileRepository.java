@@ -3,9 +3,9 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnProgressListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;

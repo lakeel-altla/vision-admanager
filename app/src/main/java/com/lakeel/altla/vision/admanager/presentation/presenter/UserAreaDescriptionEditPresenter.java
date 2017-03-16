@@ -3,8 +3,8 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionEditView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.model.Area;
-import com.lakeel.altla.vision.domain.model.AreaDescription;
+import com.lakeel.altla.vision.model.Area;
+import com.lakeel.altla.vision.model.AreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import org.parceler.Parcel;

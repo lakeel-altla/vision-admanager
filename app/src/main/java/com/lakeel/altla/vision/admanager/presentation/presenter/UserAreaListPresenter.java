@@ -6,9 +6,9 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.Area;
+import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 

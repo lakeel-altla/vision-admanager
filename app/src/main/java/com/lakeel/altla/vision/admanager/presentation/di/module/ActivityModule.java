@@ -5,8 +5,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 import com.lakeel.altla.tango.TangoWrapper;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.ContentResolver;
 import android.content.Context;

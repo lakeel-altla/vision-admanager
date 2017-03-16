@@ -36,6 +36,17 @@ public final class VisionService {
 
     private final UserAssetApi userAssetApi;
 
+    private final UserActorApi userActorApi;
+
+    // TODO: This api is used our builder only.
+    private final UserAreaSettingsApi userAreaSettingsApi;
+
+    private final PublicAreaApi publicAreaApi;
+
+    private final PublicAreaDescriptionApi publicAreaDescriptionApi;
+
+    private final PublicActorApi publicActorApi;
+
     public VisionService(@NonNull Context context,
                          @NonNull FirebaseDatabase firebaseDatabase,
                          @NonNull FirebaseStorage firebaseStorage) {
@@ -56,6 +67,12 @@ public final class VisionService {
         userAreaApi = new UserAreaApi(this);
         userAreaDescriptionApi = new UserAreaDescriptionApi(this);
         userAssetApi = new UserAssetApi(this);
+        userActorApi = new UserActorApi(this);
+        userAreaSettingsApi = new UserAreaSettingsApi(this);
+
+        publicAreaApi = new PublicAreaApi(this);
+        publicAreaDescriptionApi = new PublicAreaDescriptionApi(this);
+        publicActorApi = new PublicActorApi(this);
     }
 
     @NonNull
@@ -121,5 +138,30 @@ public final class VisionService {
     @NonNull
     public UserAssetApi getUserAssetApi() {
         return userAssetApi;
+    }
+
+    @NonNull
+    public UserActorApi getUserActorApi() {
+        return userActorApi;
+    }
+
+    @NonNull
+    public UserAreaSettingsApi getUserAreaSettingsApi() {
+        return userAreaSettingsApi;
+    }
+
+    @NonNull
+    public PublicAreaApi getPublicAreaApi() {
+        return publicAreaApi;
+    }
+
+    @NonNull
+    public PublicAreaDescriptionApi getPublicAreaDescriptionApi() {
+        return publicAreaDescriptionApi;
+    }
+
+    @NonNull
+    public PublicActorApi getPublicActorApi() {
+        return publicActorApi;
     }
 }

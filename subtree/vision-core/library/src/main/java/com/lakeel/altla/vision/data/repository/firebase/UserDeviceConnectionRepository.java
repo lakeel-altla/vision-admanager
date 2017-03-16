@@ -7,9 +7,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.DeviceConnection;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
+import com.lakeel.altla.vision.model.DeviceConnection;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

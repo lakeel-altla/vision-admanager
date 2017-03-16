@@ -4,9 +4,9 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetListView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.ImageAsset;
+import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.model.ImageAsset;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
 
@@ -107,7 +107,8 @@ public final class UserImageAssetListPresenter extends BasePresenter<UserImageAs
             itemView.onUpdateName(item.asset.getName());
 
             Disposable disposable = Single.<Uri>create(e -> {
-                visionService.getUserAssetApi().getUserImageAssetFileUriById(item.asset.getId(), e::onSuccess, e::onError);
+                visionService.getUserAssetApi()
+                             .getUserImageAssetFileUriById(item.asset.getId(), e::onSuccess, e::onError);
             }).subscribe(uri -> {
                 itemView.onUpdateThumbnail(uri);
             }, e -> {

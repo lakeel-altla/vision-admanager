@@ -8,7 +8,7 @@ import com.google.android.gms.location.places.Places;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.di.ActivityScope;
+import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

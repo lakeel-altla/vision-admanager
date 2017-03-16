@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetEditView;
 import com.lakeel.altla.vision.api.CurrentUser;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.model.ImageAsset;
+import com.lakeel.altla.vision.model.ImageAsset;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import org.parceler.Parcel;

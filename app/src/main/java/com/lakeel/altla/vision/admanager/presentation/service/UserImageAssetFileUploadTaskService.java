@@ -8,7 +8,7 @@ import com.lakeel.altla.vision.admanager.presentation.di.component.ServiceCompon
 import com.lakeel.altla.vision.admanager.presentation.di.module.ServiceModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
+import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 
 import org.parceler.Parcels;
 

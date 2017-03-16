@@ -6,10 +6,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Profile;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
+import com.lakeel.altla.vision.model.Profile;
 
 import android.support.annotation.NonNull;
 

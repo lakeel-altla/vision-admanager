@@ -6,8 +6,8 @@ import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.Area;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;

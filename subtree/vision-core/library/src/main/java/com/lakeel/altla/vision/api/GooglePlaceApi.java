@@ -4,8 +4,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 
 import com.lakeel.altla.vision.data.repository.android.PlaceRepository;
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

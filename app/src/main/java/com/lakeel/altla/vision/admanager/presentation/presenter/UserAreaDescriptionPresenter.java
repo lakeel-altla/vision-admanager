@@ -7,9 +7,9 @@ import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.model.AreaDescription;
+import com.lakeel.altla.vision.model.TangoAreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.os.Bundle;

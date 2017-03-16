@@ -28,10 +28,10 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAss
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.domain.helper.DataListEvent;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
+import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 import com.squareup.picasso.Picasso;
 
 import android.content.Context;

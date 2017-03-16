@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.api;
 
 import com.lakeel.altla.vision.data.repository.firebase.ConnectionRepository;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
+import com.lakeel.altla.vision.helper.ObservableData;
 
 import android.support.annotation.NonNull;
 

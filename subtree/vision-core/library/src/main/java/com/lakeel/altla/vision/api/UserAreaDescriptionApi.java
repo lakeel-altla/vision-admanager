@@ -3,12 +3,12 @@ package com.lakeel.altla.vision.api;
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.helper.OnFailureListener;
-import com.lakeel.altla.vision.domain.helper.OnProgressListener;
-import com.lakeel.altla.vision.domain.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.AreaDescription;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.OnFailureListener;
+import com.lakeel.altla.vision.helper.OnProgressListener;
+import com.lakeel.altla.vision.helper.OnSuccessListener;
+import com.lakeel.altla.vision.model.AreaDescription;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 public final class UserAreaDescriptionApi extends BaseVisionApi {
 
@@ -39,6 +40,13 @@ public final class UserAreaDescriptionApi extends BaseVisionApi {
                                         @Nullable OnFailureListener onFailureListener) {
         userAreaDescriptionRepository.find(CurrentUser.getInstance().getUserId(), areaDescriptionId,
                                            onSuccessListener, onFailureListener);
+    }
+
+    public void findAreaDescriptionsByAreaId(@NonNull String areaId,
+                                             @Nullable OnSuccessListener<List<AreaDescription>> onSuccessListener,
+                                             @Nullable OnFailureListener onFailureListener) {
+        userAreaDescriptionRepository.findByAreaId(CurrentUser.getInstance().getUserId(), areaId,
+                                                   onSuccessListener, onFailureListener);
     }
 
     @NonNull

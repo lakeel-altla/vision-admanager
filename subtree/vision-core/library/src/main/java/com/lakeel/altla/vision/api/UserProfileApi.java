@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.api;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
-import com.lakeel.altla.vision.domain.helper.ObservableData;
-import com.lakeel.altla.vision.domain.model.Profile;
+import com.lakeel.altla.vision.helper.ObservableData;
+import com.lakeel.altla.vision.model.Profile;
 
 import android.support.annotation.NonNull;
 

@@ -8,8 +8,6 @@ public final class Names {
 
     static final String GOOGLE_API_WEB_CLIENT_ID = "google.api.webClientId";
 
-    static final String EXTERNAL_STORAGE_ROOT = "external.storage.root";
-
     private Names() {
     }
 }
