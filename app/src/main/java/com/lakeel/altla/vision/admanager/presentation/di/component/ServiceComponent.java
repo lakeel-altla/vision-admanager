@@ -4,13 +4,11 @@ import com.lakeel.altla.vision.admanager.presentation.di.ServiceScope;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ServiceModule;
 import com.lakeel.altla.vision.admanager.presentation.service.UserImageAssetFileUploadTaskService;
 
-import android.support.annotation.NonNull;
-
 import dagger.Subcomponent;
 
 @ServiceScope
 @Subcomponent(modules = { ServiceModule.class })
 public interface ServiceComponent {
 
-    void inject(@NonNull UserImageAssetFileUploadTaskService service);
+    void inject(UserImageAssetFileUploadTaskService service);
 }

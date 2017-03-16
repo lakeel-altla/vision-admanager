@@ -2,7 +2,6 @@ package com.lakeel.altla.vision.admanager.presentation.di.component;
 
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScope;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.admanager.presentation.view.activity.MainActivity;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
@@ -23,8 +22,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAss
 import dagger.Subcomponent;
 
 @ActivityScope
-@Subcomponent(modules = { ActivityModule.class,
-                          GoogleApiModule.class })
+@Subcomponent(modules = { ActivityModule.class })
 public interface ActivityComponent {
 
     void inject(MainActivity activity);
