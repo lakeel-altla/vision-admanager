@@ -11,8 +11,8 @@ import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnProgressListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.ImageAsset;
-import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
+import com.lakeel.altla.vision.model.ImageAsset;
+import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;

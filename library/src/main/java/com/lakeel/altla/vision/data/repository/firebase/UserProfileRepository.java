@@ -9,7 +9,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Profile;
+import com.lakeel.altla.vision.model.Profile;
 
 import android.support.annotation.NonNull;
 

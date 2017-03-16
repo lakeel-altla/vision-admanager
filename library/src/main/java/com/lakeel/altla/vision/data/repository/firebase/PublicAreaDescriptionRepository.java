@@ -7,7 +7,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.AreaDescription;
+import com.lakeel.altla.vision.model.AreaDescription;
 
 import android.support.annotation.NonNull;
 

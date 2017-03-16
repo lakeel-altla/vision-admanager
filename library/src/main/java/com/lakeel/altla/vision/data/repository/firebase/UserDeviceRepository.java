@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.database.FirebaseDatabase;
 
-import com.lakeel.altla.vision.domain.model.Device;
+import com.lakeel.altla.vision.model.Device;
 
 import android.support.annotation.NonNull;
 

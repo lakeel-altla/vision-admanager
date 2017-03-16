@@ -5,7 +5,7 @@ import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Area;
+import com.lakeel.altla.vision.model.Area;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

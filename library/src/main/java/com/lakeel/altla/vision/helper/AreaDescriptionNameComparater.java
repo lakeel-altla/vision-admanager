@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.helper;
 
-import com.lakeel.altla.vision.domain.model.AreaDescription;
+import com.lakeel.altla.vision.model.AreaDescription;
 
 import java.util.Comparator;
 

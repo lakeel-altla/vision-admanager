@@ -13,8 +13,8 @@ import com.lakeel.altla.vision.data.repository.firebase.UserDeviceRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepository;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Device;
-import com.lakeel.altla.vision.domain.model.Profile;
+import com.lakeel.altla.vision.model.Device;
+import com.lakeel.altla.vision.model.Profile;
 
 import android.os.Build;
 import android.support.annotation.NonNull;

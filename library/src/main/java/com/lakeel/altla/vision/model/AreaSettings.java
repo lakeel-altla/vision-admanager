@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.domain.model;
+package com.lakeel.altla.vision.model;
 
 import com.google.firebase.database.Exclude;
 

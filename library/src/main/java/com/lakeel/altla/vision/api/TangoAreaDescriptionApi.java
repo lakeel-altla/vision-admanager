@@ -6,8 +6,8 @@ import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionIdRepository;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
-import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.model.TangoAreaDescription;
+import com.lakeel.altla.vision.model.AreaDescription;
+import com.lakeel.altla.vision.model.TangoAreaDescription;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

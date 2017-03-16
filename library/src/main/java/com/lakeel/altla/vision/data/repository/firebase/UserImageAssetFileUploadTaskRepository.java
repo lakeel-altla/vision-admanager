@@ -4,7 +4,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import com.lakeel.altla.vision.helper.ObservableDataList;
-import com.lakeel.altla.vision.domain.model.ImageAssetFileUploadTask;
+import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 
 import android.support.annotation.NonNull;
 

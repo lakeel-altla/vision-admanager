@@ -11,7 +11,7 @@ import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
-import com.lakeel.altla.vision.domain.model.Actor;
+import com.lakeel.altla.vision.model.Actor;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,7 +31,7 @@ public final class UserActorRepository extends BaseDatabaseRepository {
 
     public void save(@NonNull Actor actor) {
         if (actor.getUserId() == null) throw new IllegalArgumentException("actor.getUserId() must be not null.");
-        if (actor.getAreaId() == null) throw new IllegalArgumentException("actor.getAreaId() must be not null.");
+        if (actor.getAreaId() == null) throw new IllegalArgumentException("actor.getSceneId() must be not null.");
 
         actor.setUpdatedAtAsLong(-1);
 
