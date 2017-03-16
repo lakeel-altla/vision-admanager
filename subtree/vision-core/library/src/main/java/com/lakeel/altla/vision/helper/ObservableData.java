@@ -11,6 +11,8 @@ import com.lakeel.altla.android.log.LogFactory;
 import android.support.annotation.NonNull;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ObservableData<TData> implements Closeable {
 
@@ -19,6 +21,10 @@ public final class ObservableData<TData> implements Closeable {
     private final Query query;
 
     private final DataSnapshotConverter<TData> dataSnapshotConverter;
+
+    private final List<OnDataChangeListener<TData>> onDataChangeListeners = new ArrayList<>();
+
+    private final List<OnFailureListener> onFailureListeners = new ArrayList<>();
 
     private ValueEventListener valueEventListener;
 
@@ -29,36 +35,50 @@ public final class ObservableData<TData> implements Closeable {
         this.dataSnapshotConverter = dataSnapshotConverter;
     }
 
-    public void observe(OnDataChangeListener<TData> onDataChangeListener, OnFailureListener onFailureListener) {
-        if (closed) throw new IllegalStateException("This object is already closed.");
+    public void addOnDataChangeListener(@NonNull OnDataChangeListener<TData> dataChangeListener) {
+        onDataChangeListeners.add(dataChangeListener);
+    }
 
-        if (valueEventListener != null) {
-            query.removeEventListener(valueEventListener);
-            valueEventListener = null;
-        }
+    public void removeOnDataChangeListener(@NonNull OnDataChangeListener<TData> dataChangeListener) {
+        onDataChangeListeners.remove(dataChangeListener);
+    }
 
-        if (onDataChangeListener != null || onFailureListener != null) {
-            valueEventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    TData data = null;
-                    if (snapshot.exists()) {
-                        data = dataSnapshotConverter.convert(snapshot);
-                    }
-                    if (data == null) {
-                        LOG.w("The target data not found.");
-                    } else {
-                        if (onDataChangeListener != null) onDataChangeListener.onDataChange(data);
+    public void addOnFailureListener(@NonNull OnFailureListener onFailureListener) {
+        onFailureListeners.add(onFailureListener);
+    }
+
+    public void removeOnFailureListener(@NonNull OnFailureListener onFailureListener) {
+        onFailureListeners.remove(onFailureListener);
+    }
+
+    public void observe() {
+        if (closed) throw new IllegalStateException("This object is closed.");
+
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                TData data = null;
+                if (snapshot.exists()) {
+                    data = dataSnapshotConverter.convert(snapshot);
+                }
+                if (data == null) {
+                    LOG.w("The target data not found.");
+                } else {
+                    for (OnDataChangeListener<TData> onDataChangeListener : onDataChangeListeners) {
+                        onDataChangeListener.onDataChange(data);
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    if (onFailureListener != null) onFailureListener.onFailure(error.toException());
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Exception e = error.toException();
+                for (OnFailureListener onFailureListener : onFailureListeners) {
+                    onFailureListener.onFailure(e);
                 }
-            };
-            query.addValueEventListener(valueEventListener);
-        }
+            }
+        };
+        query.addValueEventListener(valueEventListener);
     }
 
     @Override

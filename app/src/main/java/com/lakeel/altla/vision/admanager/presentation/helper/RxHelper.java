@@ -19,7 +19,9 @@ public final class RxHelper {
     public static <TData> Observable<TData> usingData(@NonNull Callable<ObservableData<TData>> observableDataFactory) {
         return Observable.using(observableDataFactory,
                                 observableData -> Observable.<TData>create(subscriber -> {
-                                    observableData.observe(subscriber::onNext, subscriber::onError);
+                                    observableData.addOnDataChangeListener(subscriber::onNext);
+                                    observableData.addOnFailureListener(subscriber::onError);
+                                    observableData.observe();
                                 }),
                                 ObservableData::close);
     }
@@ -29,7 +31,9 @@ public final class RxHelper {
             @NonNull Callable<ObservableList<TData>> observableListFactory) {
         return Observable.using(observableListFactory,
                                 observableList -> Observable.<DataListEvent<TData>>create(subscriber -> {
-                                    observableList.observe(subscriber::onNext, subscriber::onError);
+                                    observableList.addOnDataListEventListener(subscriber::onNext);
+                                    observableList.addOnFailureListener(subscriber::onError);
+                                    observableList.observe();
                                 }),
                                 ObservableList::close);
     }
