@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.view.helper;
+package com.lakeel.altla.vision.admanager.presentation.helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.view.helper;
+package com.lakeel.altla.vision.admanager.presentation.helper;
 
 import com.lakeel.altla.vision.admanager.R;
 import com.squareup.picasso.Picasso;

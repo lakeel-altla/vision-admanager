@@ -5,9 +5,9 @@ import com.lakeel.altla.tango.TangoIntents;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserAreaDescriptionPresenter;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
+import com.lakeel.altla.vision.admanager.presentation.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.DateFormatHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.DateFormatHelper;
 import com.lakeel.altla.vision.presentation.view.fragment.AbstractFragment;
 
 import android.app.Activity;

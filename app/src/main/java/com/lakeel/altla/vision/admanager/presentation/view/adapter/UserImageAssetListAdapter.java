@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.admanager.presentation.view.adapter;
 import com.lakeel.altla.vision.admanager.R;
 import com.lakeel.altla.vision.admanager.presentation.presenter.UserImageAssetListPresenter;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetItemView;
-import com.lakeel.altla.vision.admanager.presentation.view.helper.ThumbnailLoader;
+import com.lakeel.altla.vision.admanager.presentation.helper.ThumbnailLoader;
 
 import android.content.Context;
 import android.net.Uri;

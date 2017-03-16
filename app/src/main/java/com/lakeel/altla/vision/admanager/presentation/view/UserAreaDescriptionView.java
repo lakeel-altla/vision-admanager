@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.view;
 
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
+import com.lakeel.altla.vision.admanager.presentation.model.ImportStatus;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

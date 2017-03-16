@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.admanager.presentation.presenter.model;
+package com.lakeel.altla.vision.admanager.presentation.model;
 
 public enum ImportStatus {
 

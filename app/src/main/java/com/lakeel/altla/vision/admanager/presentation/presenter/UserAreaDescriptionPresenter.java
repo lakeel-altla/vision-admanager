@@ -4,7 +4,7 @@ import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.presenter.model.ImportStatus;
+import com.lakeel.altla.vision.admanager.presentation.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.helper.ObservableData;
