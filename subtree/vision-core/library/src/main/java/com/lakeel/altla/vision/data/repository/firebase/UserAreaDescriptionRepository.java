@@ -8,7 +8,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
 import com.lakeel.altla.vision.model.AreaDescription;
@@ -128,24 +128,24 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
     }
 
     @NonNull
-    public ObservableDataList<AreaDescription> observeAll(@NonNull String userId) {
+    public ObservableList<AreaDescription> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_NAME);
 
-        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
+        return new ObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     @NonNull
-    public ObservableDataList<AreaDescription> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
+    public ObservableList<AreaDescription> observeByAreaId(@NonNull String userId, @NonNull String areaId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_AREA_ID)
                                    .equalTo(areaId);
 
-        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
+        return new ObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {

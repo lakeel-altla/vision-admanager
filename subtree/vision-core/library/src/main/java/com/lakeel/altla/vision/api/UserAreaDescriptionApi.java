@@ -4,7 +4,7 @@ import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepos
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepository;
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnProgressListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
@@ -55,12 +55,12 @@ public final class UserAreaDescriptionApi extends BaseVisionApi {
     }
 
     @NonNull
-    public ObservableDataList<AreaDescription> observeAreaDescriptionsByAreaId(@NonNull String areaId) {
+    public ObservableList<AreaDescription> observeAreaDescriptionsByAreaId(@NonNull String areaId) {
         return userAreaDescriptionRepository.observeByAreaId(CurrentUser.getInstance().getUserId(), areaId);
     }
 
     @NonNull
-    public ObservableDataList<AreaDescription> observeAllAreaDescriptions() {
+    public ObservableList<AreaDescription> observeAllAreaDescriptions() {
         return userAreaDescriptionRepository.observeAll(CurrentUser.getInstance().getUserId());
     }
 

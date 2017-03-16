@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Maybe;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAreaDescriptionEditView> {
@@ -27,6 +28,8 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaDescriptionId;
 
@@ -121,7 +124,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                 getLog().e("Entity not found.");
                 getView().onSnackbar(R.string.snackbar_failed);
             });
-            manageDisposable(disposable);
+            compositeDisposable.add(disposable);
         } else {
             getView().onUpdateTitle(model.areaDescription.getName());
             getView().onUpdateName(model.areaDescription.getName());
@@ -155,7 +158,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
                         getLog().e("Entity not found.");
                         getView().onSnackbar(R.string.snackbar_failed);
                     });
-                    manageDisposable(disposable);
+                    compositeDisposable.add(disposable);
                 }
             } else {
                 getView().onUpdateAreaName(model.areaName);
@@ -169,6 +172,7 @@ public final class UserAreaDescriptionEditPresenter extends BasePresenter<UserAr
     protected void onStopOverride() {
         super.onStopOverride();
 
+        compositeDisposable.clear();
         getView().onUpdateHomeAsUpIndicator(null);
     }
 

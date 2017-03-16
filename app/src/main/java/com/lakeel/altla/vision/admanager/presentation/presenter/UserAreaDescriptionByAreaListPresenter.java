@@ -2,11 +2,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionByAreaListView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.helper.DataListEvent;
-import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.model.AreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -20,10 +20,13 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Maybe;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAreaDescriptionByAreaListView>
         implements DataList.OnItemListener {
+
+    private static final String ARG_AREA_ID = "areaId";
 
     @Inject
     VisionService visionService;
@@ -31,7 +34,7 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
     @Inject
     Resources resources;
 
-    private static final String ARG_AREA_ID = "areaId";
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final DataList<Item> items = new DataList<>(this);
 
@@ -75,8 +78,8 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
 
         items.clear();
 
-        Disposable disposable1 = ObservableDataList
-                .using(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionsByAreaId(areaId))
+        Disposable disposable1 = RxHelper
+                .usingList(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionsByAreaId(areaId))
                 .map(Event::new)
                 .subscribe(event -> {
                     items.change(event.type, event.item, event.previousId);
@@ -84,7 +87,7 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable1);
+        compositeDisposable.add(disposable1);
 
         Disposable disposable2 = Maybe.<Area>create(e -> {
             visionService.getUserAreaApi().findAreaById(areaId, area -> {
@@ -105,7 +108,14 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
             getLog().e("Entity not found.");
             getView().onSnackbar(R.string.snackbar_failed);
         });
-        manageDisposable(disposable2);
+        compositeDisposable.add(disposable2);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     @Override

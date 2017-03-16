@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAssetEditView> {
@@ -29,6 +30,8 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String assetId;
 
@@ -120,7 +123,7 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
                             }, e -> {
                                 getLog().e("Failed.", e);
                             });
-                            manageDisposable(disposable1);
+                            compositeDisposable.add(disposable1);
                         }, e -> {
                             getLog().e("Failed.", e);
                             getView().onSnackbar(R.string.snackbar_failed);
@@ -128,7 +131,7 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
                             getLog().e("Entity not found.");
                             getView().onSnackbar(R.string.snackbar_failed);
                         });
-                manageDisposable(disposable);
+                compositeDisposable.add(disposable);
             }
         } else {
             getView().onUpdateTitle(model.asset.getName());
@@ -143,6 +146,7 @@ public final class UserImageAssetEditPresenter extends BasePresenter<UserImageAs
     protected void onStopOverride() {
         super.onStopOverride();
 
+        compositeDisposable.clear();
         getView().onUpdateHomeAsUpIndicator(null);
     }
 

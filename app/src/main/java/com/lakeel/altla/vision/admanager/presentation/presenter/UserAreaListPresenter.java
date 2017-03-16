@@ -3,11 +3,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.helper.DataListEvent;
-import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
@@ -27,6 +28,8 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
     @Inject
     GoogleApiClient googleApiClient;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final DataList<Item> items = new DataList<>(this);
 
@@ -47,8 +50,8 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         items.clear();
 
-        Disposable disposable = ObservableDataList
-                .using(() -> visionService.getUserAreaApi().observeAreas())
+        Disposable disposable = RxHelper
+                .usingList(() -> visionService.getUserAreaApi().observeAreas())
                 .map(ItemEvent::new)
                 .concatMap(event -> {
                     String placeId = event.item.area.getPlaceId();
@@ -71,7 +74,14 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     @Override

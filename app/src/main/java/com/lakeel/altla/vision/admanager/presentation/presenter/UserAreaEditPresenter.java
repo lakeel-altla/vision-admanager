@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView> {
@@ -34,6 +35,8 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
 
     @Inject
     GoogleApiClient googleApiClient;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaId;
 
@@ -131,7 +134,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
                     getLog().e("Entity not found.");
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-                manageDisposable(disposable);
+                compositeDisposable.add(disposable);
             }
         } else {
             getView().onUpdateTitle(model.area.getName());
@@ -149,6 +152,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
     protected void onStopOverride() {
         super.onStopOverride();
 
+        compositeDisposable.clear();
         getView().onUpdateHomeAsUpIndicator(null);
     }
 
@@ -209,7 +213,7 @@ public final class UserAreaEditPresenter extends BasePresenter<UserAreaEditView>
             getLog().e("Failed.", e);
             getView().onSnackbar(R.string.snackbar_failed);
         });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
     }
 
     @Parcel

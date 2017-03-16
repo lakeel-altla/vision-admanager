@@ -8,7 +8,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
 import com.lakeel.altla.vision.model.ImageAsset;
@@ -75,12 +75,12 @@ public final class UserImageAssetRepository extends BaseDatabaseRepository {
     }
 
     @NonNull
-    public ObservableDataList<ImageAsset> observeAll(@NonNull String userId) {
+    public ObservableList<ImageAsset> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_NAME);
 
-        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(ImageAsset.class));
+        return new ObservableList<>(query, snapshot -> snapshot.getValue(ImageAsset.class));
     }
 }

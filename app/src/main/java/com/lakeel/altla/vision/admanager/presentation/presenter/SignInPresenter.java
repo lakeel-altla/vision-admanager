@@ -18,6 +18,7 @@ import android.content.Intent;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class SignInPresenter extends BasePresenter<SignInView> {
@@ -29,6 +30,8 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
 
     @Inject
     GoogleApiClient googleApiClient;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final FirebaseAuth.AuthStateListener authStateListener;
 
@@ -79,6 +82,7 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
     protected void onStopOverride() {
         super.onStopOverride();
 
+        compositeDisposable.clear();
         FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
     }
 
@@ -130,6 +134,6 @@ public final class SignInPresenter extends BasePresenter<SignInView> {
                            e -> {
                                getLog().e("Failed to sign in to Firebase.", e);
                            });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
     }
 }

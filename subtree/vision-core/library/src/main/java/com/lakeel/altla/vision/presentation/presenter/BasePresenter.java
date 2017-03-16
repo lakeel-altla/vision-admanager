@@ -9,9 +9,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
 public class BasePresenter<TView> implements Presenter<TView> {
 
     private final Log log = LogFactory.getLog(getClass());
@@ -19,8 +16,6 @@ public class BasePresenter<TView> implements Presenter<TView> {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private TView view;
-
-    private CompositeDisposable compositeDisposable;
 
     protected BasePresenter() {
     }
@@ -53,8 +48,6 @@ public class BasePresenter<TView> implements Presenter<TView> {
 
     @Override
     public final void onStop() {
-        if (compositeDisposable != null) compositeDisposable.clear();
-
         onStopOverride();
     }
 
@@ -85,12 +78,6 @@ public class BasePresenter<TView> implements Presenter<TView> {
     @NonNull
     protected final TView getView() {
         return view;
-    }
-
-    protected final void manageDisposable(@NonNull Disposable disposable) {
-        if (compositeDisposable == null) compositeDisposable = new CompositeDisposable();
-
-        compositeDisposable.add(disposable);
     }
 
     protected final void runOnUiThread(@NonNull Runnable runnable) {

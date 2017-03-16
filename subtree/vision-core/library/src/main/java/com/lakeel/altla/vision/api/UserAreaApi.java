@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.api;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaRepository;
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
 import com.lakeel.altla.vision.model.Area;
@@ -46,7 +46,7 @@ public final class UserAreaApi extends BaseVisionApi {
     }
 
     @NonNull
-    public ObservableDataList<Area> observeAreas() {
+    public ObservableList<Area> observeAreas() {
         return userAreaRepository.observeAll(CurrentUser.getInstance().getUserId());
     }
 

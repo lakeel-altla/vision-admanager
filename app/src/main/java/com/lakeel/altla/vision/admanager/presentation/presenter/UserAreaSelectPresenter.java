@@ -17,6 +17,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectView> {
@@ -26,6 +27,8 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
 
     @Inject
     GoogleApiClient googleApiClient;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final List<Item> items = new ArrayList<>();
 
@@ -75,7 +78,14 @@ public final class UserAreaSelectPresenter extends BasePresenter<UserAreaSelectV
             getLog().e("Failed.", e);
             getView().onSnackbar(R.string.snackbar_failed);
         });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     public int getItemCount() {

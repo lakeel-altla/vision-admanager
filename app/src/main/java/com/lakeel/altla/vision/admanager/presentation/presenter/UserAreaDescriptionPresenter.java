@@ -4,10 +4,10 @@ import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.model.AreaDescription;
 import com.lakeel.altla.vision.model.TangoAreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDescriptionView>
@@ -31,6 +32,8 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaDescriptionId;
 
@@ -92,8 +95,9 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         visionService.getTangoWrapper().addOnTangoReadyListener(this);
 
-        Disposable disposable = ObservableData
-                .using(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionById(areaDescriptionId))
+        Disposable disposable = RxHelper
+                .usingData(() -> visionService.getUserAreaDescriptionApi()
+                                              .observeAreaDescriptionById(areaDescriptionId))
                 .map(Model::new)
                 .flatMap(model -> {
                     // Resolve the area name
@@ -135,13 +139,14 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
     }
 
     @Override
     protected void onStopOverride() {
         super.onStopOverride();
 
+        compositeDisposable.clear();
         visionService.getTangoWrapper().removeOnTangoReadyListener(this);
     }
 
@@ -180,7 +185,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
     }
 
     public void onActionDownload() {
@@ -207,7 +212,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
     }
 
     public void onActionDeleteCache() {

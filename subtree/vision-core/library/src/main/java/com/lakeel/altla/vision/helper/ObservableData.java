@@ -11,9 +11,6 @@ import com.lakeel.altla.android.log.LogFactory;
 import android.support.annotation.NonNull;
 
 import java.io.Closeable;
-import java.util.concurrent.Callable;
-
-import io.reactivex.Observable;
 
 public final class ObservableData<TData> implements Closeable {
 
@@ -30,15 +27,6 @@ public final class ObservableData<TData> implements Closeable {
     public ObservableData(@NonNull Query query, @NonNull DataSnapshotConverter<TData> dataSnapshotConverter) {
         this.query = query;
         this.dataSnapshotConverter = dataSnapshotConverter;
-    }
-
-    @NonNull
-    public static <TData> Observable<TData> using(@NonNull Callable<ObservableData<TData>> observableDataFactory) {
-        return Observable.using(observableDataFactory,
-                                observableData -> Observable.<TData>create(subscriber -> {
-                                    observableData.observe(subscriber::onNext, subscriber::onError);
-                                }),
-                                ObservableData::close);
     }
 
     public void observe(OnDataChangeListener<TData> onDataChangeListener, OnFailureListener onFailureListener) {

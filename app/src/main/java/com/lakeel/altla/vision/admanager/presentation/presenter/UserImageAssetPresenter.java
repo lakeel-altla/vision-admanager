@@ -2,9 +2,9 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
 import android.net.Uri;
@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserImageAssetPresenter extends BasePresenter<UserImageAssetView> {
@@ -23,6 +24,8 @@ public final class UserImageAssetPresenter extends BasePresenter<UserImageAssetV
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String assetId;
 
@@ -62,8 +65,8 @@ public final class UserImageAssetPresenter extends BasePresenter<UserImageAssetV
     protected void onStartOverride() {
         super.onStartOverride();
 
-        Disposable disposable = ObservableData
-                .using(() -> visionService.getUserAssetApi().observeUserImageAssetById(assetId))
+        Disposable disposable = RxHelper
+                .usingData(() -> visionService.getUserAssetApi().observeUserImageAssetById(assetId))
                 .subscribe(asset -> {
                     getView().onUpdateTitle(asset.getName());
                     getView().onUpdateImageId(asset.getId());
@@ -79,12 +82,19 @@ public final class UserImageAssetPresenter extends BasePresenter<UserImageAssetV
                     }, e -> {
                         getLog().e("Failed.", e);
                     });
-                    manageDisposable(disposable1);
+                    compositeDisposable.add(disposable1);
                 }, e -> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     public void onEdit() {

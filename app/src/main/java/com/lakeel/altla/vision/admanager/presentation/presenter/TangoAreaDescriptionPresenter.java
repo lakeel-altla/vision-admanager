@@ -19,6 +19,7 @@ import java.io.File;
 import javax.inject.Inject;
 
 import io.reactivex.Maybe;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoAreaDescriptionView>
@@ -28,6 +29,8 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaDescriptionId;
 
@@ -101,7 +104,7 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
                         getLog().e("Entity not found.");
                         getView().onSnackbar(R.string.snackbar_failed);
                     });
-            manageDisposable(disposable);
+            compositeDisposable.add(disposable);
         });
     }
 
@@ -117,6 +120,13 @@ public final class TangoAreaDescriptionPresenter extends BasePresenter<TangoArea
         super.onPauseOverride();
 
         visionService.getTangoWrapper().removeOnTangoReadyListener(this);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     public void onActionDelete() {

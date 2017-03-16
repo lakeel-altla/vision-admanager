@@ -11,6 +11,7 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.service.UserImageAssetFileUploadTaskService;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
@@ -29,8 +30,6 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAss
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.helper.DataListEvent;
-import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 import com.squareup.picasso.Picasso;
 
@@ -440,8 +439,8 @@ public final class MainActivity extends AppCompatActivity
             if (user != null) {
                 // Subscribe the connection.
                 if (observeConnectionDisposable == null) {
-                    observeConnectionDisposable = ObservableData
-                            .using(() -> visionService.getFirebaseConnectionApi().observeConnection())
+                    observeConnectionDisposable = RxHelper
+                            .usingData(() -> visionService.getFirebaseConnectionApi().observeConnection())
                             .doOnNext(connected -> LOG
                                     .i("The user device connection state changed: connected = %b", connected))
                             .flatMapCompletable(connected -> {
@@ -460,8 +459,8 @@ public final class MainActivity extends AppCompatActivity
 
                 // Subscribe the user profile.
                 if (observeUserProfileDisposable == null) {
-                    observeUserProfileDisposable = ObservableData
-                            .using(() -> visionService.getUserProfileApi().observeUserProfileById(user.getUid()))
+                    observeUserProfileDisposable = RxHelper
+                            .usingData(() -> visionService.getUserProfileApi().observeUserProfileById(user.getUid()))
                             .subscribe(profile -> {
                                 // Update UI each time the user profile is updated.
                                 if (profile.getPhotoUri() != null) {
@@ -477,8 +476,8 @@ public final class MainActivity extends AppCompatActivity
 
                 // Observe all pending storage tasks.
                 if (observeAllUserAssetImageFileUploadTasksDisposable == null) {
-                    observeAllUserAssetImageFileUploadTasksDisposable = ObservableDataList
-                            .using(() -> visionService.getUserAssetApi().observeUserImageAssetFileUploadTask())
+                    observeAllUserAssetImageFileUploadTasksDisposable = RxHelper
+                            .usingList(() -> visionService.getUserAssetApi().observeUserImageAssetFileUploadTask())
                             .subscribe(event -> {
                                 if (event.getType() == DataListEvent.Type.ADDED) {
                                     ImageAssetFileUploadTask task = event.getData();

@@ -4,9 +4,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 
@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
@@ -28,6 +29,8 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
     @Inject
     GoogleApiClient googleApiClient;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String areaId;
 
@@ -69,8 +72,8 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
         getView().onUpdateTitle(null);
 
-        Disposable disposable = ObservableData
-                .using(() -> visionService.getUserAreaApi().observeAreaById(areaId))
+        Disposable disposable = RxHelper
+                .usingData(() -> visionService.getUserAreaApi().observeAreaById(areaId))
                 .map(Model::new)
                 .flatMap(model -> {
                     String placeId = model.area.getPlaceId();
@@ -101,7 +104,14 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     public void onEdit() {

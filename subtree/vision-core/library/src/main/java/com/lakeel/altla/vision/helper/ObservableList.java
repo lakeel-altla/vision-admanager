@@ -11,13 +11,10 @@ import com.lakeel.altla.android.log.LogFactory;
 import android.support.annotation.NonNull;
 
 import java.io.Closeable;
-import java.util.concurrent.Callable;
 
-import io.reactivex.Observable;
+public final class ObservableList<TData> implements Closeable {
 
-public final class ObservableDataList<TData> implements Closeable {
-
-    private static final Log LOG = LogFactory.getLog(ObservableDataList.class);
+    private static final Log LOG = LogFactory.getLog(ObservableList.class);
 
     private final Query query;
 
@@ -27,19 +24,9 @@ public final class ObservableDataList<TData> implements Closeable {
 
     private boolean closed;
 
-    public ObservableDataList(@NonNull Query query, @NonNull DataSnapshotConverter<TData> dataSnapshotConverter) {
+    public ObservableList(@NonNull Query query, @NonNull DataSnapshotConverter<TData> dataSnapshotConverter) {
         this.query = query;
         this.dataSnapshotConverter = dataSnapshotConverter;
-    }
-
-    @NonNull
-    public static <TData> Observable<DataListEvent<TData>> using(
-            @NonNull Callable<ObservableDataList<TData>> observableDataListFactory) {
-        return Observable.using(observableDataListFactory,
-                                observableDataList -> Observable.<DataListEvent<TData>>create(subscriber -> {
-                                    observableDataList.observe(subscriber::onNext, subscriber::onError);
-                                }),
-                                ObservableDataList::close);
     }
 
     public void observe(OnDataListEventListener<TData> onDataListEventListener, OnFailureListener onFailureListener) {

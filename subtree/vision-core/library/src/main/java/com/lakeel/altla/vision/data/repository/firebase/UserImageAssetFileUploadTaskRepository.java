@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 
 import android.support.annotation.NonNull;
@@ -36,13 +36,13 @@ public final class UserImageAssetFileUploadTaskRepository extends BaseDatabaseRe
     }
 
     @NonNull
-    public ObservableDataList<ImageAssetFileUploadTask> observeAll(@NonNull String userId) {
+    public ObservableList<ImageAssetFileUploadTask> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId)
                                    .orderByChild(FIELD_ORDER);
 
-        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(ImageAssetFileUploadTask.class));
+        return new ObservableList<>(query, snapshot -> snapshot.getValue(ImageAssetFileUploadTask.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String assetId) {

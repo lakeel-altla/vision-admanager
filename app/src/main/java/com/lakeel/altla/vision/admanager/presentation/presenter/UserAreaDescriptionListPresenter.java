@@ -1,11 +1,11 @@
 package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.admanager.R;
+import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionListView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.helper.DataListEvent;
-import com.lakeel.altla.vision.helper.ObservableDataList;
 import com.lakeel.altla.vision.model.AreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAreaDescriptionListView>
@@ -21,6 +22,8 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
     @Inject
     VisionService visionService;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final DataList<Item> items = new DataList<>(this);
 
@@ -41,8 +44,8 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
 
         items.clear();
 
-        Disposable disposable = ObservableDataList
-                .using(() -> visionService.getUserAreaDescriptionApi().observeAllAreaDescriptions())
+        Disposable disposable = RxHelper
+                .usingList(() -> visionService.getUserAreaDescriptionApi().observeAllAreaDescriptions())
                 .map(Event::new)
                 .subscribe(model -> {
                     items.change(model.type, model.item, model.previousId);
@@ -50,7 +53,14 @@ public final class UserAreaDescriptionListPresenter extends BasePresenter<UserAr
                     getLog().e("Failed.", e);
                     getView().onSnackbar(R.string.snackbar_failed);
                 });
-        manageDisposable(disposable);
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onStopOverride() {
+        super.onStopOverride();
+
+        compositeDisposable.clear();
     }
 
     @Override
