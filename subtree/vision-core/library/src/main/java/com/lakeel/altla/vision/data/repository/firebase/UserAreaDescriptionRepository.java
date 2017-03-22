@@ -7,6 +7,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import com.lakeel.altla.vision.helper.FirebaseObservableData;
+import com.lakeel.altla.vision.helper.FirebaseObservableList;
 import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
@@ -124,7 +126,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                                                    .child(userId)
                                                    .child(areaDescriptionId);
 
-        return new ObservableData<>(reference, snapshot -> snapshot.getValue(AreaDescription.class));
+        return new FirebaseObservableData<>(reference, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     @NonNull
@@ -134,7 +136,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                                    .child(userId)
                                    .orderByChild(FIELD_NAME);
 
-        return new ObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
+        return new FirebaseObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     @NonNull
@@ -145,7 +147,7 @@ public final class UserAreaDescriptionRepository extends BaseDatabaseRepository 
                                    .orderByChild(FIELD_AREA_ID)
                                    .equalTo(areaId);
 
-        return new ObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
+        return new FirebaseObservableList<>(query, snapshot -> snapshot.getValue(AreaDescription.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String areaDescriptionId) {
