@@ -114,9 +114,4 @@ public final class ObservableList<TData> implements Closeable {
 
         LOG.v("Closed.");
     }
-
-    public interface DataSnapshotConverter<TData> {
-
-        TData convert(DataSnapshot snapshot);
-    }
 }

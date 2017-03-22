@@ -92,9 +92,4 @@ public final class ObservableData<TData> implements Closeable {
 
         LOG.v("Closed.");
     }
-
-    public interface DataSnapshotConverter<TData> {
-
-        TData convert(DataSnapshot snapshot);
-    }
 }
