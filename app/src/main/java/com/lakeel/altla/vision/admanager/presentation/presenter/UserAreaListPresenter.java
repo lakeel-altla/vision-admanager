@@ -3,11 +3,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaItemView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaListView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableListEvent;
 import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
 import com.lakeel.altla.vision.presentation.presenter.model.DataList;
@@ -50,7 +50,7 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
         items.clear();
 
-        Disposable disposable = RxHelper
+        Disposable disposable = ObservableHelper
                 .usingList(() -> visionService.getUserAreaApi().observeAreas())
                 .map(ItemEvent::new)
                 .concatMap(event -> {
@@ -143,13 +143,13 @@ public final class UserAreaListPresenter extends BasePresenter<UserAreaListView>
 
     private final class ItemEvent {
 
-        final DataListEvent.Type type;
+        final ObservableListEvent.Type type;
 
         final Item item;
 
         final String previousId;
 
-        ItemEvent(DataListEvent<Area> event) {
+        ItemEvent(ObservableListEvent<Area> event) {
             type = event.getType();
             item = new Item(event.getData());
             previousId = event.getPreviousChildName();

@@ -2,11 +2,11 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionByAreaListView;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionItemView;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableListEvent;
 import com.lakeel.altla.vision.model.Area;
 import com.lakeel.altla.vision.model.AreaDescription;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -78,7 +78,7 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
 
         items.clear();
 
-        Disposable disposable1 = RxHelper
+        Disposable disposable1 = ObservableHelper
                 .usingList(() -> visionService.getUserAreaDescriptionApi().observeAreaDescriptionsByAreaId(areaId))
                 .map(Event::new)
                 .subscribe(event -> {
@@ -173,13 +173,13 @@ public class UserAreaDescriptionByAreaListPresenter extends BasePresenter<UserAr
 
     private final class Event {
 
-        final DataListEvent.Type type;
+        final ObservableListEvent.Type type;
 
         final Item item;
 
         final String previousId;
 
-        Event(@NonNull DataListEvent<AreaDescription> event) {
+        Event(@NonNull ObservableListEvent<AreaDescription> event) {
             type = event.getType();
             item = new Item(event.getData());
             previousId = event.getPreviousChildName();

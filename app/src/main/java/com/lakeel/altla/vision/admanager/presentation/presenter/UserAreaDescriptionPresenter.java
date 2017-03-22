@@ -4,7 +4,7 @@ import com.google.atap.tangoservice.Tango;
 
 import com.lakeel.altla.tango.TangoWrapper;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.model.ImportStatus;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaDescriptionView;
 import com.lakeel.altla.vision.api.VisionService;
@@ -95,7 +95,7 @@ public final class UserAreaDescriptionPresenter extends BasePresenter<UserAreaDe
 
         visionService.getTangoWrapper().addOnTangoReadyListener(this);
 
-        Disposable disposable = RxHelper
+        Disposable disposable = ObservableHelper
                 .usingData(() -> visionService.getUserAreaDescriptionApi()
                                               .observeAreaDescriptionById(areaDescriptionId))
                 .map(Model::new)

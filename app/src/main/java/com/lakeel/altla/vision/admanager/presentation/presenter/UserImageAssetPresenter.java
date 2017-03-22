@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.admanager.presentation.presenter;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserImageAssetView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.presentation.presenter.BasePresenter;
@@ -65,7 +65,7 @@ public final class UserImageAssetPresenter extends BasePresenter<UserImageAssetV
     protected void onStartOverride() {
         super.onStartOverride();
 
-        Disposable disposable = RxHelper
+        Disposable disposable = ObservableHelper
                 .usingData(() -> visionService.getUserAssetApi().observeUserImageAssetById(assetId))
                 .subscribe(asset -> {
                     getView().onUpdateTitle(asset.getName());

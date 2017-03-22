@@ -11,7 +11,7 @@ import com.lakeel.altla.vision.admanager.presentation.app.MyApplication;
 import com.lakeel.altla.vision.admanager.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.admanager.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.admanager.presentation.di.module.ActivityModule;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.service.UserImageAssetFileUploadTaskService;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.TangoAreaDescriptionFragment;
@@ -29,7 +29,7 @@ import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAss
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetFragment;
 import com.lakeel.altla.vision.admanager.presentation.view.fragment.UserImageAssetListFragment;
 import com.lakeel.altla.vision.api.VisionService;
-import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableListEvent;
 import com.lakeel.altla.vision.model.ImageAssetFileUploadTask;
 import com.squareup.picasso.Picasso;
 
@@ -439,7 +439,7 @@ public final class MainActivity extends AppCompatActivity
             if (user != null) {
                 // Subscribe the connection.
                 if (observeConnectionDisposable == null) {
-                    observeConnectionDisposable = RxHelper
+                    observeConnectionDisposable = ObservableHelper
                             .usingData(() -> visionService.getFirebaseConnectionApi().observeConnection())
                             .doOnNext(connected -> LOG
                                     .i("The user device connection state changed: connected = %b", connected))
@@ -459,7 +459,7 @@ public final class MainActivity extends AppCompatActivity
 
                 // Subscribe the user profile.
                 if (observeUserProfileDisposable == null) {
-                    observeUserProfileDisposable = RxHelper
+                    observeUserProfileDisposable = ObservableHelper
                             .usingData(() -> visionService.getUserProfileApi().observeUserProfileById(user.getUid()))
                             .subscribe(profile -> {
                                 // Update UI each time the user profile is updated.
@@ -476,10 +476,10 @@ public final class MainActivity extends AppCompatActivity
 
                 // Observe all pending storage tasks.
                 if (observeAllUserAssetImageFileUploadTasksDisposable == null) {
-                    observeAllUserAssetImageFileUploadTasksDisposable = RxHelper
+                    observeAllUserAssetImageFileUploadTasksDisposable = ObservableHelper
                             .usingList(() -> visionService.getUserAssetApi().observeUserImageAssetFileUploadTask())
                             .subscribe(event -> {
-                                if (event.getType() == DataListEvent.Type.ADDED) {
+                                if (event.getType() == ObservableListEvent.Type.ADDED) {
                                     ImageAssetFileUploadTask task = event.getData();
 
                                     if (!FirebaseInstanceId.getInstance().getId().equals(task.getInstanceId())) return;

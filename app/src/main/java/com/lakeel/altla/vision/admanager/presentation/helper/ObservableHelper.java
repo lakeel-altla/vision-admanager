@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.admanager.presentation.helper;
 
-import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableListEvent;
 import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.ObservableList;
 
@@ -10,9 +10,9 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 
-public final class RxHelper {
+public final class ObservableHelper {
 
-    private RxHelper() {
+    private ObservableHelper() {
     }
 
     @NonNull
@@ -27,10 +27,10 @@ public final class RxHelper {
     }
 
     @NonNull
-    public static <TData> Observable<DataListEvent<TData>> usingList(
+    public static <TData> Observable<ObservableListEvent<TData>> usingList(
             @NonNull Callable<ObservableList<TData>> observableListFactory) {
         return Observable.using(observableListFactory,
-                                observableList -> Observable.<DataListEvent<TData>>create(subscriber -> {
+                                observableList -> Observable.<ObservableListEvent<TData>>create(subscriber -> {
                                     observableList.addOnDataListEventListener(subscriber::onNext);
                                     observableList.addOnFailureListener(subscriber::onError);
                                     observableList.observe();

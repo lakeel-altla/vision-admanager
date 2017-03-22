@@ -4,7 +4,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.admanager.R;
-import com.lakeel.altla.vision.admanager.presentation.helper.RxHelper;
+import com.lakeel.altla.vision.admanager.presentation.helper.ObservableHelper;
 import com.lakeel.altla.vision.admanager.presentation.view.UserAreaView;
 import com.lakeel.altla.vision.api.VisionService;
 import com.lakeel.altla.vision.model.Area;
@@ -72,7 +72,7 @@ public final class UserAreaPresenter extends BasePresenter<UserAreaView> {
 
         getView().onUpdateTitle(null);
 
-        Disposable disposable = RxHelper
+        Disposable disposable = ObservableHelper
                 .usingData(() -> visionService.getUserAreaApi().observeAreaById(areaId))
                 .map(Model::new)
                 .flatMap(model -> {

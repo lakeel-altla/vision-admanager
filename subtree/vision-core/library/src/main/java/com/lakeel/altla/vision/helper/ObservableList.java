@@ -22,7 +22,7 @@ public final class ObservableList<TData> implements Closeable {
 
     private final DataSnapshotConverter<TData> dataSnapshotConverter;
 
-    private final List<OnDataListEventListener<TData>> onDataListEventListeners = new ArrayList<>();
+    private final List<OnObservableListEventListener<TData>> onObservableListEventListeners = new ArrayList<>();
 
     private final List<OnFailureListener> onFailureListeners = new ArrayList<>();
 
@@ -35,20 +35,21 @@ public final class ObservableList<TData> implements Closeable {
         this.dataSnapshotConverter = dataSnapshotConverter;
     }
 
-    public void addOnDataListEventListener(@NonNull OnDataListEventListener<TData> onDataListEventListener) {
-        onDataListEventListeners.add(onDataListEventListener);
+    public void addOnDataListEventListener(@NonNull OnObservableListEventListener<TData> listener) {
+        onObservableListEventListeners.add(listener);
     }
 
-    public void removeOnDataListEventListener(@NonNull OnDataListEventListener<TData> onDataListEventListener) {
-        onDataListEventListeners.remove(onDataListEventListener);
+    public void removeOnDataListEventListener(
+            @NonNull OnObservableListEventListener<TData> listener) {
+        onObservableListEventListeners.remove(listener);
     }
 
-    public void addOnFailureListener(@NonNull OnFailureListener onFailureListener) {
-        onFailureListeners.add(onFailureListener);
+    public void addOnFailureListener(@NonNull OnFailureListener listener) {
+        onFailureListeners.add(listener);
     }
 
-    public void removeOnFailureListener(@NonNull OnFailureListener onFailureListener) {
-        onFailureListeners.remove(onFailureListener);
+    public void removeOnFailureListener(@NonNull OnFailureListener listener) {
+        onFailureListeners.remove(listener);
     }
 
     public void observe() {
@@ -58,44 +59,44 @@ public final class ObservableList<TData> implements Closeable {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
                 TData data = dataSnapshotConverter.convert(snapshot);
-                for (OnDataListEventListener<TData> onDataListEventListener : onDataListEventListeners) {
-                    onDataListEventListener.onDataListEvent(
-                            new DataListEvent<>(DataListEvent.Type.ADDED, data, previousChildName));
+                for (OnObservableListEventListener<TData> listener : onObservableListEventListeners) {
+                    listener.onObservableListEvent(
+                            new ObservableListEvent<>(ObservableListEvent.Type.ADDED, data, previousChildName));
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
                 TData data = dataSnapshotConverter.convert(snapshot);
-                for (OnDataListEventListener<TData> onDataListEventListener : onDataListEventListeners) {
-                    onDataListEventListener.onDataListEvent(
-                            new DataListEvent<>(DataListEvent.Type.CHANGED, data, previousChildName));
+                for (OnObservableListEventListener<TData> listener : onObservableListEventListeners) {
+                    listener.onObservableListEvent(
+                            new ObservableListEvent<>(ObservableListEvent.Type.CHANGED, data, previousChildName));
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
                 TData data = dataSnapshotConverter.convert(snapshot);
-                for (OnDataListEventListener<TData> onDataListEventListener : onDataListEventListeners) {
-                    onDataListEventListener.onDataListEvent(
-                            new DataListEvent<>(DataListEvent.Type.REMOVED, data, null));
+                for (OnObservableListEventListener<TData> listener : onObservableListEventListeners) {
+                    listener.onObservableListEvent(
+                            new ObservableListEvent<>(ObservableListEvent.Type.REMOVED, data, null));
                 }
             }
 
             @Override
             public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
                 TData data = dataSnapshotConverter.convert(snapshot);
-                for (OnDataListEventListener<TData> onDataListEventListener : onDataListEventListeners) {
-                    onDataListEventListener.onDataListEvent(
-                            new DataListEvent<>(DataListEvent.Type.MOVED, data, previousChildName));
+                for (OnObservableListEventListener<TData> listener : onObservableListEventListeners) {
+                    listener.onObservableListEvent(
+                            new ObservableListEvent<>(ObservableListEvent.Type.MOVED, data, previousChildName));
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 Exception e = error.toException();
-                for (OnFailureListener onFailureListener : onFailureListeners) {
-                    onFailureListener.onFailure(e);
+                for (OnFailureListener listener : onFailureListeners) {
+                    listener.onFailure(e);
                 }
             }
         };
