@@ -2,14 +2,14 @@ package com.lakeel.altla.vision.model;
 
 import android.support.annotation.NonNull;
 
-public enum AreaScope {
+public enum Scope {
     UNKNOWN(0),
     PUBLIC(1),
     USER(2);
 
     private final int value;
 
-    AreaScope(int value) {
+    Scope(int value) {
         this.value = value;
     }
 
@@ -18,12 +18,12 @@ public enum AreaScope {
     }
 
     @NonNull
-    public static AreaScope toAreaScope(int value) {
-        for (AreaScope areaScope : AreaScope.values()) {
-            if (areaScope.getValue() == value) {
-                return areaScope;
+    public static Scope toAreaScope(int value) {
+        for (Scope scope : Scope.values()) {
+            if (scope.getValue() == value) {
+                return scope;
             }
         }
-        return AreaScope.UNKNOWN;
+        return Scope.UNKNOWN;
     }
 }

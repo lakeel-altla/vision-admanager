@@ -7,7 +7,7 @@ import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileReposi
 import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetFileUploadTaskRepository;
 import com.lakeel.altla.vision.data.repository.firebase.UserImageAssetRepository;
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnProgressListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
@@ -55,7 +55,7 @@ public final class UserAssetApi extends BaseVisionApi {
     }
 
     @NonNull
-    public ObservableDataList<ImageAsset> observeAllUserImageAssets() {
+    public ObservableList<ImageAsset> observeAllUserImageAssets() {
         return userImageAssetRepository.observeAll(CurrentUser.getInstance().getUserId());
     }
 
@@ -85,7 +85,7 @@ public final class UserAssetApi extends BaseVisionApi {
     }
 
     @NonNull
-    public ObservableDataList<ImageAssetFileUploadTask> observeUserImageAssetFileUploadTask() {
+    public ObservableList<ImageAssetFileUploadTask> observeUserImageAssetFileUploadTask() {
         return userImageAssetFileUploadTaskRepository.observeAll(CurrentUser.getInstance().getUserId());
     }
 

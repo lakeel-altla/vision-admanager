@@ -7,8 +7,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import com.lakeel.altla.vision.helper.FirebaseObservableData;
+import com.lakeel.altla.vision.helper.FirebaseObservableList;
 import com.lakeel.altla.vision.helper.ObservableData;
-import com.lakeel.altla.vision.helper.ObservableDataList;
+import com.lakeel.altla.vision.helper.ObservableList;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
 import com.lakeel.altla.vision.model.Actor;
@@ -100,16 +102,16 @@ public final class UserActorRepository extends BaseDatabaseRepository {
                                                    .child(userId)
                                                    .child(actorId);
 
-        return new ObservableData<>(reference, snapshot -> snapshot.getValue(Actor.class));
+        return new FirebaseObservableData<>(reference, snapshot -> snapshot.getValue(Actor.class));
     }
 
     @NonNull
-    public ObservableDataList<Actor> observeAll(@NonNull String userId) {
+    public ObservableList<Actor> observeAll(@NonNull String userId) {
         Query query = getDatabase().getReference()
                                    .child(BASE_PATH)
                                    .child(userId);
 
-        return new ObservableDataList<>(query, snapshot -> snapshot.getValue(Actor.class));
+        return new FirebaseObservableList<>(query, snapshot -> snapshot.getValue(Actor.class));
     }
 
     public void delete(@NonNull String userId, @NonNull String actorId) {

@@ -1,6 +1,6 @@
 package com.lakeel.altla.vision.presentation.presenter.model;
 
-import com.lakeel.altla.vision.helper.DataListEvent;
+import com.lakeel.altla.vision.helper.ObservableListEvent;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +18,7 @@ public final class DataList<TItem extends DataList.Item> {
         this.onItemListener = onItemListener;
     }
 
-    public void change(@NonNull DataListEvent.Type type, @NonNull TItem item, @Nullable String previousId) {
+    public void change(@NonNull ObservableListEvent.Type type, @NonNull TItem item, @Nullable String previousId) {
         switch (type) {
             case ADDED: {
                 onAdded(item, previousId);

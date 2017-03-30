@@ -28,12 +28,12 @@ public final class AreaSettings extends BaseEntity {
     @Exclude
     @Transient
     @NonNull
-    public AreaScope getAreaScopeAsEnum() {
-        return AreaScope.toAreaScope(areaScope);
+    public Scope getAreaScopeAsEnum() {
+        return Scope.toAreaScope(areaScope);
     }
 
-    public void setAreaScopeAsEnum(@NonNull AreaScope areaScope) {
-        this.areaScope = areaScope.getValue();
+    public void setAreaScopeAsEnum(@NonNull Scope scope) {
+        this.areaScope = scope.getValue();
     }
 
     @Nullable

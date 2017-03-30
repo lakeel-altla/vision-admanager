@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.lakeel.altla.vision.helper.FirebaseObservableData;
 import com.lakeel.altla.vision.helper.ObservableData;
 import com.lakeel.altla.vision.helper.OnFailureListener;
 import com.lakeel.altla.vision.helper.OnSuccessListener;
@@ -59,6 +60,6 @@ public final class UserProfileRepository extends BaseDatabaseRepository {
                                                    .child(BASE_PATH)
                                                    .child(userId);
 
-        return new ObservableData<>(reference, snapshot -> snapshot.getValue(Profile.class));
+        return new FirebaseObservableData<>(reference, snapshot -> snapshot.getValue(Profile.class));
     }
 }

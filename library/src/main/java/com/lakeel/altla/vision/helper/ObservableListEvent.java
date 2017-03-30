@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.helper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public final class DataListEvent<TData> {
+public final class ObservableListEvent<TData> {
 
     private final Type type;
 
@@ -11,7 +11,7 @@ public final class DataListEvent<TData> {
 
     private final String previousChildName;
 
-    DataListEvent(@NonNull Type type, @NonNull TData data, @Nullable String previousChildName) {
+    ObservableListEvent(@NonNull Type type, @NonNull TData data, @Nullable String previousChildName) {
         this.type = type;
         this.data = data;
         this.previousChildName = previousChildName;
@@ -27,7 +27,7 @@ public final class DataListEvent<TData> {
         return data;
     }
 
-    @NonNull
+    @Nullable
     public String getPreviousChildName() {
         return previousChildName;
     }
